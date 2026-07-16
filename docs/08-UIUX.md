@@ -159,6 +159,7 @@ Settings
 Before drawing anything, list every screen.
 
 Authentication
+Register
 Login
 Forgot Password
 Reset Password
