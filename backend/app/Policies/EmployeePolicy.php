@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Policies;
+
+use App\Models\Employee;
+use App\Models\User;
+
+class EmployeePolicy
+{
+    public function viewAny(User $user): bool
+    {
+        return $user->hasPermission('employee.view');
+    }
+
+    public function view(User $user, Employee $employee): bool
+    {
+        return $user->hasPermission('employee.view');
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->hasPermission('employee.create');
+    }
+
+    public function update(User $user, Employee $employee): bool
+    {
+        return $user->hasPermission('employee.update');
+    }
+
+    public function delete(User $user, Employee $employee): bool
+    {
+        return $user->hasPermission('employee.delete');
+    }
+}
