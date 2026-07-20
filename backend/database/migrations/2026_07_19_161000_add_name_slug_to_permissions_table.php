@@ -8,16 +8,20 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->string('name')->after('id');
-            $table->string('slug')->unique()->after('name');
-        });
+        if (!Schema::hasColumn('permissions', 'name')) {
+            Schema::table('permissions', function (Blueprint $table) {
+                $table->string('name')->after('id');
+                $table->string('slug')->unique()->after('name');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn(['name', 'slug']);
-        });
+        if (Schema::hasColumn('permissions', 'name')) {
+            Schema::table('permissions', function (Blueprint $table) {
+                $table->dropColumn(['name', 'slug']);
+            });
+        }
     }
 };

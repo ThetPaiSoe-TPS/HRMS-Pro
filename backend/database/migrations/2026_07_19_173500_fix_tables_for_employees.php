@@ -22,6 +22,20 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('employees', function (Blueprint $table) {
+            $table->id();
+            $table->string('employee_code', 50)->unique();
+            $table->string('name', 255);
+            $table->foreignId('department_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('position_id')->constrained()->cascadeOnDelete();
+            $table->string('phone', 50)->nullable();
+            $table->string('email', 255)->nullable()->unique();
+            $table->date('hire_date')->nullable();
+            $table->enum('status', ['active', 'inactive'])->nullable();
+            $table->string('photo', 255)->nullable();
+            $table->timestamps();
+        });
+
         Schema::table('departments', function (Blueprint $table) {
             if (!Schema::hasColumn('departments', 'name')) {
                 $table->string('name', 255);
@@ -47,7 +61,7 @@ return new class extends Migration
         Schema::dropIfExists('positions');
 
         Schema::table('departments', function (Blueprint $table) {
-            $columns = ['name', 'code', 'description', 'manager_id'];
+            $columns = ['code', 'description', 'manager_id'];
             foreach ($columns as $column) {
                 if (Schema::hasColumn('departments', $column)) {
                     $table->dropColumn($column);

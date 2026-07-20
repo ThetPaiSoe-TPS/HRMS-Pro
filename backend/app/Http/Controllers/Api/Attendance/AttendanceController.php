@@ -33,7 +33,7 @@ class AttendanceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'employee_id' => ['required', 'exists:employees,id'],
-            'check_in' => ['nullable', 'date'],
+            'check_in' => ['nullable', 'date_format:Y-m-d H:i:s'],
             'note' => ['nullable', 'string'],
         ]);
 
@@ -42,7 +42,7 @@ class AttendanceController extends Controller
         }
 
         $data = $validator->validated();
-        $data['check_in'] = $data['check_in'] ?? now();
+        $data['check_in'] = $data['check_in'] ?? now()->format('Y-m-d H:i:s');
         $data['status'] = 'present';
 
         $attendance = \App\Models\Attendance::create($data);

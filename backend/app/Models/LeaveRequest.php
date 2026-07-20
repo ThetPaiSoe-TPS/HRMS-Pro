@@ -17,7 +17,24 @@ class LeaveRequest extends Model
         'reason',
         'status',
         'attachment',
+        'attachment_original_name',
+        'attachment_mime_type',
+        'attachment_size'
     ];
+
+    protected $casts = [
+        'date_from' => 'date',
+        'date_to' => 'date',
+        'attachment_size' => 'integer'
+    ];
+
+    public function getAttachmentUrlAttribute()
+    {
+        if ($this->attachment) {
+            return asset('storage/' . $this->attachment);
+        }
+        return null;
+    }
 
     public function employee()
     {
