@@ -96,16 +96,18 @@ Simplify report generation.
 ===
 
 7. Target Users
+8. 
 Super Admin
-
 Responsible for:
 
 System configuration
 User management
 Role management
 Company settings
-HR Manager
 
+---
+
+HR Manager
 Responsible for:
 
 Employee management
@@ -113,15 +115,19 @@ Attendance monitoring
 Leave approvals
 Payroll preparation
 Recruitment
-Department Manager
 
+---
+
+Department Manager
 Responsible for:
 
 Managing team members
 Approving leave
 Viewing department reports
-Employee
 
+---
+
+Employee
 Responsible for:
 
 Updating personal information

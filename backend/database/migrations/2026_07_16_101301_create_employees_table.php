@@ -11,7 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('employees');
+        Schema::enableForeignKeyConstraints();
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->string('employee_code', 50)->unique();
@@ -31,6 +33,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('employees');
+        Schema::enableForeignKeyConstraints();
     }
 };

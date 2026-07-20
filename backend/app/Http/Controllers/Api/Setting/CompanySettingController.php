@@ -30,16 +30,26 @@ class CompanySettingController extends Controller
             'company_email' => ['sometimes', 'string', 'email', 'max:255'],
             'company_phone' => ['sometimes', 'string', 'max:50'],
             'company_address' => ['sometimes', 'string'],
-            'logo' => ['nullable', 'string'],
+            'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'], // File validation
         ]);
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
         }
 
+        $data = $validator->validated();
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $logoName = time() . '.' . $logo->getClientOriginalExtension();
+            $logoPath = $logo->storeAs('company-logos', $logoName, 'public');
+            $data['logo'] = $logoPath; // Store the path
+        }
+
         $setting = CompanySetting::updateOrCreate(
             ['id' => 1],
-            $validator->validated()
+            $data
         );
 
         return $this->success($setting, 'Company settings updated successfully.');
