@@ -132,11 +132,21 @@ Route::prefix('v1')->group(function () {
     | Sprint 6: Payroll
     |------------------------------------------------------------------
     */
-    Route::post('/{payroll}/calculate', [PayrollController::class, 'calculate']);
-    Route::post('/{payroll}/submit', [PayrollController::class, 'submitForApproval']);
-    Route::post('/{payroll}/approve', [PayrollController::class, 'approve']);
-    Route::post('/{payroll}/mark-paid', [PayrollController::class, 'markAsPaid']);
-    Route::post('/{payroll}/cancel', [PayrollController::class, 'cancel']);
+    Route::prefix('payrolls')->middleware('auth:sanctum')->group(function () {
+        // Main payroll endpoints
+        Route::get('/', [PayrollController::class, 'index'])->middleware('permission:payroll.view');
+        Route::get('/dashboard', [PayrollController::class, 'dashboard'])->middleware('permission:payroll.view');
+        Route::post('/generate', [PayrollController::class, 'generate'])->middleware('permission:payroll.generate');
+        Route::get('/{payroll}', [PayrollController::class, 'show'])->middleware('permission:payroll.view');
+
+        // Payroll actions
+        Route::post('/{payroll}/calculate', [PayrollController::class, 'calculate'])->middleware('permission:payroll.update');
+        Route::post('/{payroll}/submit', [PayrollController::class, 'submitForApproval'])->middleware('permission:payroll.update');
+        Route::post('/{payroll}/approve', [PayrollController::class, 'approve'])->middleware('permission:payroll.approve');
+        Route::post('/{payroll}/mark-paid', [PayrollController::class, 'markAsPaid'])->middleware('permission:payroll.update');
+        Route::post('/{payroll}/cancel', [PayrollController::class, 'cancel'])->middleware('permission:payroll.update');
+    });
+
 
     Route::prefix('employees')->middleware('auth:sanctum')->group(function () {
         Route::get('{employee}/salary', [PayrollController::class, 'employeeSalary'])->middleware('permission:salary.view');
