@@ -132,18 +132,11 @@ Route::prefix('v1')->group(function () {
     | Sprint 6: Payroll
     |------------------------------------------------------------------
     */
-    Route::prefix('payrolls')->middleware(['auth:sanctum', 'permission:payroll.view'])->group(function () {
-        Route::get('/', [PayrollController::class, 'index']);
-        Route::post('generate', [PayrollController::class, 'generate'])->withoutMiddleware('permission:payroll.view')->middleware('permission:payroll.generate');
-        Route::get('settings', [PayrollController::class, 'settings'])->withoutMiddleware('permission:payroll.view');
-        Route::put('settings', [PayrollController::class, 'updateSettings'])->withoutMiddleware('permission:payroll.view')->middleware('permission:payroll.update');
-        Route::get('{payroll}', [PayrollController::class, 'show']);
-        Route::put('{payroll}', [PayrollController::class, 'update'])->withoutMiddleware('permission:payroll.view')->middleware('permission:payroll.update');
-        Route::put('{payroll}/approve', [PayrollController::class, 'approve'])->withoutMiddleware('permission:payroll.view')->middleware('permission:payroll.approve');
-        Route::put('{payroll}/pay', [PayrollController::class, 'pay'])->withoutMiddleware('permission:payroll.view')->middleware('permission:payroll.pay');
-        Route::put('{payroll}/mark-paid', [PayrollController::class, 'markPaid'])->withoutMiddleware('permission:payroll.view')->middleware('permission:payroll.update');
-        Route::get('{payroll}/download', [PayrollController::class, 'download']);
-    });
+    Route::post('/{payroll}/calculate', [PayrollController::class, 'calculate']);
+    Route::post('/{payroll}/submit', [PayrollController::class, 'submitForApproval']);
+    Route::post('/{payroll}/approve', [PayrollController::class, 'approve']);
+    Route::post('/{payroll}/mark-paid', [PayrollController::class, 'markAsPaid']);
+    Route::post('/{payroll}/cancel', [PayrollController::class, 'cancel']);
 
     Route::prefix('employees')->middleware('auth:sanctum')->group(function () {
         Route::get('{employee}/salary', [PayrollController::class, 'employeeSalary'])->middleware('permission:salary.view');

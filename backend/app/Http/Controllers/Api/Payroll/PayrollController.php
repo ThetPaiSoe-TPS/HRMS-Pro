@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Api\Payroll;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
-use App\Models\EmployeeSalary;
 use App\Models\Payroll;
-use App\Models\PayrollSetting;
+use App\Services\Payroll\PayrollService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -15,9 +14,32 @@ class PayrollController extends Controller
 {
     use ApiResponseTrait;
 
+    protected $payrollService;
+
+    public function __construct(PayrollService $payrollService)
+    {
+        $this->payrollService = $payrollService;
+    }
+
     public function index(Request $request)
     {
-        $payrolls = Payroll::with('employee:id,name,employee_code');
+        $validator = Validator::make($request->all(), [
+            'employee_id' => ['nullable', 'exists:employees,id'],
+            'month' => ['nullable', 'integer', 'between:1,12'],
+            'year' => ['nullable', 'integer', 'min:2000'],
+            'status' => ['nullable', 'in:draft,calculated,pending_approval,approved,paid,cancelled'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors());
+        }
+
+        $payrolls = Payroll::with([
+            'employee:id,name,employee_code,department_id',
+            'employee.department:id,name',
+            'creator:id,name',
+        ]);
 
         if ($request->filled('employee_id')) {
             $payrolls->where('employee_id', $request->employee_id);
@@ -32,11 +54,13 @@ class PayrollController extends Controller
         }
 
         if ($request->filled('status')) {
-            $payrolls->where('payment_status', $request->status);
+            $payrolls->where('status', $request->status);
         }
 
         $perPage = $request->integer('per_page', 10);
-        $payrolls = $payrolls->orderBy('payroll_month', 'desc')->paginate($perPage);
+        $payrolls = $payrolls->orderBy('payroll_month', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate($perPage);
 
         return $this->success($payrolls, 'Payrolls retrieved successfully.');
     }
@@ -48,6 +72,9 @@ class PayrollController extends Controller
             'employee.department:id,name',
             'employee.position:id,title',
             'creator:id,name',
+            'approver:id,name',
+            'payer:id,name',
+            'items',
         ]);
 
         return $this->success($payroll, 'Payroll retrieved successfully.');
@@ -68,8 +95,9 @@ class PayrollController extends Controller
 
         $month = $request->integer('month');
         $year = $request->integer('year');
-        $payrollMonth = now()->setYear($year)->setMonth($month)->startOfMonth();
+        $createdBy = $request->user()?->id;
 
+        // Get employees to generate payroll for
         $employees = Employee::query();
         if ($request->filled('employee_ids')) {
             $employees->whereIn('id', $request->employee_ids);
@@ -77,195 +105,138 @@ class PayrollController extends Controller
         $employees = $employees->get();
 
         if ($employees->isEmpty()) {
-            return $this->error('No employees found to generate payroll.');
+            return $this->error('No employees found to generate payroll.', 422);
         }
 
-        $generated = [];
+        try {
+            $generated = $this->payrollService->generatePayroll(
+                $employees->pluck('id')->toArray(),
+                $year,
+                $month,
+                $createdBy
+            );
 
-        foreach ($employees as $employee) {
-            $exists = Payroll::where('employee_id', $employee->id)
-                ->whereYear('payroll_month', $year)
-                ->whereMonth('payroll_month', $month)
-                ->exists();
-
-            if ($exists) {
-                continue;
+            if (empty($generated)) {
+                return $this->error('No new payroll records generated. They may already exist.', 422);
             }
 
-            $salary = EmployeeSalary::where('employee_id', $employee->id)
-                ->where('is_active', true)
-                ->first();
-
-            $basicSalary = $salary ? $salary->base_salary : 0;
-            $netSalary = $basicSalary;
-
-            $payroll = Payroll::create([
-                'employee_id' => $employee->id,
-                'payroll_month' => $payrollMonth,
-                'basic_salary' => $basicSalary,
-                'net_salary' => $netSalary,
-                'payment_status' => 'pending',
-                'created_by' => $request->user()?->id,
-            ]);
-
-            $generated[] = $payroll->load('employee:id,name,employee_code');
+            return $this->created($generated, 'Payroll generated successfully.');
+        } catch (\Exception $e) {
+            return $this->error('Failed to generate payroll: ' . $e->getMessage(), 500);
         }
-
-        return $this->created($generated, 'Payroll generated successfully.');
     }
 
-    public function update(Request $request, Payroll $payroll)
+    public function calculate(Request $request, Payroll $payroll)
     {
-        $validator = Validator::make($request->all(), [
-            'basic_salary' => ['nullable', 'numeric', 'min:0'],
-            'net_salary'   => ['nullable', 'numeric', 'min:0'],
-            'notes'        => ['nullable', 'string'],
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationError($validator->errors());
+        if (!$payroll->canBeEdited()) {
+            return $this->error('Payroll cannot be calculated in current status.', 422);
         }
 
-        // ✅ FIX: Use only() to explicitly pick the fields we want to update
-        $payroll->update($request->only([
-            'basic_salary',
-            'net_salary',
-            'notes',
-        ]));
+        try {
+            $calculated = $this->payrollService->calculatePayroll($payroll);
+            return $this->success($calculated, 'Payroll calculated successfully.');
+        } catch (\Exception $e) {
+            return $this->error('Failed to calculate payroll: ' . $e->getMessage(), 500);
+        }
+    }
 
-        return $this->success(
-            $payroll->fresh()->load('employee:id,name,employee_code'),
-            'Payroll updated successfully.'
-        );
+    public function submitForApproval(Request $request, Payroll $payroll)
+    {
+        try {
+            $submitted = $this->payrollService->submitForApproval($payroll);
+            return $this->success($submitted, 'Payroll submitted for approval successfully.');
+        } catch (\Exception $e) {
+            return $this->error('Failed to submit for approval: ' . $e->getMessage(), 422);
+        }
     }
 
     public function approve(Request $request, Payroll $payroll)
     {
-        if ($payroll->payment_status !== 'pending') {
-            return $this->error('Only pending payrolls can be approved.');
+        try {
+            $approved = $this->payrollService->approvePayroll($payroll, $request->user()?->id);
+            return $this->success($approved, 'Payroll approved successfully.');
+        } catch (\Exception $e) {
+            return $this->error('Failed to approve payroll: ' . $e->getMessage(), 422);
         }
-
-        $payroll->update([
-            'payment_status' => 'processing',
-        ]);
-
-        return $this->success($payroll->load('employee:id,name,employee_code'), 'Payroll approved successfully.');
     }
 
-    public function pay(Request $request, Payroll $payroll)
+    public function markAsPaid(Request $request, Payroll $payroll)
     {
-        if ($payroll->payment_status !== 'processing') {
-            return $this->error('Only approved payrolls can be processed for payment.');
-        }
-
         $validator = Validator::make($request->all(), [
             'payment_date' => ['nullable', 'date'],
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationError($validator->errors());
-        }
-
-        $payroll->update([
-            'payment_status' => 'paid',
-            'payment_date' => $request->payment_date ?? now()->toDateString(),
-        ]);
-
-        return $this->success($payroll->load('employee:id,name,employee_code'), 'Payment processed successfully.');
-    }
-
-    public function markPaid(Request $request, Payroll $payroll)
-    {
-        $payroll->update([
-            'payment_status' => 'paid',
-            'payment_date' => now()->toDateString(),
-        ]);
-
-        return $this->success($payroll->load('employee:id,name,employee_code'), 'Payroll marked as paid successfully.');
-    }
-
-    public function employeeSalary(Request $request, string $employeeId)
-    {
-        $salary = EmployeeSalary::where('employee_id', $employeeId)
-            ->where('is_active', true)
-            ->first();
-
-        if (!$salary) {
-            return $this->notFound('Salary record not found for this employee.');
-        }
-
-        return $this->success($salary, 'Employee salary retrieved successfully.');
-    }
-
-    public function updateEmployeeSalary(Request $request, string $employeeId)
-    {
-        $validator = Validator::make($request->all(), [
-            'base_salary' => ['required', 'numeric', 'min:0'],
-            'allowances' => ['nullable', 'array'],
-            'allowances.*' => ['numeric', 'min:0'],
-            'deductions' => ['nullable', 'array'],
-            'deductions.*' => ['numeric', 'min:0'],
+            'payment_method' => ['nullable', 'string', 'in:bank_transfer,cash,cheque,other'],
             'bank_name' => ['nullable', 'string', 'max:100'],
             'bank_account' => ['nullable', 'string', 'max:50'],
-            'effective_date' => ['nullable', 'date'],
+            'transaction_number' => ['nullable', 'string', 'max:100'],
         ]);
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
         }
 
-        $data = $validator->validated();
-        $data['employee_id'] = $employeeId;
-        $data['monthly_rate'] = $data['base_salary'];
-        $data['effective_date'] = $data['effective_date'] ?? now()->toDateString();
-
-        EmployeeSalary::where('employee_id', $employeeId)->update(['is_active' => false]);
-
-        $salary = EmployeeSalary::create($data);
-
-        return $this->success($salary, 'Employee salary updated successfully.');
-    }
-
-    public function settings(Request $request)
-    {
-        $settings = PayrollSetting::first();
-
-        if (!$settings) {
-            return $this->notFound('Payroll settings not found.');
+        try {
+            $paid = $this->payrollService->markAsPaid(
+                $payroll,
+                $request->only(['payment_date', 'payment_method', 'bank_name', 'bank_account', 'transaction_number']),
+                $request->user()?->id
+            );
+            return $this->success($paid, 'Payroll marked as paid successfully.');
+        } catch (\Exception $e) {
+            return $this->error('Failed to mark as paid: ' . $e->getMessage(), 422);
         }
-
-        return $this->success($settings, 'Payroll settings retrieved successfully.');
     }
 
-    public function updateSettings(Request $request)
+    public function cancel(Request $request, Payroll $payroll)
     {
         $validator = Validator::make($request->all(), [
-            'payroll_cycle' => ['sometimes', 'string', 'in:monthly,bi_weekly,weekly'],
-            'payroll_day' => ['sometimes', 'integer', 'between:1,28'],
-            'pay_day' => ['sometimes', 'integer', 'between:1,28'],
-            'overtime_rate_multiplier' => ['sometimes', 'numeric', 'min:1'],
-            'holiday_rate_multiplier' => ['sometimes', 'numeric', 'min:1'],
-            'night_shift_rate_multiplier' => ['sometimes', 'numeric', 'min:1'],
-            'insurance_employee_rate' => ['sometimes', 'numeric', 'min:0', 'max:100'],
-            'insurance_employer_rate' => ['sometimes', 'numeric', 'min:0', 'max:100'],
-            'max_loan_percentage' => ['sometimes', 'numeric', 'min:0', 'max:100'],
-            'min_loan_amount' => ['sometimes', 'numeric', 'min:0'],
+            'reason' => ['nullable', 'string', 'max:500'],
         ]);
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
         }
 
-        $companyId = \App\Models\CompanySetting::value('id');
-        if (!$companyId) {
-            return $this->error('No company found. Please set up company settings first.');
+        try {
+            $cancelled = $this->payrollService->cancelPayroll($payroll, $request->reason);
+            return $this->success($cancelled, 'Payroll cancelled successfully.');
+        } catch (\Exception $e) {
+            return $this->error('Failed to cancel payroll: ' . $e->getMessage(), 422);
+        }
+    }
+
+    public function dashboard(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'month' => ['nullable', 'integer', 'between:1,12'],
+            'year' => ['nullable', 'integer', 'min:2000'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors());
         }
 
-        $settings = PayrollSetting::updateOrCreate(
-            ['id' => 1],
-            array_merge($validator->validated(), ['company_id' => $companyId])
-        );
+        $month = $request->integer('month', now()->month);
+        $year = $request->integer('year', now()->year);
 
-        return $this->success($settings, 'Payroll settings updated successfully.');
+        $summary = $this->payrollService->getDashboardSummary($year, $month);
+
+        // Get department breakdown
+        $departmentCost = Payroll::with('employee.department')
+            ->whereYear('payroll_month', $year)
+            ->whereMonth('payroll_month', $month)
+            ->where('status', 'paid')
+            ->get()
+            ->groupBy('employee.department.name')
+            ->map(function ($items) {
+                return [
+                    'total_salary' => $items->sum('net_salary'),
+                    'employee_count' => $items->count(),
+                ];
+            });
+
+        return $this->success([
+            'summary' => $summary,
+            'department_breakdown' => $departmentCost,
+        ], 'Dashboard data retrieved successfully.');
     }
 }
