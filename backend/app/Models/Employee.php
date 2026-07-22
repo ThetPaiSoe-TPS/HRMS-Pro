@@ -10,6 +10,7 @@ class Employee extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'employee_code',
         'name',
         'department_id',
@@ -20,6 +21,11 @@ class Employee extends Model
         'status',
         'photo',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function department()
     {

@@ -65,8 +65,14 @@ class PayrollController extends Controller
         return $this->success($payrolls, 'Payrolls retrieved successfully.');
     }
 
-    public function show(Request $request, Payroll $payroll)
+    public function show(Request $request, $id)
     {
+        $payroll = Payroll::find($id);
+
+        if (!$payroll) {
+            return $this->notFound('Payroll not found.');
+        }
+
         $payroll->load([
             'employee:id,name,employee_code,department_id,position_id',
             'employee.department:id,name',
@@ -238,5 +244,19 @@ class PayrollController extends Controller
             'summary' => $summary,
             'department_breakdown' => $departmentCost,
         ], 'Dashboard data retrieved successfully.');
+    }
+
+    public function employeeSalary(Request $request, Employee $employee)
+    {
+        $payroll = Payroll::where('employee_id', $employee->id)
+            ->with(['employee:id,name,employee_code', 'items'])
+            ->latest('payroll_month')
+            ->first();
+
+        if (!$payroll) {
+            return $this->error('No payroll found for this employee.', 404);
+        }
+
+        return $this->success($payroll, 'Employee salary retrieved successfully.');
     }
 }

@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'employee_id'
     ];
 
     /**
@@ -55,10 +56,16 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
+
     public function hasPermission(string $permission): bool
     {
         return $this->role
             ? $this->role->permissions->contains('slug', $permission)
             : false;
     }
+
 }

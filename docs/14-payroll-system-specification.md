@@ -571,3 +571,18 @@ Audit trail for cancellations - Notes field with cancellation reason
 Salary history preserved - No overwrites, only new versions or cancellations
 
 This implementation provides a complete, production-ready payroll system with proper separation of concerns, business rule enforcement, and a clean API structure.
+
+xxx
+
+payroll process
+----
+Generate → POST /api/v1/payrolls/generate with {month, year, employee_ids?} → PayrollService::generatePayroll() creates a payroll record per employee with status = "draft" and basic_salary from the employee
+
+Calculate → POST /api/v1/payrolls/{payroll}/calculate → PayrollService::calculatePayroll() computes allowances, overtime, bonuses, deductions (late/absent/leave/loan/advance/tax/other), sets net_salary, and changes status = "calculated"
+
+Submit for approval → POST /api/v1/payrolls/{payroll}/submit → status = "pending_approval"
+
+Approve → PUT /api/v1/payrolls/{payroll}/approve → status = "approved", records approved_by and approved_at
+
+Mark as paid → POST /api/v1/payrolls/{payroll}/mark-paid with {payment_date?, payment_method?} → status = "paid", records paid_by and paid_at
+Cancel (any step) → POST /api/v1/payrolls/{payroll}/cancel → status = "cancelled"

@@ -55,10 +55,40 @@ class SyncRolePermissionsSeeder extends Seeder
         }
 
         $superAdmin = Role::firstOrCreate(['slug' => 'super-admin'], ['name' => 'Super Admin']);
-        Role::firstOrCreate(['slug' => 'hr-manager'],      ['name' => 'HR Manager']);
-        Role::firstOrCreate(['slug' => 'dept-manager'],    ['name' => 'Department Manager']);
-        Role::firstOrCreate(['slug' => 'employee'],        ['name' => 'Employee']);
+        $hrManager  = Role::firstOrCreate(['slug' => 'hr-manager'],      ['name' => 'HR Manager']);
+        $deptMgr    = Role::firstOrCreate(['slug' => 'dept-manager'],    ['name' => 'Department Manager']);
+        $employee   = Role::firstOrCreate(['slug' => 'employee'],        ['name' => 'Employee']);
 
         $superAdmin->permissions()->sync(Permission::all()->pluck('id'));
+
+        $hrManager->permissions()->sync(Permission::whereIn('slug', [
+            'employee.view', 'employee.create', 'employee.update', 'employee.delete',
+            'department.view',
+            'position.view',
+            'attendance.view', 'attendance.create', 'attendance.update',
+            'leave.view', 'leave.create', 'leave.approve', 'leave.reject',
+            'payroll.view', 'payroll.generate',
+            'salary.view',
+            'report.view',
+            'user.view',
+            'role.view',
+        ])->pluck('id'));
+
+        $deptMgr->permissions()->sync(Permission::whereIn('slug', [
+            'employee.view', 'employee.create', 'employee.update',
+            'department.view',
+            'position.view',
+            'attendance.view', 'attendance.create', 'attendance.update',
+            'leave.view', 'leave.create', 'leave.approve', 'leave.reject',
+            'payroll.view', 'payroll.generate',
+            'report.view',
+            'user.view',
+        ])->pluck('id'));
+
+        $employee->permissions()->sync(Permission::whereIn('slug', [
+            'attendance.view', 'attendance.create',
+            'leave.view', 'leave.create',
+            'payroll.view',
+        ])->pluck('id'));
     }
 }

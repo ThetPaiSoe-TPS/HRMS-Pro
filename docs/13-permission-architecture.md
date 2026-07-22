@@ -255,3 +255,49 @@ Register the middleware alias.
 Protect routes.
 Update Form Requests to use authorize().
 Update the React UI to show/hide features based on permissions.
+
+===
+
+admin can access all
+
+employee role: 
+---
+Profile (auth:sanctum only, no permission middleware)
+Method	Route	Action
+GET	/auth/profile	View own auth profile
+PUT	/auth/change-password	Change own password
+GET	/profile	View own full profile
+PUT	/profile	Update own profile
+PUT	/profile/change-password	Change own password
+
+Employees (employee.view)
+Method	Route	Action
+GET	/employees	View employee list (auto-scoped to own)
+GET	/employees/{employee}	View own employee details
+
+Attendance (attendance.view, attendance.create)
+Method	Route	Action
+GET	/attendance	View own attendance history (auto-scoped)
+POST	/attendance/check-in	Check in
+POST	/attendance/check-out	Check out
+
+Leave (leave.view, leave.create)
+Method	Route	Action
+GET	/leave-requests	View own leave history (auto-scoped)
+POST	/leave-requests	Apply for leave
+GET	/leave-requests/{id}	View own leave detail
+PUT	/leave-requests/{id}	Update own leave
+DELETE	/leave-requests/{id}	Delete own leave
+POST	/leave-requests/{id}/attachment	Upload attachment
+
+Payroll (payroll.view)
+Method	Route	Action
+GET	/payrolls	View own payroll list
+GET	/payrolls/{payroll}	View own payroll/payslip
+
+Salary (salary.view)
+Method	Route	Action
+GET	/employees/{employee}/salary	View own salary info
+
+xxx
+

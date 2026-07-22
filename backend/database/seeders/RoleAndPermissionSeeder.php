@@ -45,13 +45,13 @@ class RoleAndPermissionSeeder extends Seeder
         ];
 
         foreach ($permissions as $p) {
-            Permission::create($p);
+            Permission::firstOrCreate(['slug'=> $p['slug']], $p);
         }
 
-        $superAdmin = Role::create(['name' => 'Super Admin', 'slug' => 'super-admin']);
-        $hrManager  = Role::create(['name' => 'HR Manager',  'slug' => 'hr-manager']);
-        $deptMgr    = Role::create(['name' => 'Department Manager', 'slug' => 'dept-manager']);
-        $employee   = Role::create(['name' => 'Employee',    'slug' => 'employee']);
+        $superAdmin = Role::firstOrCreate(['name' => 'Super Admin', 'slug' => 'super-admin']);
+        $hrManager  = Role::firstOrCreate(['name' => 'HR Manager',  'slug' => 'hr-manager']);
+        $deptMgr    = Role::firstOrCreate(['name' => 'Department Manager', 'slug' => 'dept-manager']);
+        $employee   = Role::firstOrCreate(['name' => 'Employee',    'slug' => 'employee']);
 
         $superAdmin->permissions()->attach(Permission::all());
 
@@ -75,9 +75,10 @@ class RoleAndPermissionSeeder extends Seeder
         ])->get());
 
         $employee->permissions()->attach(Permission::whereIn('slug', [
-            'employee.view',
+            'employee.view', 'generate',
             'attendance.view', 'attendance.create',
             'leave.view', 'leave.create',
+            'profile.view', 'payroll.view', 'salary.view'
         ])->get());
     }
 }

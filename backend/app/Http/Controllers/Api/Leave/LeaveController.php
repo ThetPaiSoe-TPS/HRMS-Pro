@@ -3,19 +3,40 @@
 namespace App\Http\Controllers\Api\Leave;
 
 use App\Http\Controllers\Controller;
+use App\Models\LeaveRequest;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class LeaveController extends Controller
 {
     use ApiResponseTrait;
 
+    protected function getEmployeeId(Request $request)
+    {
+        if ($request->user()->employee) {
+            return $request->user()->employee->id;
+        }
+        return null;
+    }
+
+    protected function isEmployee(Request $request)
+    {
+        return $request->user()->role->slug === 'employee';
+    }
+
     public function index(Request $request)
     {
-        $query = \App\Models\LeaveRequest::query();
+        $query = LeaveRequest::query();
 
-        if ($request->filled('employee_id')) {
+        if ($this->isEmployee($request)) {
+            $employeeId = $this->getEmployeeId($request);
+            if (!$employeeId) {
+                return $this->error('No employee record found.', 404);
+            }
+            $query->where('employee_id', $employeeId);
+        } elseif ($request->filled('employee_id')) {
             $query->where('employee_id', $request->employee_id);
         }
 
@@ -35,8 +56,12 @@ class LeaveController extends Controller
 
     public function store(Request $request)
     {
+        $employeeId = $this->getEmployeeId($request);
+        if (!$employeeId) {
+            return $this->error('No employee record found.', 404);
+        }
+
         $validator = Validator::make($request->all(), [
-            'employee_id' => ['required', 'exists:employees,id'],
             'leave_type' => ['required', 'string', 'max:100'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
@@ -48,16 +73,17 @@ class LeaveController extends Controller
         }
 
         $data = $validator->validated();
+        $data['employee_id'] = $employeeId;
         $data['status'] = 'pending';
 
-        $leave = \App\Models\LeaveRequest::create($data);
+        $leave = LeaveRequest::create($data);
 
         return $this->created($leave, 'Leave request created successfully.');
     }
 
     public function show(string $id)
     {
-        $leave = \App\Models\LeaveRequest::find($id);
+        $leave = LeaveRequest::find($id);
 
         if (! $leave) {
             return $this->notFound('Leave request not found.');
@@ -68,7 +94,7 @@ class LeaveController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $leave = \App\Models\LeaveRequest::find($id);
+        $leave = LeaveRequest::find($id);
 
         if (! $leave) {
             return $this->notFound('Leave request not found.');
@@ -93,7 +119,7 @@ class LeaveController extends Controller
 
     public function destroy(string $id)
     {
-        $leave = \App\Models\LeaveRequest::find($id);
+        $leave = LeaveRequest::find($id);
 
         if (! $leave) {
             return $this->notFound('Leave request not found.');
@@ -106,7 +132,7 @@ class LeaveController extends Controller
 
     public function approve(Request $request, string $id)
     {
-        $leave = \App\Models\LeaveRequest::find($id);
+        $leave = LeaveRequest::find($id);
 
         if (! $leave) {
             return $this->notFound('Leave request not found.');
@@ -119,7 +145,7 @@ class LeaveController extends Controller
 
     public function reject(Request $request, string $id)
     {
-        $leave = \App\Models\LeaveRequest::find($id);
+        $leave = LeaveRequest::find($id);
 
         if (! $leave) {
             return $this->notFound('Leave request not found.');
@@ -132,7 +158,7 @@ class LeaveController extends Controller
 
     public function uploadAttachment(Request $request, string $id)
     {
-        $leave = \App\Models\LeaveRequest::find($id);
+        $leave = LeaveRequest::find($id);
 
         if (! $leave) {
             return $this->notFound('Leave request not found.');

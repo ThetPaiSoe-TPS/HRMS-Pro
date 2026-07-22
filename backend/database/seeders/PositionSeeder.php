@@ -14,8 +14,15 @@ class PositionSeeder extends Seeder
                 'title' => 'HR Assistant',
                 'department_id' => 1, // assumes Human Resources department exists
                 'description' => 'Staff recruitment, employee relations, and HR policies.',
-                'salary_range' => '400000-500000 MMK',
+                'salary_range' => '400000-500000',
             ],
+            [
+                'title'         => 'Sales & Marketing Assistant',
+                'department_id' => 2, // assumes Sales & Marketing department exists
+                'description'   => 'Supports the manager with client outreach, prepares promotional materials, and assists in organizing campaigns.',
+                'salary_range'  => '600,000 - 900,000 MMK',
+            ],
+
             [
                 'title' => 'Sales & Marketing Manager',
                 'department_id' => 2, // assumes Sales & Marketing department exists
@@ -28,6 +35,7 @@ class PositionSeeder extends Seeder
                 'description' => 'Develops and maintains software applications and systems.',
                 'salary_range' => '100000- 1500000 MMK',
             ],
+
         ]);
     }
 }
