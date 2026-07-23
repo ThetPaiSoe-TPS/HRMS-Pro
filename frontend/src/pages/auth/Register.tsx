@@ -157,7 +157,6 @@ export const Register: React.FC = () => {
           {...register('password_confirmation')}
         />
 
-        {/* Password strength indicator */}
         {password && (
           <div className="space-y-1">
             <div className="flex items-center gap-2">

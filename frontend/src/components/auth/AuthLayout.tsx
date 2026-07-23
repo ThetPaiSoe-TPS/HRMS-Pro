@@ -6,6 +6,10 @@ interface AuthLayoutProps {
   subtitle?: string;
   showLogo?: boolean;
   showFooter?: boolean;
+  logoSrc?: string;
+  logoAlt?: string;
+  logoWidth?: number;
+  logoHeight?: number;
 }
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({
@@ -14,14 +18,28 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
   subtitle,
   showLogo = true,
   showFooter = true,
+  logoSrc = '/HRSM-pro.png', 
+  logoAlt = 'Logo',
+  logoWidth = 200,
+  logoHeight = 200,
 }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {showLogo && (
           <div className="flex justify-center">
-            <div className="h-14 w-14 bg-primary-600 rounded-btn flex items-center justify-center shadow-lg">
-              <span className="text-white text-3xl font-bold tracking-tight">H</span>
+            <div className="h-32 w-32 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+              {logoSrc ? (
+                <img
+                  src={logoSrc}
+                  alt={logoAlt}
+                  width={logoWidth}
+                  height={logoHeight}
+                  className="object-contain w-full h-full"
+                />
+              ) : (
+                <span className="text-white text-3xl font-bold tracking-tight">H</span>
+              )}
             </div>
           </div>
         )}

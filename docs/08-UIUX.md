@@ -62,10 +62,8 @@ Before creating pages, define reusable tokens.
 
 | Purpose    | Color      |
 | ---------- | ---------- |
-| Primary    | Blue       |
-| Success    | Green      |
-| Warning    | Orange     |
-| Danger     | Red        |
+| Primary    | #002a80       |
+Secondary       #fcc71e
 | Background | Light Gray |
 | Surface    | White      |
 | Text       | Dark Gray  |
