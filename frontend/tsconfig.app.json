@@ -22,5 +22,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/pages/leave/.tsx", "src/pages/leave/.tsx", "src/pages/leave/.tsx"]
+  "include": ["src", "src/pages/admin/leaves/.tsx", "src/pages/admin/leaves/.tsx", "src/pages/admin/leaves/.tsx"]
 }

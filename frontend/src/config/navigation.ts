@@ -22,7 +22,8 @@ import {
   DocumentArrowUpIcon,
   KeyIcon,
   ShieldCheckIcon,
-} from '@heroicons/react/24/outline';
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 
 export interface NavItem {
   name: string;
@@ -32,28 +33,28 @@ export interface NavItem {
   badge?: number;
 }
 
-export const navigation: NavItem[] = [
+export const navigationData: NavItem[] = [
   // ============================================
   // DASHBOARD
   // ============================================
   {
-    name: 'Dashboard',
+    name: "Dashboard",
     icon: HomeIcon,
-    href: '/dashboard',
+    href: "/dashboard",
   },
 
   // ============================================
   // EMPLOYEE MANAGEMENT
   // ============================================
   {
-    name: 'Employee Management',
+    name: "Employee Management",
     icon: UsersIcon,
-    href: '#',
+    href: "#",
     children: [
-      { name: 'Employee List', icon: UsersIcon, href: '/employees' },
-      { name: 'Add Employee', icon: UserPlusIcon, href: '/employees/create' },
-      { name: 'Departments', icon: BuildingOfficeIcon, href: '/departments' },
-      { name: 'Positions', icon: BriefcaseIcon, href: '/positions' },
+      { name: "Employee List", icon: UsersIcon, href: "/employees" },
+      { name: "Add Employee", icon: UserPlusIcon, href: "/employees/create" },
+      { name: "Departments", icon: BuildingOfficeIcon, href: "/departments" },
+      { name: "Positions", icon: BriefcaseIcon, href: "/positions" },
     ],
   },
 
@@ -61,13 +62,25 @@ export const navigation: NavItem[] = [
   // ATTENDANCE
   // ============================================
   {
-    name: 'Attendance',
+    name: "Attendance",
     icon: ClockIcon,
-    href: '#',
+    href: "#",
     children: [
-      { name: 'Attendance Records', icon: DocumentArrowUpIcon, href: '/attendance' },
-      { name: 'Check In / Check Out', icon: ClockIcon, href: '/attendance/check' },
-      { name: 'Attendance Report', icon: ChartBarIcon, href: '/attendance/report' },
+      {
+        name: "Attendance Records",
+        icon: DocumentArrowUpIcon,
+        href: "/admin/attendance",
+      },
+      {
+        name: "Check In / Check Out",
+        icon: ClockIcon,
+        href: "/admin/attendance/check",
+      },
+      {
+        name: "Attendance Report",
+        icon: ChartBarIcon,
+        href: "/admin/attendance/report",
+      },
     ],
   },
 
@@ -75,14 +88,23 @@ export const navigation: NavItem[] = [
   // LEAVE MANAGEMENT
   // ============================================
   {
-    name: 'Leave Management',
+    name: "Leave Management",
     icon: CalendarDaysIcon,
-    href: '#',
+    href: "#",
     children: [
-      { name: 'Leave Requests', icon: ListBulletIcon, href: '/leaves' },
-      { name: 'Apply Leave', icon: PencilSquareIcon, href: '/leaves/create' },
-      { name: 'Leave Approval', icon: CheckBadgeIcon, href: '/leaves/approval' },
-      { name: 'Leave Types', icon: CalendarIcon, href: '/leave-types' },
+      { name: "Leave Requests", icon: ListBulletIcon, href: "/admin/leaves" },
+      {
+        name: "Apply Leave",
+        icon: PencilSquareIcon,
+        href: "/admin/leaves/create",
+      },
+      { name: "Leave Approval", icon: CheckBadgeIcon, href: "/admin/leaves" },
+      { name: "Leave Types", icon: CalendarIcon, href: "/admin/leave-types" },
+      {
+        name: "Create Leave Type",
+        icon: PlusIcon,
+        href: "/admin/leave-types/create",
+      },
     ],
   },
 
@@ -90,13 +112,17 @@ export const navigation: NavItem[] = [
   // PAYROLL
   // ============================================
   {
-    name: 'Payroll',
+    name: "Payroll",
     icon: CurrencyDollarIcon,
-    href: '#',
+    href: "#",
     children: [
-      { name: 'Payroll List', icon: DocumentTextIcon, href: '/payroll' },
-      { name: 'Generate Payroll', icon: CurrencyDollarIcon, href: '/payroll/generate' },
-      { name: 'Payslips', icon: DocumentTextIcon, href: '/payslips' },
+      { name: "Payroll List", icon: DocumentTextIcon, href: "/admin/payroll" },
+      {
+        name: "Generate Payroll",
+        icon: CurrencyDollarIcon,
+        href: "/admin/payroll/generate",
+      },
+      // { name: "Payslips", icon: DocumentTextIcon, href: "/admin/payroll" },
     ],
   },
 
@@ -104,14 +130,30 @@ export const navigation: NavItem[] = [
   // REPORTS
   // ============================================
   {
-    name: 'Reports',
+    name: "Reports",
     icon: ChartBarIcon,
-    href: '#',
+    href: "#",
     children: [
-      { name: 'Employee Report', icon: UsersIcon, href: '/reports/employees' },
-      { name: 'Attendance Report', icon: ClockIcon, href: '/reports/attendance' },
-      { name: 'Leave Report', icon: CalendarDaysIcon, href: '/reports/leaves' },
-      { name: 'Payroll Report', icon: CurrencyDollarIcon, href: '/reports/payroll' },
+      {
+        name: "Employee Report",
+        icon: UsersIcon,
+        href: "/admin/reports/employees",
+      },
+      {
+        name: "Attendance Report",
+        icon: ClockIcon,
+        href: "/admin/attendance/report",
+      },
+      {
+        name: "Leave Report",
+        icon: CalendarDaysIcon,
+        href: "/admin/reports/leaves",
+      },
+      {
+        name: "Payroll Report",
+        icon: CurrencyDollarIcon,
+        href: "/admin/reports/payroll",
+      },
     ],
   },
 
@@ -119,33 +161,33 @@ export const navigation: NavItem[] = [
   // ANNOUNCEMENTS
   // ============================================
   {
-    name: 'Announcements',
+    name: "Announcements",
     icon: MegaphoneIcon,
-    href: '/announcements',
+    href: "/announcements",
   },
 
   // ============================================
   // ADMINISTRATION (Expanded with Users)
   // ============================================
   {
-    name: 'Administration',
+    name: "Administration",
     icon: Cog6ToothIcon,
-    href: '#',
+    href: "#",
     children: [
-      { 
-        name: 'Users', 
-        icon: UserGroupIcon, 
-        href: '/admin/users',
+      {
+        name: "Users",
+        icon: UserGroupIcon,
+        href: "/admin/users",
         badge: 5, // Show pending users count
       },
-      { 
-        name: 'Create User', 
-        icon: UserPlusIcon, 
-        href: '/admin/users/create' 
+      {
+        name: "Create User",
+        icon: UserPlusIcon,
+        href: "/admin/users/create",
       },
-      { name: 'Roles', icon: ShieldCheckIcon, href: '/admin/roles' },
-      { name: 'Permissions', icon: KeyIcon, href: '/admin/permissions' },
-      { name: 'Settings', icon: Cog6ToothIcon, href: '/admin/settings' },
+      { name: "Roles", icon: ShieldCheckIcon, href: "/admin/roles" },
+      { name: "Permissions", icon: KeyIcon, href: "/admin/permissions" },
+      { name: "Settings", icon: Cog6ToothIcon, href: "/admin/settings" },
     ],
   },
 
@@ -153,8 +195,8 @@ export const navigation: NavItem[] = [
   // PROFILE (Bottom Section)
   // ============================================
   {
-    name: 'Profile',
+    name: "Profile",
     icon: UserCircleIcon,
-    href: '/profile',
+    href: "/profile",
   },
 ];
