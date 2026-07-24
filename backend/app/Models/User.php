@@ -23,10 +23,19 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role_id',
-        'employee_id'
+        'employee_id',
+        'avatar',
+        'department',
+        'position',
+        'join_date',
+        'address',
+        'bio',
     ];
+
+    protected $appends = ['role_name'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -66,6 +75,11 @@ class User extends Authenticatable
         return $this->role
             ? $this->role->permissions->contains('slug', $permission)
             : false;
+    }
+
+    public function getRoleNameAttribute(): ?string
+    {
+        return $this->role?->name;
     }
 
 }

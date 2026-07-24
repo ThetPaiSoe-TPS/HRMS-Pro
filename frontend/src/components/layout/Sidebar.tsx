@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { navigationData } from '../../config/navigation';
 import type { NavItem } from '../../config/navigation';
 
 interface SidebarProps {
@@ -49,22 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  // Check if user has admin permissions
-  const hasAdminAccess = () => {
-    const role = user?.role;
-    return role === 'super_admin' || role === 'hr_manager';
-  };
-
-  // Filter navigation based on user role
-  const getFilteredNavigation = () => {
-    // If user is not admin, remove Administration section
-    if (!hasAdminAccess()) {
-      return navigation.filter(item => item.name !== 'Administration');
-    }
-    return navigation;
-  };
-
-  const filteredNavigation = getFilteredNavigation();
+  const filteredNavigation = navigationData;
 
   const renderNavItem = (item: NavItem) => {
     const hasChildren = item.children && item.children.length > 0;
@@ -191,14 +177,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
           {filteredNavigation.map((item) => renderNavItem(item))}
-          
-          {/* Admin status indicator */}
-          {hasAdminAccess() && (
-            <div className="mt-4 px-3 py-2 bg-primary-50 rounded-lg border border-primary-100">
-              <p className="text-xs text-primary-700 font-medium">Admin Access</p>
-              <p className="text-xs text-primary-500">{user?.role?.replace('_', ' ').toUpperCase()}</p>
-            </div>
-          )}
         </nav>
 
         {/* Bottom Section - User Profile & Logout */}
@@ -218,7 +196,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 {user?.name || 'User'}
               </p>
               <p className="text-xs text-gray-500 truncate capitalize">
-                {user?.role?.replace('_', ' ') || 'Employee'}
+                {String(user?.role ?? '').replace('_', ' ') || 'Employee'}
               </p>
             </div>
             <div className="h-2 w-2 rounded-full bg-green-500"></div>

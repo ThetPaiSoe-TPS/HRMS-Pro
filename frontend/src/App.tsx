@@ -4,10 +4,8 @@ import {
   Routes,
   Route,
   Navigate,
-  Outlet,
 } from "react-router-dom";
 import { useAuth } from "./hooks/useAuth";
-// import { Layout } from './components/layout/Layout';
 
 // Auth Pages
 import { Login } from "./pages/auth/Login";
@@ -16,6 +14,7 @@ import { ForgotPassword } from "./pages/auth/ForgotPassword";
 
 // Announcements
 import { Dashboard } from "./pages/dashboard/Dashboard";
+import { Layout } from "./components/layout/Layout";
 import Profile from "./pages/profile/Profile";
 import EmployeeList, { Employees } from "./pages/employees/Employees";
 import EmployeeCreate, {
@@ -33,7 +32,7 @@ import EmployeeReport from "./pages/admin/reports/EmployeeReport";
 import LeaveReport from "./pages/admin/reports/LeaveReport";
 import PayrollReport from "./pages/admin/reports/PayrollReport";
 import Announcements from "./pages/announcements/Announcements";
-import UserSettings from "./components/settings/UserSettings";
+import UserSettings from "./pages/admin/settings/Setting";
 import Roles from "./pages/admin/roles/Roles";
 import Permissions from "./pages/permissions/Permissions";
 import AttendanceReportPage, {
@@ -59,6 +58,7 @@ import EditEmployee from "./pages/employees/EditEmployee";
 import CheckInOut from "./pages/admin/attendance/CheckInOut";
 import CreateLeaveType from "./pages/admin/leaves/CreateLeaveTypes";
 import EditLeaveType from "./pages/admin/leaves/EditLeaveType";
+import Settings from "./pages/settings/Settings";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -82,10 +82,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 
 const ProtectedLayout = () => (
   <ProtectedRoute>
-    <Dashboard />
-    <main className="min-h-screen ml-64 bg-gray-50">
-      <Outlet />
-    </main>
+    <Layout />
   </ProtectedRoute>
 );
 
@@ -181,7 +178,9 @@ function App() {
           <Route path="/admin/users" element={<Users />} />
           <Route path="/admin/roles" element={<Roles />} />
           <Route path="/admin/permissions" element={<Permissions />} />
-          <Route path="/admin/settings" element={<UserSettings />} />
+          
+
+          <Route path="/admin/settings" element={<Settings />} />
 
           {/* Profile */}
           <Route path="/profile" element={<Profile />} />

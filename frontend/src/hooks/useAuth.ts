@@ -10,6 +10,8 @@ interface UseAuthReturn {
   register: (data: any) => Promise<void>;
   logout: () => Promise<void>;
   getProfile: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
+  uploadAvatar: (file: File) => Promise<void>;
   hasPermission: (permission: string) => boolean;
   hasAnyPermission: (permissions: string[]) => boolean;
 }
@@ -105,6 +107,37 @@ export const useAuth = (): UseAuthReturn => {
     }
   }, []);
 
+  const updateProfile = useCallback(async (data: Partial<User>) => {
+    setIsLoading(true);
+    try {
+      const updatedUser = await authApi.updateProfile(data);
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const uploadAvatar = useCallback(async (file: File) => {
+    setIsLoading(true);
+    try {
+      const avatarUrl = await authApi.uploadAvatar(file);
+      setUser((prev) => prev ? { ...prev, avatar: avatarUrl } : null);
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        const u = JSON.parse(stored);
+        u.avatar = avatarUrl;
+        localStorage.setItem("user", JSON.stringify(u));
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const hasPermission = useCallback(
     (permission: string): boolean => {
       if (!user) return false;
@@ -129,6 +162,8 @@ export const useAuth = (): UseAuthReturn => {
     register,
     logout,
     getProfile,
+    updateProfile,
+    uploadAvatar,
     hasPermission,
     hasAnyPermission,
   };

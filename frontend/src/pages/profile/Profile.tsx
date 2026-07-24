@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef } from "react";
+﻿import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   UserCircleIcon,
@@ -14,30 +14,45 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
+import api from "../../api/axios";
+import { activityApi, type Activity } from "../../api/activityApi";
+
+interface PositionOption {
+  id: number;
+  title: string;
+}
 
 // ============================================
 // PROFILE PAGE
 // ============================================
 export const Profile: React.FC = () => {
-  const { user } = useAuth();
+  const { user, updateProfile, uploadAvatar } = useAuth();
+  console.log("user:", user);
+
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // State for positions dropdown
+  const [positions, setPositions] = useState<PositionOption[]>([]);
 
   // State for profile editing
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    phone: "+1234567890",
-    department: "Engineering",
-    position: "Senior Developer",
-    joinDate: "Jan 15, 2020",
-    address: "123 Main Street, City, Country",
-    bio: "Passionate developer with 5+ years of experience in web development.",
+    phone: user?.phone || "",
+    department: user?.department || "",
+    position: user?.position || "",
+    joinDate: user?.joinDate || "",
+    address: user?.address || "",
+    bio: user?.bio || "",
   });
+  console.log("profileData:", profileData);
 
   // State for password change
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(true);
   const [passwordData, setPasswordData] = useState({
     current_password: "",
     new_password: "",
@@ -48,23 +63,113 @@ export const Profile: React.FC = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Add this useEffect after the profileData useState
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user?.name || profileData.name,
+        email: user?.email || profileData.email,
+        phone: user?.phone || profileData.phone,
+        department: user?.department || profileData.department,
+        position: user?.position || profileData.position,
+        joinDate: user?.joinDate || profileData.joinDate,
+        address: user?.address || profileData.address,
+        bio: user?.bio || profileData.bio,
+      });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchActivities();
+  }, []);
+
+  const fetchActivities = async () => {
+    try {
+      setLoadingActivities(true);
+      const data = await activityApi.getMyActivities(10);
+      setActivities(data);
+    } catch (error) {
+      console.error("Failed to fetch activities:", error);
+    } finally {
+      setLoadingActivities(false);
+    }
+  };
+
+  const getActivityIcon = (color: string) => {
+    const icons: Record<string, any> = {
+      blue: UserCircleIcon,
+      green: CheckBadgeIcon,
+      yellow: ClockIcon,
+      red: XMarkIcon,
+      purple: BellIcon,
+      gray: ClockIcon,
+    };
+    return icons[color] || ClockIcon;
+  };
+
+  const getActivityBgColor = (color: string) => {
+    const colors: Record<string, string> = {
+      blue: "bg-blue-100 text-blue-600",
+      green: "bg-green-100 text-green-600",
+      yellow: "bg-yellow-100 text-yellow-600",
+      red: "bg-red-100 text-red-600",
+      purple: "bg-purple-100 text-purple-600",
+      gray: "bg-gray-100 text-gray-600",
+    };
+    return colors[color] || "bg-gray-100 text-gray-600";
+  };
+
+  // Fetch positions for dropdown
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        const data: any = await api.get("/positions");
+        setPositions(data?.data || data || []);
+      } catch (err) {
+        console.error("Failed to fetch positions:", err);
+      }
+    };
+    fetchPositions();
+  }, []);
+
   // Handle profile update
   const handleProfileUpdate = async () => {
-    // TODO: API call to update profile
-    setIsEditing(false);
-    // Show success message
+    try {
+      await updateProfile({
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        department: profileData.department,
+        position: profileData.position,
+        join_date: profileData.joinDate,
+        address: profileData.address,
+        bio: profileData.bio,
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Profile update failed:", error);
+    }
   };
 
   // Handle password change
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API call to change password
-    setShowPasswordModal(false);
-    setPasswordData({
-      current_password: "",
-      new_password: "",
-      new_password_confirmation: "",
-    });
+    try {
+      const { authApi } = await import("../../api/auth/authApi");
+      await authApi.changePassword({
+        current_password: passwordData.current_password,
+        new_password: passwordData.new_password,
+        new_password_confirmation: passwordData.new_password_confirmation,
+      });
+      setShowPasswordModal(false);
+      setPasswordData({
+        current_password: "",
+        new_password: "",
+        new_password_confirmation: "",
+      });
+    } catch (error) {
+      console.error("Password change failed:", error);
+    }
   };
 
   // Handle avatar upload
@@ -86,17 +191,13 @@ export const Profile: React.FC = () => {
 
     setIsUploading(true);
     try {
-      // Preview avatar
       const reader = new FileReader();
       reader.onload = (event) => {
         setAvatar(event.target?.result as string);
       };
       reader.readAsDataURL(file);
 
-      // TODO: Upload to API
-      // const formData = new FormData();
-      // formData.append('avatar', file);
-      // await api.post('/profile/avatar', formData);
+      await uploadAvatar(file);
 
       setIsUploading(false);
     } catch (error) {
@@ -104,25 +205,6 @@ export const Profile: React.FC = () => {
       console.error("Avatar upload failed:", error);
     }
   };
-
-  // Activity data
-  const recentActivities = [
-    {
-      action: "Changed password",
-      time: "2 days ago",
-      ip: "192.168.1.1",
-    },
-    {
-      action: "Updated profile information",
-      time: "1 week ago",
-      ip: "192.168.1.1",
-    },
-    {
-      action: "Logged in",
-      time: "2 weeks ago",
-      ip: "192.168.1.1",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -182,9 +264,24 @@ export const Profile: React.FC = () => {
                         alt="Profile"
                         className="h-full w-full object-cover"
                       />
+                    ) : user?.avatar ? (
+                      <img
+                        src={
+                          user.avatar.startsWith("http")
+                            ? user.avatar
+                            : `http://localhost:8000${user.avatar}`
+                        }
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          // If image fails to load, show initials
+                          (e.target as HTMLImageElement).style.display = "none";
+                          // You might want to show the initials fallback here
+                        }}
+                      />
                     ) : (
                       <span className="text-primary-700 text-3xl font-medium">
-                        {user?.name?.charAt(0) || "U"}
+                        {user?.name?.charAt(0)?.toUpperCase() || "U"}
                       </span>
                     )}
                   </div>
@@ -209,7 +306,12 @@ export const Profile: React.FC = () => {
                   {user?.name || "User Name"}
                 </h2>
                 <p className="text-sm text-gray-500 capitalize">
-                  {user?.role || "Employee"}
+                  {user?.role_name || user?.role || "Employee"}
+                </p>
+
+                {/* Add email here */}
+                <p className="text-sm text-gray-500 mt-1">
+                  {user?.email || "No email"}
                 </p>
 
                 {/* Status Badge */}
@@ -351,8 +453,7 @@ export const Profile: React.FC = () => {
                     Position
                   </label>
                   {isEditing ? (
-                    <input
-                      type="text"
+                    <select
                       value={profileData.position}
                       onChange={(e) =>
                         setProfileData({
@@ -361,7 +462,14 @@ export const Profile: React.FC = () => {
                         })
                       }
                       className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    />
+                    >
+                      <option value="">Select Position</option>
+                      {positions.map((pos) => (
+                        <option key={pos.id} value={pos.title}>
+                          {pos.title}
+                        </option>
+                      ))}
+                    </select>
                   ) : (
                     <p className="mt-1 text-gray-900">{profileData.position}</p>
                   )}
@@ -370,7 +478,21 @@ export const Profile: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700">
                     Join Date
                   </label>
-                  <p className="mt-1 text-gray-900">{profileData.joinDate}</p>
+                  {isEditing ? (
+                    <input
+                      type="date"
+                      value={profileData.joinDate}
+                      onChange={(e) =>
+                        setProfileData({
+                          ...profileData,
+                          joinDate: e.target.value,
+                        })
+                      }
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    />
+                  ) : (
+                    <p className="mt-1 text-gray-900">{profileData.joinDate}</p>
+                  )}
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">
@@ -412,34 +534,61 @@ export const Profile: React.FC = () => {
               </div>
             </div>
 
-            {/* Recent Activity */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Recent Activity
-              </h3>
-              <div className="space-y-3">
-                {recentActivities.map((activity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                        <ClockIcon className="h-4 w-4 text-gray-500" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-900">
-                          {activity.action}
-                        </p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
-                      </div>
-                    </div>
-                    <span className="text-xs text-gray-400">
-                      IP: {activity.ip}
-                    </span>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Recent Activity
+                </h3>
+                <button
+                  onClick={fetchActivities}
+                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  Refresh
+                </button>
               </div>
+
+              {loadingActivities ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+              ) : activities.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-500">
+                    No recent activities found
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {activities.map((activity) => {
+                    const Icon = getActivityIcon(activity.color);
+                    return (
+                      <div
+                        key={activity.id}
+                        className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`h-8 w-8 rounded-full flex items-center justify-center ${getActivityBgColor(activity.color)}`}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-gray-900">
+                              {activity.description}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {activity.time}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          IP: {activity.ip}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

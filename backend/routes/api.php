@@ -43,7 +43,10 @@ Route::prefix('v1')->group(function () {
         Route::post('register', [RegisterController::class, 'register']);
         Route::post('logout', [LogoutController::class, 'logout'])->middleware('auth:sanctum');
         Route::get('profile', [ProfileController::class, 'show'])->middleware('auth:sanctum');
-        Route::put('change-password', [ProfileController::class, 'changePassword'])->middleware('auth:sanctum');
+        Route::put('profile', [ProfileController::class, 'update'])->middleware(['auth:sanctum', 'log.activity'])->name('profile.update');
+        Route::post('profile/avatar', [ProfileController::class, 'uploadAvatar'])->middleware('auth:sanctum');
+        Route::get('profile/activities', [\App\Http\Controllers\Api\Profile\ProfileController::class, 'activities'])->middleware('auth:sanctum');
+        Route::put('change-password', [ProfileController::class, 'changePassword'])->middleware(['auth:sanctum', 'log.activity'])->name('password.update');
     });
 
     Route::middleware('auth:sanctum')->group(function () {

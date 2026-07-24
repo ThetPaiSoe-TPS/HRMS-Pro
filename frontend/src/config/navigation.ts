@@ -178,16 +178,43 @@ export const navigationData: NavItem[] = [
         name: "Users",
         icon: UserGroupIcon,
         href: "/admin/users",
-        badge: 5, // Show pending users count
+        badge: 5,
       },
       {
         name: "Create User",
         icon: UserPlusIcon,
         href: "/admin/users/create",
       },
-      { name: "Roles", icon: ShieldCheckIcon, href: "/admin/roles" },
-      { name: "Permissions", icon: KeyIcon, href: "/admin/permissions" },
-      { name: "Settings", icon: Cog6ToothIcon, href: "/admin/settings" },
+      {
+        name: "Roles",
+        icon: ShieldCheckIcon,
+        href: "/admin/roles",
+      },
+      {
+        name: "Permissions",
+        icon: KeyIcon,
+        href: "/admin/permissions",
+      },
+      {
+        name: "Departments",
+        icon: BuildingOfficeIcon,
+        href: "/admin/departments",
+      },
+      {
+        name: "Positions",
+        icon: BriefcaseIcon,
+        href: "/admin/positions",
+      },
+      {
+        name: "Employees",
+        icon: UserGroupIcon,
+        href: "/admin/employees",
+      },
+      {
+        name: "Settings",
+        icon: Cog6ToothIcon,
+        href: "/admin/settings",
+      },
     ],
   },
 

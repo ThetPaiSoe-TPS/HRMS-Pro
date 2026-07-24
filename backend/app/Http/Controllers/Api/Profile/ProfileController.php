@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Profile;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -55,5 +57,29 @@ class ProfileController extends Controller
         ]);
 
         return $this->success(null, 'Password changed successfully.');
+    }
+
+    public function activities(Request $request)
+    {
+        $user = Auth::user();
+        $limit = $request->integer('limit', 10);
+
+        $activities = ActivityLog::forUser($user->id)
+            ->recent($limit)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'action' => $log->action,
+                    'description' => $log->description,
+                    'time' => $log->formatted_time,
+                    'icon' => $log->icon,
+                    'color' => $log->color,
+                    'ip' => $log->ip_address,
+                    'created_at' => $log->created_at,
+                ];
+            });
+
+        return $this->success($activities, 'Activities retrieved successfully.');
     }
 }

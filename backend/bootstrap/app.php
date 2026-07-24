@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Middleware\CheckPermission;
+use App\Listeners\LogUserActivity;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,7 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureFrontendRequestsAreStateful::class,
         ]);
         $middleware->alias([
-            'permission'=> CheckPermission::class,
+            'permission' => CheckPermission::class,
+            'log.activity' => \App\Http\Middleware\LogActivity::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

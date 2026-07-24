@@ -16,9 +16,17 @@ export interface User {
   name: string;
   email: string;
   role: string;
+  role_id?: number;
+  role_name?: string;
   permissions: string[];
   employee_id?: number;
   avatar?: string;
+  phone?: string;
+  department?: string;
+  position?: string;
+  joinDate?: string;
+  address?: string;
+  bio?: string;
   created_at: string;
   updated_at: string;
 }
