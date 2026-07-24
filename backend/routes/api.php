@@ -91,6 +91,7 @@ Route::prefix('v1')->group(function () {
         |------------------------------------------------------------------
         */
         Route::get('employees/export', [EmployeeExportController::class, 'export'])->middleware('permission:employee.view');
+        Route::get('employees/generate-code', [EmployeeController::class, 'generateCode']); // <-- ADD THIS LINE
         Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:employee.view');
         Route::post('employees', [EmployeeController::class, 'store'])->middleware('permission:employee.create');
         Route::get('employees/{employee}', [EmployeeController::class, 'show'])->middleware('permission:employee.view');
@@ -152,8 +153,8 @@ Route::prefix('v1')->group(function () {
 
 
     Route::prefix('employees')->middleware('auth:sanctum')->group(function () {
-        Route::get('{employee}/salary', [PayrollController::class, 'employeeSalary'])->middleware('permission:salary.view');
         Route::put('{employee}/salary', [PayrollController::class, 'updateEmployeeSalary'])->middleware('permission:salary.update');
+        Route::get('generate-code', [EmployeeController::class, 'generateCode']);
     });
 
     /*

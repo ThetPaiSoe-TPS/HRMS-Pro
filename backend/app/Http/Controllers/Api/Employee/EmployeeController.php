@@ -7,6 +7,7 @@ use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
@@ -14,14 +15,14 @@ class EmployeeController extends Controller
 
     public function index(Request $request)
     {
-        $query = \App\Models\Employee::query();
+        $query = \App\Models\Employee::with(['department', 'position']);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', '%' . $search . '%')
-                    ->orWhere('last_name', 'like', '%' . $search . '%')
-                    ->orWhere('employee_code', 'like', '%' . $search . '%');
+                $q->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('employee_code', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
 
@@ -56,6 +57,8 @@ class EmployeeController extends Controller
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'hire_date' => ['nullable', 'date'],
             'status' => ['nullable', 'string', 'in:active,inactive'],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
         ]);
 
         if ($validator->fails()) {
@@ -69,7 +72,7 @@ class EmployeeController extends Controller
 
     public function show(string $id)
     {
-        $employee = \App\Models\Employee::find($id);
+        $employee = \App\Models\Employee::with(['department', 'position'])->find($id);
 
         if (! $employee) {
             return $this->notFound('Employee not found.');
@@ -88,10 +91,11 @@ class EmployeeController extends Controller
 
         $validator = Validator::make($request->all(), [
             'employee_code' => ['sometimes', 'string', 'max:50', 'unique:employees,employee_code,' . $id],
-            'first_name' => ['sometimes', 'string', 'max:255'],
-            'last_name' => ['sometimes', 'string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
             'department_id' => ['sometimes', 'exists:departments,id'],
             'position_id' => ['sometimes', 'exists:positions,id'],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'hire_date' => ['nullable', 'date'],
@@ -158,5 +162,15 @@ class EmployeeController extends Controller
         $employee->update(['photo' => null]);
 
         return $this->success(null, 'Photo deleted successfully.');
+    }
+
+    public function generateCode(Request $request)
+    {
+        $prefix = $request->input('prefix', 'EMP');
+        $lastEmployee = \App\Models\Employee::orderBy('id', 'desc')->first();
+        $nextNumber = $lastEmployee ? intval(substr($lastEmployee->employee_code, strlen($prefix))) + 1 : 1;
+        $code = $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+
+        return $this->success(['employee_code' => $code], 'Employee code generated.');
     }
 }

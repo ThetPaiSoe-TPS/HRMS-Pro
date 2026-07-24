@@ -17,6 +17,9 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user()->load('role');
+        $user->years_experience = $user->years_experience ?? 0;
+        $user->total_projects = $user->total_projects ?? 0;
+
         return $this->success($user, 'Profile retrieved successfully.');
     }
 
@@ -34,6 +37,8 @@ class ProfileController extends Controller
             'address' => ['sometimes', 'nullable', 'string', 'max:500'],
             'bio' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'avatar' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'years_experience' => ['sometimes', 'integer', 'min:0'],
+            'total_projects' => ['sometimes', 'integer', 'min:0'],
         ]);
 
         if ($validator->fails()) {
@@ -42,7 +47,9 @@ class ProfileController extends Controller
 
         $user->update($validator->validated());
 
-        return $this->success($user->load('role'), 'Profile updated successfully.');
+        $user = $user->fresh()->load('role');
+
+        return $this->success($user, 'Profile updated successfully.');
     }
 
     public function uploadAvatar(Request $request)
@@ -61,6 +68,11 @@ class ProfileController extends Controller
         $path = $request->file('avatar')->store('avatars', 'public');
         $url = Storage::url($path);
         $user->update(['avatar' => $url]);
+
+        $updatedUser = $user->fresh()->load('role');
+        $userData = $updatedUser->toArray();
+        $userData['years_experience'] = $updatedUser->years_experience ?? 0;
+        $userData['total_projects'] = $updatedUser->total_projects ?? 0;
 
         return $this->success(['avatar' => $url], 'Avatar uploaded successfully.');
     }

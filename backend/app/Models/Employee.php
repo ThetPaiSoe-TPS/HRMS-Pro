@@ -20,6 +20,13 @@ class Employee extends Model
         'hire_date',
         'status',
         'photo',
+        'date_of_birth',
+        'gender',
+    ];
+
+    protected $casts = [
+        'hire_date' => 'date',
+        'date_of_birth' => 'date',
     ];
 
     public function user()

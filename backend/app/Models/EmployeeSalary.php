@@ -26,6 +26,8 @@ class EmployeeSalary extends Model
         'is_active',
         'effective_date',
         'end_date',
+        'date_of_birth',
+        'gender',
     ];
 
     protected function casts(): array
@@ -36,6 +38,7 @@ class EmployeeSalary extends Model
             'effective_date' => 'date',
             'end_date' => 'date',
             'is_active' => 'boolean',
+             'date_of_birth' => 'date',
         ];
     }
 
@@ -47,5 +50,18 @@ class EmployeeSalary extends Model
     public function payrolls(): HasMany
     {
         return $this->hasMany(Payroll::class, 'employee_id', 'employee_id');
+    }
+
+    public function getGenderLabelAttribute()
+    {
+        return ucfirst($this->gender);
+    }
+
+    public function getAgeAttribute()
+    {
+        if ($this->date_of_birth) {
+            return $this->date_of_birth->age;
+        }
+        return null;
     }
 }

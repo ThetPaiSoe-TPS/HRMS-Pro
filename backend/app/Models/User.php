@@ -33,6 +33,10 @@ class User extends Authenticatable
         'join_date',
         'address',
         'bio',
+        'years_experience',
+        'total_projects',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     protected $appends = ['role_name'];
