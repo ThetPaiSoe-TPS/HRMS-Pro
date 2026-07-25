@@ -185,17 +185,17 @@ export const PayrollReport: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Payroll Report</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Payroll Report</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Generate payroll reports and analytics
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center overflow-hidden border border-gray-200 rounded-lg">
+          <div className="flex items-center overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
             <button
               onClick={() => setView('details')}
               className={`px-3 py-1.5 text-sm transition-colors ${
-                view === 'details' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+                view === 'details' ? 'bg-primary-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
               }`}
             >
               Details
@@ -203,7 +203,7 @@ export const PayrollReport: React.FC = () => {
             <button
               onClick={() => setView('summary')}
               className={`px-3 py-1.5 text-sm transition-colors ${
-                view === 'summary' ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+                view === 'summary' ? 'bg-primary-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
               }`}
             >
               Summary
@@ -227,16 +227,16 @@ export const PayrollReport: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               <DocumentArrowDownIcon className="w-5 h-5" />
               Export
             </button>
             {showExportMenu && (
-              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-                <button onClick={() => handleExport('pdf')} className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50">📄 PDF</button>
-                <button onClick={() => handleExport('excel')} className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50">📊 Excel</button>
-                <button onClick={() => handleExport('csv')} className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50">📋 CSV</button>
+              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                <button onClick={() => handleExport('pdf')} className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">📄 PDF</button>
+                <button onClick={() => handleExport('excel')} className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">📊 Excel</button>
+                <button onClick={() => handleExport('csv')} className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">📋 CSV</button>
               </div>
             )}
           </div>
@@ -245,51 +245,51 @@ export const PayrollReport: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 lg:grid-cols-7">
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Employees</p>
-          <p className="text-xl font-bold text-gray-900">{stats.total_employees}</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Employees</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{stats.total_employees}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Gross Salary</p>
-          <p className="text-sm font-bold text-gray-900">{formatCurrency(stats.total_gross)}</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Gross Salary</p>
+          <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{formatCurrency(stats.total_gross)}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Net Salary</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Net Salary</p>
           <p className="text-sm font-bold text-primary-600">{formatCurrency(stats.total_net)}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Allowances</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Allowances</p>
           <p className="text-sm font-bold text-green-600">{formatCurrency(stats.total_allowances)}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Deductions</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Deductions</p>
           <p className="text-sm font-bold text-red-600">{formatCurrency(stats.total_deductions)}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <CheckBadgeIcon className="w-4 h-4 text-green-500" />
-            <p className="text-xs text-gray-500">Paid</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Paid</p>
           </div>
           <p className="text-xl font-bold text-green-600">{stats.paid}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <ClockIcon className="w-4 h-4 text-yellow-500" />
-            <p className="text-xs text-gray-500">Pending</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Pending</p>
           </div>
           <p className="text-xl font-bold text-yellow-600">{stats.pending}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Department</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
             <select
               value={filters.department_id}
               onChange={(e) => handleFilterChange('department_id', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Departments</option>
               {mockDepartments.map((dept) => (
@@ -298,11 +298,11 @@ export const PayrollReport: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Status</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
             <select
               value={filters.status || ''}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Status</option>
               <option value="pending">Pending</option>
@@ -313,44 +313,44 @@ export const PayrollReport: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Month</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Month</label>
             <input
               type="month"
               value={filters.date_from}
               onChange={(e) => handleFilterChange('date_from', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         {view === 'details' ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Employee</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Department</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Basic</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Allowances</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Deductions</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Net</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
+                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Employee</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Department</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Basic</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Allowances</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Deductions</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Net</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredData.map((payroll) => (
-                  <tr key={payroll.employee_id} className="transition-colors hover:bg-gray-50">
+                  <tr key={payroll.employee_id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
                     <td className="px-4 py-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{payroll.employee_name}</p>
-                        <p className="text-xs text-gray-500">{payroll.employee_code}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{payroll.employee_name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{payroll.employee_code}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{payroll.department}</td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(payroll.basic_salary)}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{payroll.department}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(payroll.basic_salary)}</td>
                     <td className="px-4 py-3 text-sm text-right text-green-600">{formatCurrency(payroll.allowances)}</td>
                     <td className="px-4 py-3 text-sm text-right text-red-600">{formatCurrency(payroll.deductions)}</td>
                     <td className="px-4 py-3 text-sm font-bold text-right text-primary-600">{formatCurrency(payroll.net_salary)}</td>
@@ -368,25 +368,25 @@ export const PayrollReport: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Department</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Employees</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Basic</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Allowances</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Deductions</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Gross</th>
-                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">Net</th>
+                <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Department</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Employees</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Basic</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Allowances</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Deductions</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Gross</th>
+                  <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Net</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {mockPayrollSummary.map((summary) => (
-                  <tr key={summary.department} className="transition-colors hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{summary.department}</td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-900">{summary.total_employees}</td>
-                    <td className="px-4 py-3 text-sm text-right text-gray-900">{formatCurrency(summary.total_basic)}</td>
+                  <tr key={summary.department} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">{summary.department}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{summary.total_employees}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">{formatCurrency(summary.total_basic)}</td>
                     <td className="px-4 py-3 text-sm text-right text-green-600">{formatCurrency(summary.total_allowances)}</td>
                     <td className="px-4 py-3 text-sm text-right text-red-600">{formatCurrency(summary.total_deductions)}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-right text-gray-900">{formatCurrency(summary.total_gross)}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-right text-gray-900 dark:text-gray-100">{formatCurrency(summary.total_gross)}</td>
                     <td className="px-4 py-3 text-sm font-bold text-right text-primary-600">{formatCurrency(summary.total_net)}</td>
                   </tr>
                 ))}

@@ -14,7 +14,10 @@ class Department extends Model
         'code',
         'description',
         'manager_id',
+        'status',
     ];
+
+    protected $appends = ['employees_count'];
 
     public function employees()
     {
@@ -29,5 +32,10 @@ class Department extends Model
     public function manager()
     {
         return $this->belongsTo(Employee::class, 'manager_id');
+    }
+
+    public function getEmployeesCountAttribute()
+    {
+        return $this->employees()->count();
     }
 }

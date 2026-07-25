@@ -108,6 +108,7 @@ Route::prefix('v1')->group(function () {
     */
     Route::prefix('attendance')->middleware(['auth:sanctum', 'permission:attendance.view'])->group(function () {
         Route::get('/', [AttendanceController::class, 'index']);
+        Route::get('summary', [AttendanceController::class, 'summary'])->middleware('permission:attendance.view');
         Route::post('check-in', [AttendanceController::class, 'checkIn'])->withoutMiddleware('permission:attendance.view')->middleware('permission:attendance.create');
         Route::post('check-out', [AttendanceController::class, 'checkOut'])->withoutMiddleware('permission:attendance.view')->middleware('permission:attendance.create');
         Route::get('{attendance}', [AttendanceController::class, 'show']);

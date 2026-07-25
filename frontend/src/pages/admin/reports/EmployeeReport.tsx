@@ -149,8 +149,8 @@ export const EmployeeReport: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Employee Report</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Employee Report</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Generate employee reports and analytics
           </p>
         </div>
@@ -173,28 +173,28 @@ export const EmployeeReport: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               <DocumentArrowDownIcon className="w-5 h-5" />
               Export
             </button>
             {showExportMenu && (
-              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                 <button
                   onClick={() => handleExport('pdf')}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   📄 PDF
                 </button>
                 <button
                   onClick={() => handleExport('excel')}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   📊 Excel
                 </button>
                 <button
                   onClick={() => handleExport('csv')}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50"
+                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   📋 CSV
                 </button>
@@ -206,42 +206,42 @@ export const EmployeeReport: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-4 mb-6 sm:grid-cols-4">
-        <div className="p-4 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Total Employees</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+        <div className="p-4 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Employees</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{stats.total}</p>
         </div>
-        <div className="p-4 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <CheckBadgeIcon className="w-4 h-4 text-green-500" />
-            <p className="text-xs text-gray-500">Active</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Active</p>
           </div>
           <p className="text-2xl font-bold text-green-600">{stats.active}</p>
         </div>
-        <div className="p-4 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <XMarkIcon className="w-4 h-4 text-yellow-500" />
-            <p className="text-xs text-gray-500">Resigned</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Resigned</p>
           </div>
           <p className="text-2xl font-bold text-yellow-600">{stats.resigned}</p>
         </div>
-        <div className="p-4 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <XMarkIcon className="w-4 h-4 text-red-500" />
-            <p className="text-xs text-gray-500">Terminated</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Terminated</p>
           </div>
           <p className="text-2xl font-bold text-red-600">{stats.terminated}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Department</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Department</label>
             <select
               value={filters.department_id}
               onChange={(e) => handleFilterChange('department_id', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Departments</option>
               {mockDepartments.map((dept) => (
@@ -252,11 +252,11 @@ export const EmployeeReport: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Status</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
             <select
               value={filters.status || ''}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Status</option>
               <option value="active">Active</option>
@@ -265,69 +265,69 @@ export const EmployeeReport: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Date From</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Date From</label>
             <input
               type="date"
               value={filters.date_from}
               onChange={(e) => handleFilterChange('date_from', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Date To</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Date To</label>
             <input
               type="date"
               value={filters.date_to}
               onChange={(e) => handleFilterChange('date_to', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Employee</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Department</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Position</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Contact</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Tenure</th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Status</th>
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Employee</th>
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Department</th>
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Position</th>
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Contact</th>
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Tenure</th>
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredData.map((employee) => (
-                <tr key={employee.id} className="transition-colors hover:bg-gray-50">
+                <tr key={employee.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
                   <td className="px-4 py-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{employee.name}</p>
-                      <p className="text-xs text-gray-500">{employee.employee_code}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{employee.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{employee.employee_code}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{employee.department}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{employee.position}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{employee.department}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{employee.position}</td>
                   <td className="px-4 py-3">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-1.5">
-                        <EnvelopeIcon className="h-3.5 w-3.5 text-gray-400" />
-                        <span className="text-sm text-gray-600">{employee.email}</span>
+                        <EnvelopeIcon className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{employee.email}</span>
                       </div>
                       {employee.phone && (
                         <div className="flex items-center gap-1.5">
-                          <PhoneIcon className="h-3.5 w-3.5 text-gray-400" />
-                          <span className="text-sm text-gray-600">{employee.phone}</span>
+                          <PhoneIcon className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+                          <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{employee.phone}</span>
                         </div>
                       )}
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     <div>
-                      <p className="text-sm text-gray-900">{employee.tenure_years}y</p>
-                      <p className="text-xs text-gray-500">{new Date(employee.hire_date).toLocaleDateString()}</p>
+                      <p className="text-sm text-gray-900 dark:text-gray-100">{employee.tenure_years}y</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{new Date(employee.hire_date).toLocaleDateString()}</p>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -344,8 +344,8 @@ export const EmployeeReport: React.FC = () => {
         {filteredData.length === 0 && (
           <div className="py-12 text-center">
             <UserGroupIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900">No employees found</h3>
-            <p className="mt-1 text-sm text-gray-500">Try adjusting your filters</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No employees found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Try adjusting your filters</p>
           </div>
         )}
       </div>

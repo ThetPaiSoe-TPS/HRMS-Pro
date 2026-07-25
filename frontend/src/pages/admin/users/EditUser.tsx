@@ -90,16 +90,16 @@ export const EditUser: React.FC = () => {
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Link to="/admin/users" className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <ArrowLeftIcon className="h-5 w-5 text-gray-500" />
+          <ArrowLeftIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit User</h1>
-          <p className="mt-1 text-sm text-gray-500">Update user information</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit User</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Update user information</p>
         </div>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="rounded-lg bg-red-50 p-3 border border-red-200">
@@ -109,16 +109,16 @@ export const EditUser: React.FC = () => {
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
             <div className="relative">
-              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.name ? 'border-red-300' : 'border-gray-300'
+                  errors.name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
               />
             </div>
@@ -127,16 +127,16 @@ export const EditUser: React.FC = () => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
             <div className="relative">
-              <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <EnvelopeIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
+                  errors.email ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
               />
             </div>
@@ -145,15 +145,15 @@ export const EditUser: React.FC = () => {
 
           {/* Role */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role *</label>
             <div className="relative">
-              <UserGroupIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <UserGroupIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.role ? 'border-red-300' : 'border-gray-300'
+                  errors.role ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
                 <option value="employee">Employee</option>
@@ -167,14 +167,14 @@ export const EditUser: React.FC = () => {
 
           {/* Employee Association */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Associate with Employee
             </label>
             <select
               name="employee_id"
               value={formData.employee_id}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">No employee association</option>
               {mockEmployees.map((emp) => (
@@ -186,11 +186,11 @@ export const EditUser: React.FC = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
               onClick={() => navigate('/admin/users')}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
             >
               Cancel
             </button>

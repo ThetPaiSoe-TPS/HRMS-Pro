@@ -113,19 +113,19 @@ export const GeneratePayroll: React.FC = () => {
     <div className="max-w-3xl p-4 mx-auto sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/admin/payroll" className="p-2 transition-colors rounded-lg hover:bg-gray-100">
-          <ArrowLeftIcon className="w-5 h-5 text-gray-500" />
+        <Link to="/admin/payroll" className="p-2 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+          <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Generate Payroll</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Generate Payroll</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Generate payroll for selected month and employees
           </p>
         </div>
       </div>
 
       {/* Form Card */}
-      <div className="p-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 shadow-sm rounded-xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="flex items-start gap-3 p-3 border border-red-200 rounded-lg bg-red-50">
@@ -147,18 +147,18 @@ export const GeneratePayroll: React.FC = () => {
           {/* Month & Year */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Month *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <CalendarIcon className="w-5 h-5 text-gray-400" />
+                  <CalendarIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                 </div>
                 <select
                   value={formData.month}
                   onChange={handleMonthChange}
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.month ? 'border-red-300' : 'border-gray-300'
+                    errors.month ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
@@ -173,18 +173,18 @@ export const GeneratePayroll: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Year *
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <CalendarIcon className="w-5 h-5 text-gray-400" />
+                  <CalendarIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                 </div>
                 <select
                   value={formData.year}
                   onChange={handleYearChange}
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.year ? 'border-red-300' : 'border-gray-300'
+                    errors.year ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                   }`}
                 >
                   {[2023, 2024, 2025].map((y) => (
@@ -201,19 +201,19 @@ export const GeneratePayroll: React.FC = () => {
           </div>
 
           {/* Employee Selection */}
-          <div className="p-4 border border-gray-200 rounded-lg">
+          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <UserGroupIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-sm font-medium text-gray-700">Select Employees</span>
+                <UserGroupIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Select Employees</span>
               </div>
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-sm text-gray-600">
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
                   <input
                     type="checkbox"
                     checked={formData.all_employees}
                     onChange={(e) => setFormData({ ...formData, all_employees: e.target.checked })}
-                    className="w-4 h-4 border-gray-300 rounded text-primary-600 focus:ring-primary-500"
+                    className="w-4 h-4 border-gray-300 dark:border-gray-600 rounded text-primary-600 focus:ring-primary-500"
                   />
                   All Employees
                 </label>
@@ -237,18 +237,18 @@ export const GeneratePayroll: React.FC = () => {
                     className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-colors ${
                       formData.employee_ids.includes(employee.id)
                         ? 'bg-primary-50 border border-primary-200'
-                        : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'
+                        : 'bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={formData.employee_ids.includes(employee.id)}
                       onChange={() => handleEmployeeToggle(employee.id)}
-                      className="w-4 h-4 border-gray-300 rounded text-primary-600 focus:ring-primary-500"
+                      className="w-4 h-4 border-gray-300 dark:border-gray-600 rounded text-primary-600 focus:ring-primary-500"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{employee.name}</p>
-                      <p className="text-xs text-gray-500">{employee.employee_code} • {employee.department}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{employee.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{employee.employee_code} • {employee.department}</p>
                     </div>
                   </label>
                 ))}
@@ -261,20 +261,20 @@ export const GeneratePayroll: React.FC = () => {
           </div>
 
           {/* Summary */}
-          <div className="p-4 rounded-lg bg-gray-50">
+          <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CurrencyDollarIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-700">Payroll Summary</span>
+                <CurrencyDollarIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Payroll Summary</span>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   {formData.all_employees
                     ? `All ${mockEmployees.length} employees`
                     : `${formData.employee_ids.length} employees selected`
                   }
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   {getMonthName(formData.month)} {formData.year}
                 </p>
               </div>
@@ -282,11 +282,11 @@ export const GeneratePayroll: React.FC = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
               onClick={() => navigate('/admin/payroll')}
-              className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               Cancel
             </button>

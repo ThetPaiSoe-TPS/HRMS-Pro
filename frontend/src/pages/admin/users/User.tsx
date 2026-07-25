@@ -213,8 +213,8 @@ export const Users: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage system users and their permissions
           </p>
         </div>
@@ -229,51 +229,51 @@ export const Users: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <UserGroupIcon className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Users</p>
-              <p className="text-xl font-bold text-gray-900">{users.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Users</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{users.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <CheckBadgeIcon className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Verified</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Verified</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {users.filter(u => u.email_verified_at).length}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <XMarkIcon className="h-5 w-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Unverified</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Unverified</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {users.filter(u => !u.email_verified_at).length}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <UserGroupIcon className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Admins</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Admins</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {users.filter(u => u.role === 'super_admin' || u.role === 'hr_manager').length}
               </p>
             </div>
@@ -282,31 +282,31 @@ export const Users: React.FC = () => {
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search users by name or email..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
           >
-            <FunnelIcon className="h-5 w-5 text-gray-500" />
-            <span className="text-sm text-gray-700">Filters</span>
+            <FunnelIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-700 dark:text-gray-300">Filters</span>
           </button>
           <button
             onClick={() => {
               setSearchTerm('');
               setFilters({ search: '', role: '', status: '', page: 1, per_page: 10 });
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-gray-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300 transition-colors"
           >
             <ArrowPathIcon className="h-5 w-5" />
             <span className="text-sm">Reset</span>
@@ -315,13 +315,13 @@ export const Users: React.FC = () => {
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
               <select
                 value={filters.role}
                 onChange={(e) => handleFilterChange('role', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Roles</option>
                 <option value="super_admin">Super Admin</option>
@@ -331,11 +331,11 @@ export const Users: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Status</option>
                 <option value="verified">Verified</option>
@@ -343,11 +343,11 @@ export const Users: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Per Page</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Per Page</label>
               <select
                 value={filters.per_page}
                 onChange={(e) => handleFilterChange('per_page', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -360,34 +360,34 @@ export const Users: React.FC = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {paginatedUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
@@ -396,9 +396,9 @@ export const Users: React.FC = () => {
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
                         {user.employee && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                             {user.employee.employee_code} • {user.employee.department?.name}
                           </p>
                         )}
@@ -407,8 +407,8 @@ export const Users: React.FC = () => {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      <EnvelopeIcon className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{user.email}</span>
+                      <EnvelopeIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{user.email}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -432,7 +432,7 @@ export const Users: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       <CalendarIcon className="h-4 w-4" />
                       {new Date(user.created_at).toLocaleDateString()}
                     </div>
@@ -441,21 +441,21 @@ export const Users: React.FC = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleView(user)}
-                        className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
                         title="View"
                       >
                         <EyeIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleEdit(user)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                         title="Edit"
                       >
                         <PencilSquareIcon className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(user)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                         title="Delete"
                       >
                         <TrashIcon className="h-4 w-4" />
@@ -472,8 +472,8 @@ export const Users: React.FC = () => {
         {paginatedUsers.length === 0 && (
           <div className="text-center py-12">
             <UserGroupIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">No users found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No users found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Try adjusting your search or filters
             </p>
           </div>
@@ -481,8 +481,8 @@ export const Users: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
-            <p className="text-sm text-gray-500">
+          <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Showing {paginatedUsers.length > 0 ? (filters.page - 1) * filters.per_page + 1 : 0} to{' '}
               {Math.min(filters.page * filters.per_page, filteredUsers.length)} of {filteredUsers.length} users
             </p>
@@ -490,7 +490,7 @@ export const Users: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page - 1)}
                 disabled={filters.page === 1}
-                className="px-3 py-1 rounded-lg border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
               >
                 Previous
               </button>
@@ -501,7 +501,7 @@ export const Users: React.FC = () => {
                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                     page === filters.page
                       ? 'bg-primary-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50'
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
                   }`}
                 >
                   {page}
@@ -510,7 +510,7 @@ export const Users: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page + 1)}
                 disabled={filters.page === totalPages}
-                className="px-3 py-1 rounded-lg border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
               >
                 Next
               </button>
@@ -524,9 +524,9 @@ export const Users: React.FC = () => {
           ========================================== */}
       {showViewModal && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
                   <span className="text-primary-700 text-lg font-bold">
@@ -534,15 +534,15 @@ export const Users: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{selectedUser.name}</h3>
-                  <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{selectedUser.name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{selectedUser.email}</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <XMarkIcon className="h-5 w-5 text-gray-500" />
+                <XMarkIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
 
@@ -550,16 +550,16 @@ export const Users: React.FC = () => {
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Role</label>
-                  <p className="mt-1 text-sm font-medium text-gray-900">
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Role</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(selectedUser.role)}`}>
                       {roleLabels[selectedUser.role] || selectedUser.role}
                     </span>
                   </p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Status</label>
-                  <p className="mt-1 text-sm font-medium text-gray-900">
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Status</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[getStatus(selectedUser)]}`}>
                       {selectedUser.email_verified_at ? 'Verified' : 'Unverified'}
                     </span>
@@ -568,40 +568,40 @@ export const Users: React.FC = () => {
               </div>
 
               {selectedUser.employee && (
-                <div className="border-t border-gray-200 pt-4">
-                  <h4 className="text-sm font-medium text-gray-900 mb-3">Employee Details</h4>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Employee Details</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Code</label>
-                      <p className="mt-1 text-sm text-gray-900">{selectedUser.employee.employee_code}</p>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Employee Code</label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.employee_code}</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Department</label>
-                      <p className="mt-1 text-sm text-gray-900">{selectedUser.employee.department?.name}</p>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Department</label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.department?.name}</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Position</label>
-                      <p className="mt-1 text-sm text-gray-900">{selectedUser.employee.position?.title}</p>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Position</label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.position?.title}</p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</label>
-                      <p className="mt-1 text-sm text-gray-900">{selectedUser.employee.name}</p>
+                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Employee Name</label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.name}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="border-t border-gray-200 pt-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Joined</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(selectedUser.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Last Updated</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(selectedUser.updated_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -610,10 +610,10 @@ export const Users: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
               >
                 Close
               </button>
@@ -636,24 +636,24 @@ export const Users: React.FC = () => {
           ========================================== */}
       {showDeleteModal && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-md w-full">
             <div className="p-6">
               <div className="flex items-center justify-center mb-4">
                 <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
                   <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-center text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-center text-gray-900 dark:text-gray-100 mb-2">
                 Delete User
               </h3>
-              <p className="text-sm text-center text-gray-500">
-                Are you sure you want to delete <span className="font-medium text-gray-900">{selectedUser.name}</span>?
+              <p className="text-sm text-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Are you sure you want to delete <span className="font-medium text-gray-900 dark:text-gray-100">{selectedUser.name}</span>?
                 This action cannot be undone.
               </p>
               <div className="mt-6 flex items-center gap-3">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
                 >
                   Cancel
                 </button>

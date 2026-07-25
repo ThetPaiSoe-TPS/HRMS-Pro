@@ -27,6 +27,10 @@ export interface User {
   joinDate?: string;
   address?: string;
   bio?: string;
+  years_experience?: number;
+  total_projects?: number;
+  last_login_at?: string | null;
+  last_login_ip?: string | null;
   created_at: string;
   updated_at: string;
 }

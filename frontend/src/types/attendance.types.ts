@@ -1,19 +1,13 @@
-﻿
-export interface Attendance {
+﻿export interface Attendance {
   id: number;
   employee_id: number;
   employee?: {
     id: number;
     name: string;
     employee_code: string;
-    department: {
-      id: number;
-      name: string;
-    };
-    position: {
-      id: number;
-      title: string;
-    };
+    photo?: string | null;
+    department?: { id: number; name: string };
+    position?: { id: number; title: string };
   };
   date: string;
   check_in: string | null;
@@ -28,15 +22,11 @@ export interface Attendance {
   updated_at: string;
 }
 
-export interface AttendanceFormData {
+export interface CheckInOutData {
   employee_id: number;
-  date: string;
-  check_in: string;
-  check_out: string;
-  status: 'present' | 'absent' | 'late' | 'half_day' | 'leave';
-  work_hours: number;
-  overtime_hours: number;
-  notes: string;
+  location_in?: string;
+  location_out?: string;
+  notes?: string;
 }
 
 export interface AttendanceFilters {
@@ -56,16 +46,20 @@ export interface AttendanceStats {
   half_day: number;
   on_leave: number;
   present_percentage: number;
+  date?: string;
 }
 
-export interface CheckInOutData {
-  employee_id: number;
-  latitude?: string;
-  longitude?: string;
-  location?: string;
-  notes?: string;
+export interface PaginatedResponse<T> {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
 }
 
+// Report specific types
 export interface AttendanceReportFilters {
   date_from: string;
   date_to: string;
@@ -86,7 +80,7 @@ export interface AttendanceSummary {
 }
 
 export interface EmployeeAttendanceSummary {
-  employee_id: number;
+  employee_id?: number;
   employee_name: string;
   employee_code: string;
   department: string;

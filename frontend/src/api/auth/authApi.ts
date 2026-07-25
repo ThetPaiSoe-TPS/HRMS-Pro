@@ -28,6 +28,10 @@ const mapUser = (data: any): User => ({
   joinDate: data.joinDate || data.join_date || '',
   address: data.address || '',
   bio: data.bio || '',
+  years_experience: data.years_experience ?? 0,
+  total_projects: data.total_projects ?? 0,
+  last_login_at: data.last_login_at || null,
+  last_login_ip: data.last_login_ip || null,
   created_at: data.created_at,
   updated_at: data.updated_at,
 });

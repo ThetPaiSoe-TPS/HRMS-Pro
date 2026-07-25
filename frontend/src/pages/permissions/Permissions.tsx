@@ -205,8 +205,8 @@ export const Permissions: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Permissions Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Permissions Management</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage system permissions by module
           </p>
         </div>
@@ -221,49 +221,49 @@ export const Permissions: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary-100">
               <KeyIcon className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Permissions</p>
-              <p className="text-xl font-bold text-gray-900">{permissions.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Permissions</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{permissions.length}</p>
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <FolderIcon className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Modules</p>
-              <p className="text-xl font-bold text-gray-900">{availableModules.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Modules</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{availableModules.length}</p>
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <ShieldCheckIcon className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Used in Roles</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Used in Roles</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {permissions.filter(p => p.module !== 'permission').length}
               </p>
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <CheckBadgeIcon className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">System Permissions</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">System Permissions</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {permissions.filter(p => p.module === 'permission').length}
               </p>
             </div>
@@ -272,31 +272,31 @@ export const Permissions: React.FC = () => {
       </div>
 
       {/* Search & Filters */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 dark:text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               placeholder="Search permissions by name, module, or description..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full py-2 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
           >
-            <FunnelIcon className="w-5 h-5 text-gray-500" />
-            <span className="text-sm text-gray-700">Filters</span>
+            <FunnelIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-700 dark:text-gray-300">Filters</span>
           </button>
           <button
             onClick={() => {
               setSearchTerm('');
               setFilters({ search: '', module: '', page: 1, per_page: 10 });
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 transition-colors hover:text-gray-700"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-300"
           >
             <ArrowPathIcon className="w-5 h-5" />
             <span className="text-sm">Reset</span>
@@ -305,13 +305,13 @@ export const Permissions: React.FC = () => {
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="grid grid-cols-1 gap-4 pt-4 mt-4 border-t border-gray-200 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700 sm:grid-cols-2">
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Module</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Module</label>
               <select
                 value={filters.module}
                 onChange={(e) => handleFilterChange('module', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Modules</option>
                 {availableModules.map((module) => (
@@ -322,11 +322,11 @@ export const Permissions: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Per Page</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Per Page</label>
               <select
                 value={filters.per_page}
                 onChange={(e) => handleFilterChange('per_page', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -340,59 +340,59 @@ export const Permissions: React.FC = () => {
       </div>
 
       {/* Permissions Table */}
-      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Permission
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Module
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Description
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Created
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {paginatedPermissions.map((permission) => {
                 const ModuleIcon = getModuleIcon(permission.module);
                 return (
-                  <tr key={permission.id} className="transition-colors hover:bg-gray-50">
+                  <tr key={permission.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center flex-shrink-0 rounded-lg h-9 w-9 bg-primary-100">
                           <KeyIcon className="w-5 h-5 text-primary-600" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">{permission.name}</p>
-                          <span className="text-xs text-gray-500">ID: {permission.id}</span>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{permission.name}</p>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">ID: {permission.id}</span>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <ModuleIcon className="w-4 h-4 text-gray-400" />
+                        <ModuleIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getModuleColor(permission.module)}`}>
                           {permission.module.charAt(0).toUpperCase() + permission.module.slice(1)}
                         </span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="max-w-xs text-sm text-gray-600 truncate">
+                      <p className="max-w-xs text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 truncate">
                         {permission.description || 'No description'}
                       </p>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                      <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                         <CalendarIcon className="w-4 h-4" />
                         {new Date(permission.created_at).toLocaleDateString()}
                       </div>
@@ -401,21 +401,21 @@ export const Permissions: React.FC = () => {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleView(permission)}
-                          className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+                          className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
                           title="View"
                         >
                           <EyeIcon className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleEdit(permission)}
-                          className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                          className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                           title="Edit"
                         >
                           <PencilSquareIcon className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(permission)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                          className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                           title="Delete"
                         >
                           <TrashIcon className="w-4 h-4" />
@@ -433,8 +433,8 @@ export const Permissions: React.FC = () => {
         {paginatedPermissions.length === 0 && (
           <div className="py-12 text-center">
             <KeyIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900">No permissions found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No permissions found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Try adjusting your search or create a new permission
             </p>
           </div>
@@ -442,8 +442,8 @@ export const Permissions: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Showing {paginatedPermissions.length > 0 ? (filters.page - 1) * filters.per_page + 1 : 0} to{' '}
               {Math.min(filters.page * filters.per_page, filteredPermissions.length)} of {filteredPermissions.length} permissions
             </p>
@@ -451,7 +451,7 @@ export const Permissions: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page - 1)}
                 disabled={filters.page === 1}
-                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Previous
               </button>
@@ -462,7 +462,7 @@ export const Permissions: React.FC = () => {
                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                     page === filters.page
                       ? 'bg-primary-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50'
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
                   }`}
                 >
                   {page}
@@ -471,7 +471,7 @@ export const Permissions: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page + 1)}
                 disabled={filters.page === totalPages}
-                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Next
               </button>
@@ -485,34 +485,34 @@ export const Permissions: React.FC = () => {
           ========================================== */}
       {showViewModal && selectedPermission && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl">
+          <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-100">
                   <KeyIcon className="w-5 h-5 text-primary-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Permission Details</h3>
-                  <p className="text-sm text-gray-500">ID: {selectedPermission.id}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Permission Details</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">ID: {selectedPermission.id}</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <XMarkIcon className="w-5 h-5 text-gray-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
 
             {/* Modal Body */}
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Permission Name</label>
-                <p className="mt-1 text-sm font-medium text-gray-900">{selectedPermission.name}</p>
+                <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Permission Name</label>
+                <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">{selectedPermission.name}</p>
               </div>
               <div>
-                <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Module</label>
+                <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Module</label>
                 <p className="mt-1">
                   <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getModuleColor(selectedPermission.module)}`}>
                     {selectedPermission.module.charAt(0).toUpperCase() + selectedPermission.module.slice(1)}
@@ -520,25 +520,25 @@ export const Permissions: React.FC = () => {
                 </p>
               </div>
               <div>
-                <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Description</label>
-                <p className="mt-1 text-sm text-gray-900">
+                <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Description</label>
+                <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                   {selectedPermission.description || 'No description provided'}
                 </p>
               </div>
               <div>
-                <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Guard Name</label>
-                <p className="mt-1 text-sm text-gray-900">{selectedPermission.guard_name}</p>
+                <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Guard Name</label>
+                <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedPermission.guard_name}</p>
               </div>
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div>
-                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Created</label>
-                  <p className="mt-1 text-sm text-gray-900">
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Created</label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                     {new Date(selectedPermission.created_at).toLocaleString()}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Last Updated</label>
-                  <p className="mt-1 text-sm text-gray-900">
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Last Updated</label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                     {new Date(selectedPermission.updated_at).toLocaleString()}
                   </p>
                 </div>
@@ -546,10 +546,10 @@ export const Permissions: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Close
               </button>
@@ -572,18 +572,18 @@ export const Permissions: React.FC = () => {
           ========================================== */}
       {showDeleteModal && selectedPermission && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl">
+          <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-xl">
             <div className="p-6">
               <div className="flex items-center justify-center mb-4">
                 <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
                   <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
                 </div>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900">
+              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
                 Delete Permission
               </h3>
-              <p className="text-sm text-center text-gray-500">
-                Are you sure you want to delete <span className="font-medium text-gray-900">{selectedPermission.name}</span>?
+              <p className="text-sm text-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Are you sure you want to delete <span className="font-medium text-gray-900 dark:text-gray-100">{selectedPermission.name}</span>?
                 {selectedPermission.module === 'permission' && (
                   <span className="block mt-2 text-red-600">
                     ⚠️ This is a system permission and may affect role assignments.
@@ -593,7 +593,7 @@ export const Permissions: React.FC = () => {
               <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   Cancel
                 </button>

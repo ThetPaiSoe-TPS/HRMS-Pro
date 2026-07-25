@@ -317,9 +317,9 @@ export const Dashboard: React.FC = () => {
       case 'employee':
         return <UserPlusIcon className="w-4 h-4 text-blue-500" />;
       case 'system':
-        return <Cog6ToothIcon className="w-4 h-4 text-gray-500" />;
+        return <Cog6ToothIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 dark:text-gray-500" />;
       default:
-        return <BellIcon className="w-4 h-4 text-gray-500" />;
+        return <BellIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 dark:text-gray-500" />;
     }
   };
 
@@ -334,9 +334,9 @@ export const Dashboard: React.FC = () => {
       case 'employee':
         return 'bg-blue-50 border-blue-200';
       case 'system':
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-700';
       default:
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-700';
     }
   };
 
@@ -349,7 +349,7 @@ export const Dashboard: React.FC = () => {
       case 'religious':
         return 'bg-purple-100 text-purple-800';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-800';
     }
   };
 
@@ -361,14 +361,14 @@ export const Dashboard: React.FC = () => {
           <Link
             key={stat.title}
             to={stat.link || '#'}
-            className="p-4 transition-all duration-200 bg-white border border-gray-100 shadow-sm rounded-xl hover:shadow-md hover:border-primary-200 group"
+            className="p-4 transition-all duration-200 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl hover:shadow-md hover:border-primary-200 group dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium tracking-wider text-gray-500 uppercase">
+                <p className="text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   {stat.title}
                 </p>
-                <p className="mt-1 text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{stat.value}</p>
               </div>
               <div className={`${stat.color} p-2.5 rounded-lg group-hover:scale-105 transition-transform duration-200`}>
                 <stat.icon className="w-5 h-5 text-white" />
@@ -376,15 +376,15 @@ export const Dashboard: React.FC = () => {
             </div>
             <div className="mt-2">
               {stat.changeType === 'increase' && (
-                <span className="text-xs font-medium text-green-600">↑ {stat.change}</span>
+                <span className="text-xs font-medium text-green-600 dark:text-green-400">↑ {stat.change}</span>
               )}
               {stat.changeType === 'decrease' && (
-                <span className="text-xs font-medium text-red-600">↓ {stat.change}</span>
+                <span className="text-xs font-medium text-red-600 dark:text-red-400">↓ {stat.change}</span>
               )}
               {stat.changeType === 'neutral' && (
-                <span className="text-xs font-medium text-gray-500">{stat.change}</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">{stat.change}</span>
               )}
-              <span className="ml-1 text-xs text-gray-500">from last month</span>
+              <span className="ml-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">from last month</span>
             </div>
           </Link>
         ))}
@@ -393,17 +393,17 @@ export const Dashboard: React.FC = () => {
           {/* ===== CHARTS SECTION ===== */}
       <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-2 xl:grid-cols-3">
         {/* Attendance Chart */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">Attendance Chart</h3>
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl lg:col-span-2 dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Attendance Chart</h3>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                <span className="text-xs text-gray-500">Present</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">Present</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                <span className="text-xs text-gray-500">Absent</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">Absent</span>
               </div>
             </div>
           </div>
@@ -443,8 +443,8 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Employee by Department */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
-          <h3 className="mb-4 text-sm font-semibold text-gray-900">Employee by Department</h3>
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Employee by Department</h3>
           <div className="h-[250px] flex items-center justify-center">
             <Doughnut
               data={departmentChartData}
@@ -468,8 +468,8 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Leave Statistics */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
-          <h3 className="mb-4 text-sm font-semibold text-gray-900">Leave Statistics</h3>
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Leave Statistics</h3>
           <div className="h-[250px]">
             <Bar
               data={leaveChartData}
@@ -497,12 +497,12 @@ export const Dashboard: React.FC = () => {
       {/* ===== RECENT ACTIVITIES & UPCOMING HOLIDAYS ===== */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Recent Activities */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">Recent Activities</h3>
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl lg:col-span-2 dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Recent Activities</h3>
             <Link
               to="/admin/activities"
-              className="text-xs font-medium text-primary-600 hover:text-primary-700"
+              className="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >
               View All →
             </Link>
@@ -513,15 +513,15 @@ export const Dashboard: React.FC = () => {
                 key={activity.id}
                 className={`flex items-start gap-3 p-3 rounded-lg border ${getActivityBgColor(activity.type)} transition-all hover:shadow-sm`}
               >
-                <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 bg-white rounded-full shadow-sm">
+                <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 bg-white dark:bg-gray-800 rounded-full shadow-sm dark:bg-gray-700">
                   {getActivityIcon(activity.type)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-900">
+                  <p className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">
                     <span className="font-medium">{activity.user}</span>
                     {' '}{activity.action}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-0.5 flex items-center gap-1 dark:text-gray-400 dark:text-gray-500">
                     <ClockIcon className="w-3 h-3" />
                     {activity.time}
                   </p>
@@ -532,12 +532,12 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Upcoming Holidays */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">Upcoming Holidays</h3>
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100">Upcoming Holidays</h3>
             <Link
               to="/admin/holidays"
-              className="text-xs font-medium text-primary-600 hover:text-primary-700"
+              className="text-xs font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
             >
               View All →
             </Link>
@@ -546,18 +546,18 @@ export const Dashboard: React.FC = () => {
             {holidays.map((holiday) => (
               <div
                 key={holiday.id}
-                className="flex items-center justify-between p-3 transition-colors border border-gray-100 rounded-lg bg-gray-50 hover:bg-gray-100"
+                className="flex items-center justify-between p-3 transition-colors border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 dark:bg-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-4 h-4 text-gray-400" />
-                    <p className="text-sm font-medium text-gray-900">{holiday.name}</p>
+                    <CalendarIcon className="w-4 h-4 text-gray-400 dark:text-gray-500 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">{holiday.name}</p>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getHolidayTypeColor(holiday.type)}`}>
                       {holiday.type.charAt(0).toUpperCase() + holiday.type.slice(1)}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       {new Date(holiday.date).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
@@ -567,7 +567,7 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2.5 py-1 rounded-full dark:bg-primary-900/30 dark:text-primary-400">
                     {holiday.daysLeft} days
                   </span>
                 </div>
@@ -576,16 +576,16 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-2 pt-4 mt-4 border-t border-gray-200">
-            <div className="p-2 text-center rounded-lg bg-gray-50">
-              <p className="text-xs text-gray-500">Next Holiday</p>
-              <p className="text-sm font-medium text-gray-900">
+          <div className="grid grid-cols-2 gap-2 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700 dark:border-gray-700">
+            <div className="p-2 text-center rounded-lg bg-gray-50 dark:bg-gray-700 dark:bg-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">Next Holiday</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100">
                 {holidays.length > 0 ? holidays[0].name : 'None'}
               </p>
             </div>
-            <div className="p-2 text-center rounded-lg bg-gray-50">
-              <p className="text-xs text-gray-500">Days Until</p>
-              <p className="text-sm font-medium text-primary-600">
+            <div className="p-2 text-center rounded-lg bg-gray-50 dark:bg-gray-700 dark:bg-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">Days Until</p>
+              <p className="text-sm font-medium text-primary-600 dark:text-primary-400">
                 {holidays.length > 0 ? `${holidays[0].daysLeft} days` : 'N/A'}
               </p>
             </div>
@@ -594,15 +594,15 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* ========== FOOTER ========== */}
-      <footer className="pt-4 mt-8 border-t border-gray-200">
+      <footer className="pt-4 mt-8 border-t border-gray-200 dark:border-gray-700 dark:border-gray-700">
         <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">
             © {new Date().getFullYear()} HRMS Pro. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-gray-500">PROSPECTING</span>
-            <span className="text-xs text-gray-500">SALES</span>
-            <span className="text-xs text-gray-500">MARKETING</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">PROSPECTING</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">SALES</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-500">MARKETING</span>
           </div>
         </div>
       </footer>

@@ -191,8 +191,8 @@ export const Roles: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Roles Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Roles Management</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage user roles and their permissions
           </p>
         </div>
@@ -207,51 +207,51 @@ export const Roles: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary-100">
               <ShieldCheckIcon className="w-5 h-5 text-primary-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Roles</p>
-              <p className="text-xl font-bold text-gray-900">{roles.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Roles</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{roles.length}</p>
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
               <UserGroupIcon className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Users</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Users</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {roles.reduce((sum, r) => sum + (r.users_count || 0), 0)}
               </p>
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
               <CheckBadgeIcon className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Admin Roles</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Admin Roles</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {roles.filter(r => r.name === 'super_admin' || r.name === 'hr_manager').length}
               </p>
             </div>
           </div>
         </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
               <ShieldCheckIcon className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Permissions</p>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Permissions</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {new Set(roles.flatMap(r => r.permissions?.map(p => p.id) || [])).size}
               </p>
             </div>
@@ -260,16 +260,16 @@ export const Roles: React.FC = () => {
       </div>
 
       {/* Search */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 dark:text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               placeholder="Search roles by name or description..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full py-2 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <button
@@ -277,7 +277,7 @@ export const Roles: React.FC = () => {
               setSearchTerm('');
               setFilters({ search: '', page: 1, per_page: 10 });
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 transition-colors hover:text-gray-700"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-300"
           >
             <ArrowPathIcon className="w-5 h-5" />
             <span className="text-sm">Reset</span>
@@ -286,41 +286,41 @@ export const Roles: React.FC = () => {
       </div>
 
       {/* Roles Table */}
-      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Role
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Description
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Permissions
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Users
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Created
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {paginatedRoles.map((role) => (
-                <tr key={role.id} className="transition-colors hover:bg-gray-50">
+                <tr key={role.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center justify-center flex-shrink-0 rounded-lg h-9 w-9 bg-primary-100">
                         <ShieldCheckIcon className="w-5 h-5 text-primary-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{role.display_name}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{role.display_name}</p>
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(role.name)}`}>
                           {roleLabels[role.name] || role.name}
                         </span>
@@ -328,26 +328,26 @@ export const Roles: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="max-w-xs text-sm text-gray-600 truncate">
+                    <p className="max-w-xs text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 truncate">
                       {role.description || 'No description'}
                     </p>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {getPermissionCount(role)}
                       </span>
-                      <span className="text-xs text-gray-500">permissions</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">permissions</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      <UserGroupIcon className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-900">{role.users_count || 0}</span>
+                      <UserGroupIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-sm text-gray-900 dark:text-gray-100">{role.users_count || 0}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                    <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                       <CalendarIcon className="w-4 h-4" />
                       {new Date(role.created_at).toLocaleDateString()}
                     </div>
@@ -356,21 +356,21 @@ export const Roles: React.FC = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleView(role)}
-                        className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
                         title="View"
                       >
                         <EyeIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleEdit(role)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                         title="Edit"
                       >
                         <PencilSquareIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(role)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                         title="Delete"
                         disabled={role.name === 'super_admin' || role.users_count > 0}
                       >
@@ -388,8 +388,8 @@ export const Roles: React.FC = () => {
         {paginatedRoles.length === 0 && (
           <div className="py-12 text-center">
             <ShieldCheckIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900">No roles found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No roles found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Try adjusting your search or create a new role
             </p>
           </div>
@@ -397,8 +397,8 @@ export const Roles: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Showing {paginatedRoles.length > 0 ? (filters.page - 1) * filters.per_page + 1 : 0} to{' '}
               {Math.min(filters.page * filters.per_page, filteredRoles.length)} of {filteredRoles.length} roles
             </p>
@@ -406,7 +406,7 @@ export const Roles: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page - 1)}
                 disabled={filters.page === 1}
-                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Previous
               </button>
@@ -417,7 +417,7 @@ export const Roles: React.FC = () => {
                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                     page === filters.page
                       ? 'bg-primary-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50'
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
                   }`}
                 >
                   {page}
@@ -426,7 +426,7 @@ export const Roles: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page + 1)}
                 disabled={filters.page === totalPages}
-                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Next
               </button>
@@ -440,16 +440,16 @@ export const Roles: React.FC = () => {
           ========================================== */}
       {showViewModal && selectedRole && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100">
                   <ShieldCheckIcon className="w-6 h-6 text-primary-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{selectedRole.display_name}</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{selectedRole.display_name}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(selectedRole.name)}`}>
                       {roleLabels[selectedRole.name] || selectedRole.name}
                     </span>
@@ -458,9 +458,9 @@ export const Roles: React.FC = () => {
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <XMarkIcon className="w-5 h-5 text-gray-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
 
@@ -468,8 +468,8 @@ export const Roles: React.FC = () => {
             <div className="p-6 space-y-6">
               {/* Description */}
               <div>
-                <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Description</label>
-                <p className="mt-1 text-sm text-gray-900">
+                <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Description</label>
+                <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                   {selectedRole.description || 'No description provided'}
                 </p>
               </div>
@@ -477,23 +477,23 @@ export const Roles: React.FC = () => {
               {/* Stats */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Users with this role</label>
-                  <p className="mt-1 text-sm font-medium text-gray-900">{selectedRole.users_count || 0}</p>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Users with this role</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">{selectedRole.users_count || 0}</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Total Permissions</label>
-                  <p className="mt-1 text-sm font-medium text-gray-900">{getPermissionCount(selectedRole)}</p>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Total Permissions</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">{getPermissionCount(selectedRole)}</p>
                 </div>
               </div>
 
               {/* Permissions */}
-              <div className="pt-4 border-t border-gray-200">
-                <h4 className="mb-3 text-sm font-medium text-gray-900">Permissions</h4>
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h4 className="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">Permissions</h4>
                 {selectedRole.permissions && selectedRole.permissions.length > 0 ? (
                   <div className="space-y-4">
                     {Object.entries(getGroupedPermissions(selectedRole.permissions)).map(([module, perms]) => (
                       <div key={module}>
-                        <h5 className="mb-2 text-xs font-medium tracking-wider text-gray-500 uppercase">
+                        <h5 className="mb-2 text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                           {module.charAt(0).toUpperCase() + module.slice(1)}
                         </h5>
                         <div className="flex flex-wrap gap-2">
@@ -511,22 +511,22 @@ export const Roles: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No permissions assigned</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">No permissions assigned</p>
                 )}
               </div>
 
               {/* Metadata */}
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Created</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Created</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(selectedRole.created_at).toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Last Updated</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Last Updated</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(selectedRole.updated_at).toLocaleString()}
                     </p>
                   </div>
@@ -535,10 +535,10 @@ export const Roles: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Close
               </button>
@@ -561,18 +561,18 @@ export const Roles: React.FC = () => {
           ========================================== */}
       {showDeleteModal && selectedRole && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl">
+          <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-xl">
             <div className="p-6">
               <div className="flex items-center justify-center mb-4">
                 <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
                   <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
                 </div>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900">
+              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
                 Delete Role
               </h3>
-              <p className="text-sm text-center text-gray-500">
-                Are you sure you want to delete <span className="font-medium text-gray-900">{selectedRole.display_name}</span>?
+              <p className="text-sm text-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Are you sure you want to delete <span className="font-medium text-gray-900 dark:text-gray-100">{selectedRole.display_name}</span>?
                 {selectedRole.users_count > 0 && (
                   <span className="block mt-2 text-red-600">
                     ⚠️ This role is assigned to {selectedRole.users_count} user(s). Delete will remove the role from these users.
@@ -587,7 +587,7 @@ export const Roles: React.FC = () => {
               <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   Cancel
                 </button>

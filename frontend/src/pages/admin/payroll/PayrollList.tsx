@@ -384,8 +384,8 @@ export const PayrollList: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Payroll</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Payroll</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage payroll and payslips
           </p>
         </div>
@@ -402,74 +402,74 @@ export const PayrollList: React.FC = () => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 lg:grid-cols-7">
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Total</p>
-          <p className="text-xl font-bold text-gray-900">{stats.total_payrolls}</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Total</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{stats.total_payrolls}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <ClockIcon className="w-4 h-4 text-yellow-500" />
-            <p className="text-xs text-gray-500">Pending</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Pending</p>
           </div>
           <p className="text-xl font-bold text-yellow-600">{stats.pending}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <ArrowPathIcon className="w-4 h-4 text-blue-500" />
-            <p className="text-xs text-gray-500">Processing</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Processing</p>
           </div>
           <p className="text-xl font-bold text-blue-600">{stats.processing}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <CheckBadgeIcon className="w-4 h-4 text-green-500" />
-            <p className="text-xs text-gray-500">Paid</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Paid</p>
           </div>
           <p className="text-xl font-bold text-green-600">{stats.paid}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
-            <BanknotesIcon className="w-4 h-4 text-gray-500" />
-            <p className="text-xs text-gray-500">Amount</p>
+            <BanknotesIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Amount</p>
           </div>
-          <p className="text-xl font-bold text-gray-900">{formatCurrency(stats.total_amount)}</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{formatCurrency(stats.total_amount)}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">This Month</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">This Month</p>
           <p className="text-xl font-bold text-primary-600">{formatCurrency(stats.this_month_total)}</p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Employees</p>
-          <p className="text-xl font-bold text-gray-900">{stats.this_month_employees}</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Employees</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{stats.this_month_employees}</p>
         </div>
       </div>
 
       {/* Search & Filters */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 dark:text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               placeholder="Search by employee name or code..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full py-2 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
           >
-            <FunnelIcon className="w-5 h-5 text-gray-500" />
-            <span className="text-sm text-gray-700">Filters</span>
+            <FunnelIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-700 dark:text-gray-300">Filters</span>
           </button>
           <button
             onClick={() => {
               setSearchTerm('');
               setFilters({ employee_id: '', month: '', year: '', status: '', search: '', page: 1, per_page: 10 });
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 transition-colors hover:text-gray-700"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-300"
           >
             <ArrowPathIcon className="w-5 h-5" />
             <span className="text-sm">Reset</span>
@@ -477,13 +477,13 @@ export const PayrollList: React.FC = () => {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 gap-4 pt-4 mt-4 border-t border-gray-200 sm:grid-cols-5">
+          <div className="grid grid-cols-1 gap-4 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700 sm:grid-cols-5">
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Status</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Status</option>
                 <option value="pending">Pending</option>
@@ -494,11 +494,11 @@ export const PayrollList: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Month</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Month</label>
               <select
                 value={filters.month}
                 onChange={(e) => handleFilterChange('month', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Months</option>
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
@@ -509,11 +509,11 @@ export const PayrollList: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Year</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Year</label>
               <select
                 value={filters.year}
                 onChange={(e) => handleFilterChange('year', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Years</option>
                 <option value="2024">2024</option>
@@ -521,11 +521,11 @@ export const PayrollList: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Per Page</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Per Page</label>
               <select
                 value={filters.per_page}
                 onChange={(e) => handleFilterChange('per_page', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -538,40 +538,40 @@ export const PayrollList: React.FC = () => {
       </div>
 
       {/* Payroll Table */}
-      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Employee
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Month
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Basic
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Allowances
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Deductions
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Net
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Status
                 </th>
-                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {paginatedPayrolls.map((payroll) => (
-                <tr key={payroll.id} className="transition-colors hover:bg-gray-50">
+                <tr key={payroll.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-100">
@@ -580,21 +580,21 @@ export const PayrollList: React.FC = () => {
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{payroll.employee?.name}</p>
-                        <p className="text-xs text-gray-500">{payroll.employee?.employee_code}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{payroll.employee?.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{payroll.employee?.employee_code}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-900">
-                      <CalendarIcon className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-1.5 text-sm text-gray-900 dark:text-gray-100">
+                      <CalendarIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       {getMonthYear(payroll.payroll_month)}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-900">
+                  <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">
                     {formatCurrency(payroll.basic_salary)}
                   </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-900">
+                  <td className="px-4 py-3 text-sm text-right text-gray-900 dark:text-gray-100">
                     {formatCurrency(payroll.total_allowances)}
                   </td>
                   <td className="px-4 py-3 text-sm text-right text-red-600">
@@ -613,14 +613,14 @@ export const PayrollList: React.FC = () => {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => handleView(payroll)}
-                        className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
                         title="View"
                       >
                         <EyeIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDownload(payroll)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                        className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                         title="Download Payslip"
                       >
                         <DocumentArrowDownIcon className="w-4 h-4" />
@@ -629,14 +629,14 @@ export const PayrollList: React.FC = () => {
                         <>
                           <button
                             onClick={() => handleAction(payroll, 'approve')}
-                            className="p-1.5 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors"
                             title="Approve"
                           >
                             <CheckBadgeIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleAction(payroll, 'reject')}
-                            className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                             title="Reject"
                           >
                             <XMarkIcon className="w-4 h-4" />
@@ -646,7 +646,7 @@ export const PayrollList: React.FC = () => {
                       {payroll.payment_status === 'processing' && (
                         <button
                           onClick={() => handleAction(payroll, 'pay')}
-                          className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                          className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                           title="Mark as Paid"
                         >
                           <CurrencyDollarIcon className="w-4 h-4" />
@@ -655,7 +655,7 @@ export const PayrollList: React.FC = () => {
                       {(payroll.payment_status === 'pending' || payroll.payment_status === 'processing') && (
                         <button
                           onClick={() => handleAction(payroll, 'cancel')}
-                          className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                           title="Cancel"
                         >
                           <XMarkIcon className="w-4 h-4" />
@@ -673,8 +673,8 @@ export const PayrollList: React.FC = () => {
         {paginatedPayrolls.length === 0 && (
           <div className="py-12 text-center">
             <CurrencyDollarIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900">No payroll records found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No payroll records found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Try adjusting your search or generate payroll
             </p>
           </div>
@@ -682,8 +682,8 @@ export const PayrollList: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Showing {paginatedPayrolls.length > 0 ? (filters.page - 1) * filters.per_page + 1 : 0} to{' '}
               {Math.min(filters.page * filters.per_page, filteredPayrolls.length)} of {filteredPayrolls.length} records
             </p>
@@ -691,7 +691,7 @@ export const PayrollList: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page - 1)}
                 disabled={filters.page === 1}
-                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Previous
               </button>
@@ -702,7 +702,7 @@ export const PayrollList: React.FC = () => {
                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                     page === filters.page
                       ? 'bg-primary-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50'
+                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
                   }`}
                 >
                   {page}
@@ -711,7 +711,7 @@ export const PayrollList: React.FC = () => {
               <button
                 onClick={() => handlePageChange(filters.page + 1)}
                 disabled={filters.page === totalPages}
-                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Next
               </button>
@@ -725,62 +725,62 @@ export const PayrollList: React.FC = () => {
           ========================================== */}
       {showViewModal && selectedPayroll && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-100">
                   <DocumentTextIcon className="w-5 h-5 text-primary-600" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Payroll Details</h3>
-                  <p className="text-sm text-gray-500">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Payroll Details</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     {getMonthYear(selectedPayroll.payroll_month)}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <XMarkIcon className="w-5 h-5 text-gray-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
 
             <div className="p-6 space-y-4">
               {/* Employee Info */}
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100">
                   <UserGroupIcon className="w-5 h-5 text-primary-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{selectedPayroll.employee?.name}</p>
-                  <p className="text-xs text-gray-500">{selectedPayroll.employee?.employee_code}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedPayroll.employee?.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{selectedPayroll.employee?.employee_code}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Department</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedPayroll.employee?.department?.name}</p>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Department</label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedPayroll.employee?.department?.name}</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Position</label>
-                  <p className="mt-1 text-sm text-gray-900">{selectedPayroll.employee?.position?.title}</p>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Position</label>
+                  <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedPayroll.employee?.position?.title}</p>
                 </div>
               </div>
 
               {/* Salary Breakdown */}
-              <div className="pt-4 border-t border-gray-200">
-                <h4 className="mb-3 text-sm font-semibold text-gray-900">Salary Breakdown</h4>
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h4 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Salary Breakdown</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Basic Salary</span>
-                    <span className="font-medium text-gray-900">{formatCurrency(selectedPayroll.basic_salary)}</span>
+                    <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Basic Salary</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(selectedPayroll.basic_salary)}</span>
                   </div>
                   {selectedPayroll.allowances && Object.entries(selectedPayroll.allowances).map(([key, value]) => (
                     <div key={key} className="flex justify-between pl-4 text-sm">
-                      <span className="text-gray-500">- {key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                      <span className="text-gray-700">{formatCurrency(value)}</span>
+                      <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">- {key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{formatCurrency(value)}</span>
                     </div>
                   ))}
                   <div className="flex justify-between text-sm font-medium text-green-600">
@@ -789,17 +789,17 @@ export const PayrollList: React.FC = () => {
                   </div>
                   {selectedPayroll.overtime_hours > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Overtime ({selectedPayroll.overtime_hours}h @ {selectedPayroll.overtime_rate}x)</span>
+                      <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">Overtime ({selectedPayroll.overtime_hours}h @ {selectedPayroll.overtime_rate}x)</span>
                       <span className="text-blue-600">{formatCurrency(selectedPayroll.overtime_amount)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between pt-2 text-sm font-bold text-gray-900 border-t border-gray-100">
+                  <div className="flex justify-between pt-2 text-sm font-bold text-gray-900 dark:text-gray-100 border-t border-gray-100 dark:border-gray-700">
                     <span>Gross Salary</span>
                     <span>{formatCurrency(selectedPayroll.gross_salary)}</span>
                   </div>
                   {selectedPayroll.deductions && Object.entries(selectedPayroll.deductions).map(([key, value]) => (
                     <div key={key} className="flex justify-between pl-4 text-sm">
-                      <span className="text-gray-500">- {key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="text-gray-500 dark:text-gray-400 dark:text-gray-500">- {key.charAt(0).toUpperCase() + key.slice(1)}</span>
                       <span className="text-red-600">-{formatCurrency(value)}</span>
                     </div>
                   ))}
@@ -807,7 +807,7 @@ export const PayrollList: React.FC = () => {
                     <span>Total Deductions</span>
                     <span>-{formatCurrency(selectedPayroll.total_deductions)}</span>
                   </div>
-                  <div className="flex justify-between pt-2 text-lg font-bold border-t border-gray-200 text-primary-600">
+                  <div className="flex justify-between pt-2 text-lg font-bold border-t border-gray-200 dark:border-gray-700 text-primary-600">
                     <span>Net Salary</span>
                     <span>{formatCurrency(selectedPayroll.net_salary)}</span>
                   </div>
@@ -815,11 +815,11 @@ export const PayrollList: React.FC = () => {
               </div>
 
               {/* Payment Info */}
-              <div className="pt-4 border-t border-gray-200">
-                <h4 className="mb-3 text-sm font-semibold text-gray-900">Payment Information</h4>
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <h4 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Payment Information</h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Status</label>
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Status</label>
                     <p className="mt-1">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(selectedPayroll.payment_status)}`}>
                         {getStatusIcon(selectedPayroll.payment_status)}
@@ -828,31 +828,31 @@ export const PayrollList: React.FC = () => {
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Payment Method</label>
-                    <p className="mt-1 text-sm text-gray-900">
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Payment Method</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {selectedPayroll.payment_method ? selectedPayroll.payment_method.replace('_', ' ').toUpperCase() : 'N/A'}
                     </p>
                   </div>
                 </div>
                 {selectedPayroll.payment_status === 'paid' && selectedPayroll.payment_date && (
                   <div className="mt-2">
-                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Payment Date</label>
-                    <p className="mt-1 text-sm text-gray-900">{new Date(selectedPayroll.payment_date).toLocaleDateString()}</p>
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Payment Date</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{new Date(selectedPayroll.payment_date).toLocaleDateString()}</p>
                   </div>
                 )}
                 {selectedPayroll.approved_by && (
                   <div className="mt-2">
-                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase">Approved By</label>
-                    <p className="mt-1 text-sm text-gray-900">{selectedPayroll.approver?.name}</p>
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase">Approved By</label>
+                    <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedPayroll.approver?.name}</p>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Close
               </button>
@@ -873,12 +873,12 @@ export const PayrollList: React.FC = () => {
           ========================================== */}
       {showActionModal && selectedPayroll && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl">
+          <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-xl">
             <div className="p-6">
               <div className={`flex items-center justify-center mb-4 ${
                 actionType === 'approve' ? 'text-green-600' :
                 actionType === 'pay' ? 'text-blue-600' :
-                actionType === 'reject' ? 'text-red-600' : 'text-gray-600'
+                actionType === 'reject' ? 'text-red-600' : 'text-gray-600 dark:text-gray-400 dark:text-gray-500'
               }`}>
                 <div className={`h-12 w-12 rounded-full flex items-center justify-center ${
                   actionType === 'approve' ? 'bg-green-100' :
@@ -891,12 +891,12 @@ export const PayrollList: React.FC = () => {
                   {actionType === 'cancel' && <XMarkIcon className="w-6 h-6" />}
                 </div>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900">
+              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
                 {actionType === 'approve' ? 'Approve Payroll' :
                  actionType === 'pay' ? 'Process Payment' :
                  actionType === 'reject' ? 'Reject Payroll' : 'Cancel Payroll'}
               </h3>
-              <p className="text-sm text-center text-gray-500">
+              <p className="text-sm text-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 {actionType === 'approve' && `Are you sure you want to approve ${selectedPayroll.employee?.name}'s payroll?`}
                 {actionType === 'pay' && `Are you sure you want to mark ${selectedPayroll.employee?.name}'s payroll as paid?`}
                 {actionType === 'reject' && `Are you sure you want to reject ${selectedPayroll.employee?.name}'s payroll?`}
@@ -906,11 +906,11 @@ export const PayrollList: React.FC = () => {
               {actionType === 'pay' && (
                 <div className="mt-4 space-y-3">
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Payment Method</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
                     <select
                       value={paymentData.payment_method}
                       onChange={(e) => setPaymentData({ ...paymentData, payment_method: e.target.value as any })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="bank_transfer">Bank Transfer</option>
                       <option value="cash">Cash</option>
@@ -918,32 +918,32 @@ export const PayrollList: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Bank Name</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Bank Name</label>
                     <input
                       type="text"
                       value={paymentData.bank_name}
                       onChange={(e) => setPaymentData({ ...paymentData, bank_name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Bank name"
                     />
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Bank Account</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Bank Account</label>
                     <input
                       type="text"
                       value={paymentData.bank_account}
                       onChange={(e) => setPaymentData({ ...paymentData, bank_account: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Bank account number"
                     />
                   </div>
                   <div>
-                    <label className="block mb-1 text-sm font-medium text-gray-700">Payment Date</label>
+                    <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date</label>
                     <input
                       type="date"
                       value={paymentData.payment_date}
                       onChange={(e) => setPaymentData({ ...paymentData, payment_date: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   </div>
                 </div>
@@ -952,7 +952,7 @@ export const PayrollList: React.FC = () => {
               <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={() => setShowActionModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   Cancel
                 </button>

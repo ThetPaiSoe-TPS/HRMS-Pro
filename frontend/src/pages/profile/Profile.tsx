@@ -15,7 +15,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
 import api from "../../api/axios";
-import { activityApi, type Activity } from "../../api/activityApi";
+import type { Activity } from "../../types/activity.types";
+import { activityApi } from "../../api/activityApi";
 
 interface PositionOption {
   id: number;
@@ -41,11 +42,19 @@ export const Profile: React.FC = () => {
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    department: user?.department || "",
-    position: user?.position || "",
+    department:
+      (typeof user?.department === "object"
+        ? (user?.department as any)?.name
+        : user?.department) || "",
+    position:
+      (typeof user?.position === "object"
+        ? (user?.position as any)?.name || (user?.position as any)?.title
+        : user?.position) || "",
     joinDate: user?.joinDate || "",
     address: user?.address || "",
     bio: user?.bio || "",
+    years_experience: user?.years_experience || 0,
+    total_projects: user?.total_projects || 0,
   });
   console.log("profileData:", profileData);
 
@@ -63,18 +72,26 @@ export const Profile: React.FC = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Add this useEffect after the profileData useState
   useEffect(() => {
     if (user) {
       setProfileData({
         name: user?.name || profileData.name,
         email: user?.email || profileData.email,
         phone: user?.phone || profileData.phone,
-        department: user?.department || profileData.department,
-        position: user?.position || profileData.position,
+        department:
+          (typeof user?.department === "object"
+            ? (user?.department as any)?.name
+            : user?.department) || profileData.department,
+        position:
+          (typeof user?.position === "object"
+            ? (user?.position as any)?.name || (user?.position as any)?.title
+            : user?.position) || profileData.position,
         joinDate: user?.joinDate || profileData.joinDate,
         address: user?.address || profileData.address,
         bio: user?.bio || profileData.bio,
+        years_experience:
+          user?.years_experience || profileData.years_experience || 0,
+        total_projects: user?.total_projects || profileData.total_projects || 0,
       });
     }
   }, [user]);
@@ -87,6 +104,8 @@ export const Profile: React.FC = () => {
     try {
       setLoadingActivities(true);
       const data = await activityApi.getMyActivities(10);
+      console.log("activityapi:", activityApi);
+
       setActivities(data);
     } catch (error) {
       console.error("Failed to fetch activities:", error);
@@ -132,24 +151,26 @@ export const Profile: React.FC = () => {
     fetchPositions();
   }, []);
 
-  // Handle profile update
-  const handleProfileUpdate = async () => {
-    try {
-      await updateProfile({
-        name: profileData.name,
-        email: profileData.email,
-        phone: profileData.phone,
-        department: profileData.department,
-        position: profileData.position,
-        join_date: profileData.joinDate,
-        address: profileData.address,
-        bio: profileData.bio,
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Profile update failed:", error);
-    }
-  };
+
+const handleProfileUpdate = async () => {
+  try {
+    await updateProfile({
+      name: profileData.name,
+      email: profileData.email,
+      phone: profileData.phone,
+      department: profileData.department,
+      position: profileData.position,
+      join_date: profileData.joinDate,
+      address: profileData.address,
+      bio: profileData.bio,
+      years_experience: profileData.years_experience,
+      total_projects: profileData.total_projects,
+    });
+    setIsEditing(false);
+  } catch (error) {
+    console.error("Profile update failed:", error);
+  }
+};
 
   // Handle password change
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -158,8 +179,8 @@ export const Profile: React.FC = () => {
       const { authApi } = await import("../../api/auth/authApi");
       await authApi.changePassword({
         current_password: passwordData.current_password,
-        new_password: passwordData.new_password,
-        new_password_confirmation: passwordData.new_password_confirmation,
+        password: passwordData.new_password,
+        password_confirmation: passwordData.new_password_confirmation,
       });
       setShowPasswordModal(false);
       setPasswordData({
@@ -206,14 +227,33 @@ export const Profile: React.FC = () => {
     }
   };
 
+  // Activity data
+  const recentActivities = [
+    {
+      action: "Changed password",
+      time: "2 days ago",
+      ip: "192.168.1.1",
+    },
+    {
+      action: "Updated profile information",
+      time: "1 week ago",
+      ip: "192.168.1.1",
+    },
+    {
+      action: "Logged in",
+      time: "2 weeks ago",
+      ip: "192.168.1.1",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-700">
+      <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Profile</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Manage your personal information and account settings
             </p>
           </div>
@@ -221,25 +261,25 @@ export const Profile: React.FC = () => {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
               >
-                <PencilSquareIcon className="h-4 w-4" />
+                <PencilSquareIcon className="w-4 h-4" />
                 Edit Profile
               </button>
             ) : (
               <>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300"
                 >
-                  <XMarkIcon className="h-4 w-4" />
+                  <XMarkIcon className="w-4 h-4" />
                   Cancel
                 </button>
                 <button
                   onClick={handleProfileUpdate}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
                 >
-                  <CheckBadgeIcon className="h-4 w-4" />
+                  <CheckBadgeIcon className="w-4 h-4" />
                   Save Changes
                 </button>
               </>
@@ -247,22 +287,22 @@ export const Profile: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* ==========================================
               LEFT COLUMN - Profile Card & Avatar
               ========================================== */}
           <div className="lg:col-span-1">
             {/* Profile Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
               <div className="text-center">
                 {/* Avatar */}
                 <div className="relative inline-block">
-                  <div className="h-24 w-24 rounded-full bg-primary-100 flex items-center justify-center mx-auto overflow-hidden">
+                  <div className="flex items-center justify-center w-24 h-24 mx-auto overflow-hidden rounded-full bg-primary-100">
                     {avatar ? (
                       <img
                         src={avatar}
                         alt="Profile"
-                        className="h-full w-full object-cover"
+                        className="object-cover w-full h-full"
                       />
                     ) : user?.avatar ? (
                       <img
@@ -272,7 +312,7 @@ export const Profile: React.FC = () => {
                             : `http://localhost:8000${user.avatar}`
                         }
                         alt="Profile"
-                        className="h-full w-full object-cover"
+                        className="object-cover w-full h-full"
                         onError={(e) => {
                           // If image fails to load, show initials
                           (e.target as HTMLImageElement).style.display = "none";
@@ -280,7 +320,7 @@ export const Profile: React.FC = () => {
                         }}
                       />
                     ) : (
-                      <span className="text-primary-700 text-3xl font-medium">
+                      <span className="text-3xl font-medium text-primary-700">
                         {user?.name?.charAt(0)?.toUpperCase() || "U"}
                       </span>
                     )}
@@ -290,7 +330,7 @@ export const Profile: React.FC = () => {
                     disabled={isUploading}
                     className="absolute bottom-0 right-0 p-1.5 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors shadow-lg"
                   >
-                    <CameraIcon className="h-4 w-4" />
+                    <CameraIcon className="w-4 h-4" />
                   </button>
                   <input
                     ref={fileInputRef}
@@ -300,54 +340,110 @@ export const Profile: React.FC = () => {
                     onChange={handleAvatarUpload}
                   />
                 </div>
-
                 {/* Name & Role */}
-                <h2 className="mt-4 text-xl font-semibold text-gray-900">
+                <h2 className="mt-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {user?.name || "User Name"}
                 </h2>
-                <p className="text-sm text-gray-500 capitalize">
-                  {user?.role_name || user?.role || "Employee"}
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 capitalize">
+                  {(typeof user?.role === "object"
+                    ? (user?.role as any)?.name
+                    : user?.role) || "Employee"}
                 </p>
-
                 {/* Add email here */}
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                   {user?.email || "No email"}
                 </p>
-
                 {/* Status Badge */}
                 <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span>
                   Active
                 </div>
-
-                {/* Quick Stats */}
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-gray-900">5</p>
-                    <p className="text-xs text-gray-500">Years Experience</p>
+                {user?.last_login_at && (
+                  <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+                    Last login: {new Date(user.last_login_at).toLocaleString()}
+                    {user?.last_login_ip && ` (IP: ${user.last_login_ip})`}
+                  </p>
+                )}
+                
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                    {isEditing ? (
+                      <div className="flex flex-col items-center">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={profileData.years_experience}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            setProfileData({
+                              ...profileData,
+                              years_experience: value ? parseInt(value, 10) : 0,
+                            });
+                          }}
+                          className="w-full text-2xl font-bold text-center text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-primary-500 focus:outline-none"
+                          placeholder="0"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                          Years Experience
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                          {user?.years_experience || 0}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                          Years Experience
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-2xl font-bold text-gray-900">12</p>
-                    <p className="text-xs text-gray-500">Projects</p>
+                  <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                    {isEditing ? (
+                      <div className="flex flex-col items-center">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          value={profileData.total_projects}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, "");
+                            setProfileData({
+                              ...profileData,
+                              total_projects: value ? parseInt(value, 10) : 0,
+                            });
+                          }}
+                          className="w-full text-2xl font-bold text-center text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-primary-500 focus:outline-none"
+                          placeholder="0"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Projects</p>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                          {user?.total_projects || 0}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Projects</p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Quick Actions */}
-              <div className="mt-6 space-y-2 border-t border-gray-100 pt-4">
+              <div className="pt-4 mt-6 space-y-2 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => setShowPasswordModal(true)}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  className="flex items-center w-full gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
-                  <KeyIcon className="h-4 w-4 text-gray-400" />
+                  <KeyIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   Change Password
                 </button>
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                  <BellIcon className="h-4 w-4 text-gray-400" />
+                <button className="flex items-center w-full gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
+                  <BellIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   Notification Settings
                 </button>
-                <button className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                  <XMarkIcon className="h-4 w-4" />
+                <button className="flex items-center w-full gap-3 px-3 py-2 text-sm text-red-600 transition-colors rounded-lg hover:bg-red-50">
+                  <XMarkIcon className="w-4 h-4" />
                   Deactivate Account
                 </button>
               </div>
@@ -357,15 +453,15 @@ export const Profile: React.FC = () => {
           {/* ==========================================
               RIGHT COLUMN - Profile Details
               ========================================== */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             {/* Personal Information */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Personal Information
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Full Name
                   </label>
                   {isEditing ? (
@@ -375,14 +471,14 @@ export const Profile: React.FC = () => {
                       onChange={(e) =>
                         setProfileData({ ...profileData, name: e.target.value })
                       }
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.name}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.name}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Email
                   </label>
                   {isEditing ? (
@@ -395,14 +491,14 @@ export const Profile: React.FC = () => {
                           email: e.target.value,
                         })
                       }
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.email}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.email}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Phone
                   </label>
                   {isEditing ? (
@@ -415,14 +511,14 @@ export const Profile: React.FC = () => {
                           phone: e.target.value,
                         })
                       }
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.phone}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.phone}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Department
                   </label>
                   {isEditing ? (
@@ -434,7 +530,7 @@ export const Profile: React.FC = () => {
                           department: e.target.value,
                         })
                       }
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="Engineering">Engineering</option>
                       <option value="HR">Human Resources</option>
@@ -443,13 +539,13 @@ export const Profile: React.FC = () => {
                       <option value="Operations">Operations</option>
                     </select>
                   ) : (
-                    <p className="mt-1 text-gray-900">
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
                       {profileData.department}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Position
                   </label>
                   {isEditing ? (
@@ -461,7 +557,7 @@ export const Profile: React.FC = () => {
                           position: e.target.value,
                         })
                       }
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       <option value="">Select Position</option>
                       {positions.map((pos) => (
@@ -471,11 +567,11 @@ export const Profile: React.FC = () => {
                       ))}
                     </select>
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.position}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.position}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Join Date
                   </label>
                   {isEditing ? (
@@ -488,14 +584,14 @@ export const Profile: React.FC = () => {
                           joinDate: e.target.value,
                         })
                       }
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.joinDate}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.joinDate}</p>
                   )}
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Address
                   </label>
                   {isEditing ? (
@@ -508,14 +604,14 @@ export const Profile: React.FC = () => {
                         })
                       }
                       rows={2}
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.address}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.address}</p>
                   )}
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Bio
                   </label>
                   {isEditing ? (
@@ -525,23 +621,23 @@ export const Profile: React.FC = () => {
                         setProfileData({ ...profileData, bio: e.target.value })
                       }
                       rows={3}
-                      className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900">{profileData.bio}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.bio}</p>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Recent Activity
                 </h3>
                 <button
                   onClick={fetchActivities}
-                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  className="text-sm font-medium text-primary-600 hover:text-primary-700"
                 >
                   Refresh
                 </button>
@@ -549,11 +645,11 @@ export const Profile: React.FC = () => {
 
               {loadingActivities ? (
                 <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                  <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>
                 </div>
               ) : activities.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-sm text-gray-500">
+                <div className="py-8 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                     No recent activities found
                   </p>
                 </div>
@@ -564,24 +660,24 @@ export const Profile: React.FC = () => {
                     return (
                       <div
                         key={activity.id}
-                        className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                        className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
                       >
                         <div className="flex items-center gap-3">
                           <div
                             className={`h-8 w-8 rounded-full flex items-center justify-center ${getActivityBgColor(activity.color)}`}
                           >
-                            <Icon className="h-4 w-4" />
+                            <Icon className="w-4 h-4" />
                           </div>
                           <div>
-                            <p className="text-sm text-gray-900">
+                            <p className="text-sm text-gray-900 dark:text-gray-100">
                               {activity.description}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                               {activity.time}
                             </p>
                           </div>
                         </div>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
                           IP: {activity.ip}
                         </span>
                       </div>
@@ -599,23 +695,23 @@ export const Profile: React.FC = () => {
           ========================================== */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+          <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Change Password
               </h3>
               <button
                 onClick={() => setShowPasswordModal(false)}
-                className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-1 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <XMarkIcon className="h-5 w-5 text-gray-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
 
             <form onSubmit={handlePasswordChange}>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Current Password
                   </label>
                   <input
@@ -628,12 +724,12 @@ export const Profile: React.FC = () => {
                         current_password: e.target.value,
                       })
                     }
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Enter current password"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     New Password
                   </label>
                   <input
@@ -646,12 +742,12 @@ export const Profile: React.FC = () => {
                         new_password: e.target.value,
                       })
                     }
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Enter new password"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Confirm New Password
                   </label>
                   <input
@@ -664,13 +760,13 @@ export const Profile: React.FC = () => {
                         new_password_confirmation: e.target.value,
                       })
                     }
-                    className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Confirm new password"
                   />
                 </div>
 
                 {/* Password Requirements */}
-                <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
+                <div className="p-3 space-y-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700">
                   <p>Password must contain:</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     <li
@@ -722,17 +818,17 @@ export const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center gap-3">
+              <div className="flex items-center gap-3 mt-6">
                 <button
                   type="button"
                   onClick={() => setShowPasswordModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                  className="flex-1 px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
                 >
                   Update Password
                 </button>

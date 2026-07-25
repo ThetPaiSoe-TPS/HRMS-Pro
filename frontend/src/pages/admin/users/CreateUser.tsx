@@ -110,18 +110,18 @@ export const CreateUser: React.FC = () => {
           to="/admin/users"
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
-          <ArrowLeftIcon className="h-5 w-5 text-gray-500" />
+          <ArrowLeftIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Create User</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create User</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Add a new user to the system
           </p>
         </div>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="rounded-lg bg-red-50 p-3 border border-red-200">
@@ -131,12 +131,12 @@ export const CreateUser: React.FC = () => {
 
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Full Name *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <UserIcon className="h-5 w-5 text-gray-400" />
+                <UserIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
@@ -144,7 +144,7 @@ export const CreateUser: React.FC = () => {
                 value={formData.name}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.name ? 'border-red-300' : 'border-gray-300'
+                  errors.name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="John Doe"
               />
@@ -156,12 +156,12 @@ export const CreateUser: React.FC = () => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Email Address *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="email"
@@ -169,7 +169,7 @@ export const CreateUser: React.FC = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.email ? 'border-red-300' : 'border-gray-300'
+                  errors.email ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="john@company.com"
               />
@@ -181,12 +181,12 @@ export const CreateUser: React.FC = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Password *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <LockClosedIcon className="h-5 w-5 text-gray-400" />
+                <LockClosedIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="password"
@@ -194,7 +194,7 @@ export const CreateUser: React.FC = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.password ? 'border-red-300' : 'border-gray-300'
+                  errors.password ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="Enter password"
               />
@@ -203,7 +203,7 @@ export const CreateUser: React.FC = () => {
               <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
             {/* Password Requirements */}
-            <div className="mt-2 bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
+            <div className="mt-2 bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 space-y-1">
               <p>Password must contain:</p>
               <ul className="list-disc list-inside space-y-0.5">
                 <li className={formData.password.length >= 8 ? 'text-green-600' : ''}>
@@ -224,12 +224,12 @@ export const CreateUser: React.FC = () => {
 
           {/* Password Confirmation */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Confirm Password *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <LockClosedIcon className="h-5 w-5 text-gray-400" />
+                <LockClosedIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="password"
@@ -237,7 +237,7 @@ export const CreateUser: React.FC = () => {
                 value={formData.password_confirmation}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.password_confirmation ? 'border-red-300' : 'border-gray-300'
+                  errors.password_confirmation ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder="Confirm password"
               />
@@ -249,19 +249,19 @@ export const CreateUser: React.FC = () => {
 
           {/* Role */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Role *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <UserGroupIcon className="h-5 w-5 text-gray-400" />
+                <UserGroupIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               </div>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.role ? 'border-red-300' : 'border-gray-300'
+                  errors.role ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
               >
                 <option value="employee">Employee</option>
@@ -277,14 +277,14 @@ export const CreateUser: React.FC = () => {
 
           {/* Employee Association (Optional) */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Associate with Employee (Optional)
             </label>
             <select
               name="employee_id"
               value={formData.employee_id}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">No employee association</option>
               {mockEmployees.map((emp) => (
@@ -296,11 +296,11 @@ export const CreateUser: React.FC = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
               onClick={() => navigate('/admin/users')}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
             >
               Cancel
             </button>

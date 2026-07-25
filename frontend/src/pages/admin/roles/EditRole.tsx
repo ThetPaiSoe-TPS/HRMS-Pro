@@ -135,19 +135,19 @@ export const EditRole: React.FC = () => {
     <div className="max-w-4xl p-4 mx-auto sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/admin/roles" className="p-2 transition-colors rounded-lg hover:bg-gray-100">
-          <ArrowLeftIcon className="w-5 h-5 text-gray-500" />
+        <Link to="/admin/roles" className="p-2 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+          <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Role</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Role</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Update role information and permissions
           </p>
         </div>
       </div>
 
       {/* Form Card */}
-      <div className="p-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="p-3 border border-red-200 rounded-lg bg-red-50">
@@ -157,33 +157,33 @@ export const EditRole: React.FC = () => {
 
           {/* Role Name (Read-only) */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
               Role Name *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <ShieldCheckIcon className="w-5 h-5 text-gray-400" />
+                <ShieldCheckIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full py-2 pl-10 pr-3 text-gray-500 border border-gray-300 rounded-lg cursor-not-allowed bg-gray-50"
+                className="w-full py-2 pl-10 pr-3 text-gray-500 dark:text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-gray-600 rounded-lg cursor-not-allowed bg-gray-50 dark:bg-gray-700"
                 disabled
               />
             </div>
-            <p className="mt-1 text-xs text-gray-500">Role name cannot be changed</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Role name cannot be changed</p>
           </div>
 
           {/* Display Name */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
               Display Name *
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <DocumentTextIcon className="w-5 h-5 text-gray-400" />
+                <DocumentTextIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
@@ -191,7 +191,7 @@ export const EditRole: React.FC = () => {
                 value={formData.display_name}
                 onChange={handleChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.display_name ? 'border-red-300' : 'border-gray-300'
+                  errors.display_name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                 }`}
               />
             </div>
@@ -202,7 +202,7 @@ export const EditRole: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
               Description
             </label>
             <textarea
@@ -210,18 +210,18 @@ export const EditRole: React.FC = () => {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
           {/* Permissions */}
-          <div className="pt-6 border-t border-gray-200">
+          <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-900">Permissions</h3>
-                <p className="text-xs text-gray-500">Select the permissions for this role</p>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Permissions</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Select the permissions for this role</p>
               </div>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 {selectedPermissions.length} selected
               </span>
             </div>
@@ -232,9 +232,9 @@ export const EditRole: React.FC = () => {
 
             <div className="space-y-4">
               {Object.entries(groupedPermissions).map(([module, perms]) => (
-                <div key={module} className="p-4 border border-gray-200 rounded-lg">
+                <div key={module} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-medium text-gray-900 capitalize">
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize">
                       {module}
                     </h4>
                     <button
@@ -253,7 +253,7 @@ export const EditRole: React.FC = () => {
                           inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm cursor-pointer transition-all
                           ${selectedPermissions.includes(permission.id)
                             ? 'bg-primary-50 text-primary-700 border border-primary-200'
-                            : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
+                            : 'bg-gray-50 dark:bg-gray-700 text-gray-600 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }
                         `}
                       >
@@ -266,7 +266,7 @@ export const EditRole: React.FC = () => {
                         {selectedPermissions.includes(permission.id) ? (
                           <CheckBadgeIcon className="w-4 h-4 text-primary-600" />
                         ) : (
-                          <XMarkIcon className="w-4 h-4 text-gray-400" />
+                          <XMarkIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         )}
                         {permission.name}
                       </label>
@@ -278,11 +278,11 @@ export const EditRole: React.FC = () => {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
               onClick={() => navigate('/admin/roles')}
-              className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               Cancel
             </button>

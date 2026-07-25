@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+﻿import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeftIcon,
   MagnifyingGlassIcon,
@@ -7,14 +7,12 @@ import {
   ChartBarIcon,
   DocumentArrowDownIcon,
   CalendarIcon,
-  UserGroupIcon,
   CheckBadgeIcon,
   XMarkIcon,
   ClockIcon,
-  BuildingOfficeIcon,
   UsersIcon,
   DocumentTextIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,10 +24,19 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-} from 'chart.js';
-import { Bar, Line, Doughnut } from 'react-chartjs-2';
-import type { AttendanceReportFilters, AttendanceSummary, EmployeeAttendanceSummary } from '../../../types/attendance.types';
+} from "chart.js";
+import { Bar, Line, Doughnut } from "react-chartjs-2";
+import type {
+  AttendanceReportFilters,
+  AttendanceSummary,
+  EmployeeAttendanceSummary,
+} from "../../../types/attendance.types";
+import { attendanceApi } from "../../../api/attendance/attendanceApi";
+import { employeeApi } from "../../../api/employeeApi";
+import { departmentApi } from "../../../api/department/departmentApi";
+import { getStorageUrl } from "../../../api/axios";
 
+// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -39,94 +46,426 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
 );
 
-// Mock data - Replace with API calls
-const mockDepartments = [
-  { id: 1, name: 'Engineering' },
-  { id: 2, name: 'Human Resources' },
-  { id: 3, name: 'Finance' },
-  { id: 4, name: 'Marketing' },
-  { id: 5, name: 'Operations' },
-];
+const getPhotoUrl = (photo: string | null): string | null => {
+  return getStorageUrl(photo);
+};
 
-const mockEmployees = [
-  { id: 1, name: 'John Doe', employee_code: 'EMP001', department: 'Engineering' },
-  { id: 2, name: 'Jane Smith', employee_code: 'EMP002', department: 'Engineering' },
-  { id: 3, name: 'Robert Johnson', employee_code: 'EMP003', department: 'Engineering' },
-  { id: 4, name: 'Sarah Williams', employee_code: 'EMP004', department: 'Human Resources' },
-  { id: 5, name: 'Michael Brown', employee_code: 'EMP005', department: 'Engineering' },
-];
+const getInitials = (name: string) => {
+  if (!name) return "U";
+  return name
+    .split(" ")
+    .map((n) => n.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
 
-// Mock summary data
-const mockDailySummary: AttendanceSummary[] = [
-  { date: '2024-12-01', total_employees: 5, present: 4, absent: 1, late: 0, half_day: 0, on_leave: 0, present_percentage: 80 },
-  { date: '2024-12-02', total_employees: 5, present: 3, absent: 0, late: 1, half_day: 1, on_leave: 0, present_percentage: 60 },
-  { date: '2024-12-03', total_employees: 5, present: 5, absent: 0, late: 0, half_day: 0, on_leave: 0, present_percentage: 100 },
-  { date: '2024-12-04', total_employees: 5, present: 4, absent: 1, late: 0, half_day: 0, on_leave: 0, present_percentage: 80 },
-  { date: '2024-12-05', total_employees: 5, present: 3, absent: 0, late: 0, half_day: 1, on_leave: 1, present_percentage: 60 },
-  { date: '2024-12-06', total_employees: 5, present: 2, absent: 1, late: 1, half_day: 0, on_leave: 1, present_percentage: 40 },
-  { date: '2024-12-07', total_employees: 5, present: 0, absent: 0, late: 0, half_day: 0, on_leave: 0, present_percentage: 0 },
-];
+const getRandomColor = (id: number): string => {
+  const colors = [
+    "bg-blue-100 text-blue-700",
+    "bg-green-100 text-green-700",
+    "bg-purple-100 text-purple-700",
+    "bg-pink-100 text-pink-700",
+    "bg-yellow-100 text-yellow-700",
+    "bg-indigo-100 text-indigo-700",
+    "bg-red-100 text-red-700",
+    "bg-teal-100 text-teal-700",
+    "bg-orange-100 text-orange-700",
+    "bg-cyan-100 text-cyan-700",
+  ];
+  return colors[id % colors.length];
+};
 
-const mockEmployeeSummary: EmployeeAttendanceSummary[] = [
-  { employee_id: 1, employee_name: 'John Doe', employee_code: 'EMP001', department: 'Engineering', total_days: 22, present: 18, absent: 2, late: 1, half_day: 1, on_leave: 0, attendance_rate: 95.5 },
-  { employee_id: 2, employee_name: 'Jane Smith', employee_code: 'EMP002', department: 'Engineering', total_days: 22, present: 20, absent: 0, late: 2, half_day: 0, on_leave: 0, attendance_rate: 100 },
-  { employee_id: 3, employee_name: 'Robert Johnson', employee_code: 'EMP003', department: 'Engineering', total_days: 22, present: 15, absent: 1, late: 0, half_day: 2, on_leave: 4, attendance_rate: 77.3 },
-  { employee_id: 4, employee_name: 'Sarah Williams', employee_code: 'EMP004', department: 'Human Resources', total_days: 22, present: 19, absent: 1, late: 0, half_day: 1, on_leave: 1, attendance_rate: 90.9 },
-  { employee_id: 5, employee_name: 'Michael Brown', employee_code: 'EMP005', department: 'Engineering', total_days: 22, present: 17, absent: 0, late: 1, half_day: 3, on_leave: 1, attendance_rate: 86.4 },
-];
+interface Department {
+  id: number;
+  name: string;
+  code: string;
+}
+
+interface Employee {
+  id: number;
+  name: string;
+  employee_code: string;
+  photo?: string | null;
+  department?: { name: string };
+}
+
+interface AttendanceRecord {
+  id: number;
+  employee_id: number;
+  employee?: {
+    id: number;
+    name: string;
+    employee_code: string;
+    photo?: string | null;
+    department?: { id: number; name: string };
+    position?: { id: number; title: string };
+  };
+  date: string;
+  check_in: string | null;
+  check_out: string | null;
+  status: "present" | "absent" | "late" | "half_day" | "leave";
+  work_hours: number | null;
+  overtime_hours: number | null;
+  notes: string | null;
+}
 
 const statusColors = {
-  present: '#10b981',
-  absent: '#ef4444',
-  late: '#f59e0b',
-  half_day: '#3b82f6',
-  on_leave: '#8b5cf6',
+  present: "#10b981",
+  absent: "#ef4444",
+  late: "#f59e0b",
+  half_day: "#3b82f6",
+  leave: "#8b5cf6",
 };
 
 export const AttendanceReport: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    AttendanceRecord[]
+  >([]);
   const [filters, setFilters] = useState<AttendanceReportFilters>({
-    date_from: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-    date_to: new Date().toISOString().split('T')[0],
-    department_id: '',
-    employee_id: '',
-    status: '',
+    date_from: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString()
+      .split("T")[0],
+    date_to: new Date().toISOString().split("T")[0],
+    department_id: "",
+    employee_id: "",
+    status: "",
   });
-  const [summaryData, setSummaryData] = useState<AttendanceSummary[]>(mockDailySummary);
-  const [employeeSummary, setEmployeeSummary] = useState<EmployeeAttendanceSummary[]>(mockEmployeeSummary);
+  const [summaryData, setSummaryData] = useState<AttendanceSummary[]>([]);
+  const [employeeSummary, setEmployeeSummary] = useState<
+    EmployeeAttendanceSummary[]
+  >([]);
   const [showExportMenu, setShowExportMenu] = useState(false);
+
+  // Fetch departments
+  const fetchDepartments = async () => {
+    try {
+      const result = await departmentApi.getAll();
+      setDepartments(result);
+    } catch (error) {
+      console.error("Failed to fetch departments:", error);
+    }
+  };
+
+  // Fetch employees
+  const fetchEmployees = async () => {
+    try {
+      const result = await employeeApi.getEmployees({
+        search: "",
+        department_id: "",
+        position_id: "",
+        status: "",
+        page: 1,
+        per_page: 100,
+      });
+      setEmployees(result.data);
+    } catch (error) {
+      console.error("Failed to fetch employees:", error);
+    }
+  };
+
+  // Fetch attendance records
+  const fetchAttendanceRecords = async () => {
+    setLoading(true);
+    try {
+      const result = await attendanceApi.getAttendance({
+        employee_id: filters.employee_id || "",
+        date_from: filters.date_from,
+        date_to: filters.date_to,
+        status: filters.status || "",
+        page: 1,
+        per_page: 1000,
+      });
+      setAttendanceRecords(result.data);
+      generateSummary(result.data);
+    } catch (error) {
+      console.error("Failed to fetch attendance records:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Generate summary from attendance records
+  const generateSummary = (records: AttendanceRecord[]) => {
+    // Daily summary
+    const dailyMap = new Map<string, AttendanceSummary>();
+    const employeeMap = new Map<
+      number,
+      {
+        name: string;
+        code: string;
+        department: string;
+        photo?: string | null;
+        present: number;
+        absent: number;
+        late: number;
+        half_day: number;
+        on_leave: number;
+        total_days: number;
+      }
+    >();
+
+    records.forEach((record) => {
+      const date = record.date;
+      const status = record.status;
+
+      // Daily summary
+      if (!dailyMap.has(date)) {
+        dailyMap.set(date, {
+          date: date,
+          total_employees: 0,
+          present: 0,
+          absent: 0,
+          late: 0,
+          half_day: 0,
+          on_leave: 0,
+          present_percentage: 0,
+        });
+      }
+      const dayData = dailyMap.get(date)!;
+      dayData.total_employees++;
+      if (status === "present") dayData.present++;
+      else if (status === "absent") dayData.absent++;
+      else if (status === "late") dayData.late++;
+      else if (status === "half_day") dayData.half_day++;
+      else if (status === "leave") dayData.on_leave++;
+
+      // Employee summary
+      const empId = record.employee_id;
+      if (!employeeMap.has(empId)) {
+        const emp = record.employee;
+        employeeMap.set(empId, {
+          name: emp?.name || "Unknown",
+          code: emp?.employee_code || "N/A",
+          department: emp?.department?.name || "N/A",
+          photo: emp?.photo || null,
+          present: 0,
+          absent: 0,
+          late: 0,
+          half_day: 0,
+          on_leave: 0,
+          total_days: 0,
+        });
+      }
+      const empData = employeeMap.get(empId)!;
+      empData.total_days++;
+      if (status === "present") empData.present++;
+      else if (status === "absent") empData.absent++;
+      else if (status === "late") empData.late++;
+      else if (status === "half_day") empData.half_day++;
+      else if (status === "leave") empData.on_leave++;
+    });
+
+    // Calculate percentages
+    const dailySummary = Array.from(dailyMap.values()).map((day) => ({
+      ...day,
+      present_percentage:
+        day.total_employees > 0
+          ? Math.round((day.present / day.total_employees) * 100)
+          : 0,
+    }));
+
+    const employeeSummaryData = Array.from(employeeMap.values()).map((emp) => ({
+      employee_id: 0,
+      employee_name: emp.name,
+      employee_code: emp.code,
+      department: emp.department,
+      photo: emp.photo || null,
+      total_days: emp.total_days,
+      present: emp.present,
+      absent: emp.absent,
+      late: emp.late,
+      half_day: emp.half_day,
+      on_leave: emp.on_leave,
+      attendance_rate:
+        emp.total_days > 0
+          ? Math.round((emp.present / emp.total_days) * 100)
+          : 0,
+    }));
+
+    setSummaryData(dailySummary);
+    setEmployeeSummary(employeeSummaryData);
+  };
+
+  useEffect(() => {
+    fetchDepartments();
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
+    if (filters.date_from && filters.date_to) {
+      fetchAttendanceRecords();
+    }
+  }, [filters]);
+
+  // Handlers
+  const handleFilterChange = (
+    key: keyof AttendanceReportFilters,
+    value: string,
+  ) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
+  const handleGenerateReport = () => {
+    fetchAttendanceRecords();
+  };
+
+  const handleExport = (format: "pdf" | "excel") => {
+    if (format === "excel") {
+      exportToExcel();
+    } else {
+      exportToPDF();
+    }
+    setShowExportMenu(false);
+  };
+
+  const exportToExcel = () => {
+    const data = employeeSummary.map((emp) => ({
+      Employee: emp.employee_name,
+      Code: emp.employee_code,
+      Department: emp.department,
+      Present: emp.present,
+      Absent: emp.absent,
+      Late: emp.late,
+      "Half Day": emp.half_day,
+      Leave: emp.on_leave,
+      "Total Days": emp.total_days,
+      "Attendance Rate": `${emp.attendance_rate}%`,
+    }));
+
+    // Use simple CSV export
+    const headers = Object.keys(data[0] || {});
+    let csv = headers.join(",") + "\n";
+    data.forEach((row) => {
+      csv +=
+        Object.values(row)
+          .map((v) => `"${v}"`)
+          .join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `attendance_report_${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const exportToPDF = () => {
+    // Simple print version
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    let html = `
+      <html>
+        <head>
+          <title>Attendance Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #1a202c; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th { background: #3b82f6; color: white; padding: 10px; text-align: left; }
+            td { padding: 8px 10px; border: 1px solid #e2e8f0; }
+            .text-center { text-align: center; }
+            .text-right { text-align: right; }
+          </style>
+        </head>
+        <body>
+          <h1>Attendance Report</h1>
+          <p>Generated: ${new Date().toLocaleString()}</p>
+          <p>Period: ${filters.date_from} to ${filters.date_to}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Code</th>
+                <th>Department</th>
+                <th class="text-center">Present</th>
+                <th class="text-center">Absent</th>
+                <th class="text-center">Late</th>
+                <th class="text-center">Half Day</th>
+                <th class="text-center">Leave</th>
+                <th class="text-right">Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+    `;
+
+    employeeSummary.forEach((emp) => {
+      html += `
+        <tr>
+          <td>${emp.employee_name}</td>
+          <td>${emp.employee_code}</td>
+          <td>${emp.department}</td>
+          <td class="text-center">${emp.present}</td>
+          <td class="text-center">${emp.absent}</td>
+          <td class="text-center">${emp.late}</td>
+          <td class="text-center">${emp.half_day}</td>
+          <td class="text-center">${emp.on_leave}</td>
+          <td class="text-right">${emp.attendance_rate}%</td>
+        </tr>
+      `;
+    });
+
+    html += `
+            </tbody>
+          </table>
+          <p style="margin-top: 20px; color: #718096; font-size: 12px;">
+            Total Employees: ${employeeSummary.length}
+          </p>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
+  const getStatusColor = (status: string) => {
+    return statusColors[status as keyof typeof statusColors] || "#6b7280";
+  };
 
   // Chart Data - Daily Trends
   const dailyTrendData = {
-    labels: summaryData.map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+    labels: summaryData.map((d) =>
+      new Date(d.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+    ),
     datasets: [
       {
-        label: 'Present',
-        data: summaryData.map(d => d.present),
-        backgroundColor: 'rgba(16, 185, 129, 0.5)',
-        borderColor: '#10b981',
+        label: "Present",
+        data: summaryData.map((d) => d.present),
+        backgroundColor: "rgba(16, 185, 129, 0.5)",
+        borderColor: "#10b981",
         borderWidth: 2,
         fill: true,
         tension: 0.4,
       },
       {
-        label: 'Absent',
-        data: summaryData.map(d => d.absent),
-        backgroundColor: 'rgba(239, 68, 68, 0.5)',
-        borderColor: '#ef4444',
+        label: "Absent",
+        data: summaryData.map((d) => d.absent),
+        backgroundColor: "rgba(239, 68, 68, 0.5)",
+        borderColor: "#ef4444",
         borderWidth: 2,
         fill: true,
         tension: 0.4,
       },
       {
-        label: 'Late',
-        data: summaryData.map(d => d.late),
-        backgroundColor: 'rgba(245, 158, 11, 0.5)',
-        borderColor: '#f59e0b',
+        label: "Late",
+        data: summaryData.map((d) => d.late),
+        backgroundColor: "rgba(245, 158, 11, 0.5)",
+        borderColor: "#f59e0b",
         borderWidth: 2,
         fill: true,
         tension: 0.4,
@@ -136,7 +475,7 @@ export const AttendanceReport: React.FC = () => {
 
   // Chart Data - Status Distribution
   const statusDistributionData = {
-    labels: ['Present', 'Absent', 'Late', 'Half Day', 'On Leave'],
+    labels: ["Present", "Absent", "Late", "Half Day", "On Leave"],
     datasets: [
       {
         data: [
@@ -147,19 +486,13 @@ export const AttendanceReport: React.FC = () => {
           summaryData.reduce((sum, d) => sum + d.on_leave, 0),
         ],
         backgroundColor: [
-          'rgba(16, 185, 129, 0.8)',
-          'rgba(239, 68, 68, 0.8)',
-          'rgba(245, 158, 11, 0.8)',
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(139, 92, 246, 0.8)',
+          "rgba(16, 185, 129, 0.8)",
+          "rgba(239, 68, 68, 0.8)",
+          "rgba(245, 158, 11, 0.8)",
+          "rgba(59, 130, 246, 0.8)",
+          "rgba(139, 92, 246, 0.8)",
         ],
-        borderColor: [
-          '#10b981',
-          '#ef4444',
-          '#f59e0b',
-          '#3b82f6',
-          '#8b5cf6',
-        ],
+        borderColor: ["#10b981", "#ef4444", "#f59e0b", "#3b82f6", "#8b5cf6"],
         borderWidth: 2,
       },
     ],
@@ -167,45 +500,26 @@ export const AttendanceReport: React.FC = () => {
 
   // Chart Data - Attendance Rate by Department
   const departmentRateData = {
-    labels: mockDepartments.map(d => d.name),
+    labels: departments.map((d) => d.name),
     datasets: [
       {
-        label: 'Attendance Rate (%)',
-        data: mockDepartments.map(dept => {
-          const deptEmployees = employeeSummary.filter(e => e.department === dept.name);
-          const avgRate = deptEmployees.length > 0 
-            ? deptEmployees.reduce((sum, e) => sum + e.attendance_rate, 0) / deptEmployees.length
-            : 0;
+        label: "Attendance Rate (%)",
+        data: departments.map((dept) => {
+          const deptEmployees = employeeSummary.filter(
+            (e) => e.department === dept.name,
+          );
+          const avgRate =
+            deptEmployees.length > 0
+              ? deptEmployees.reduce((sum, e) => sum + e.attendance_rate, 0) /
+                deptEmployees.length
+              : 0;
           return Math.round(avgRate);
         }),
-        backgroundColor: 'rgba(59, 130, 246, 0.8)',
-        borderColor: '#3b82f6',
+        backgroundColor: "rgba(59, 130, 246, 0.8)",
+        borderColor: "#3b82f6",
         borderWidth: 2,
       },
     ],
-  };
-
-  // Handlers
-  const handleFilterChange = (key: keyof AttendanceReportFilters, value: string) => {
-    setFilters({ ...filters, [key]: value });
-  };
-
-  const handleGenerateReport = () => {
-    setLoading(true);
-    // TODO: API call to generate report with filters
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  };
-
-  const handleExport = (format: 'pdf' | 'excel') => {
-    // TODO: API call to export report
-    console.log(`Exporting as ${format}...`);
-    setShowExportMenu(false);
-  };
-
-  const getStatusColor = (status: string) => {
-    return statusColors[status as keyof typeof statusColors] || '#6b7280';
   };
 
   return (
@@ -213,8 +527,10 @@ export const AttendanceReport: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Attendance Report</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Attendance Report
+          </h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Analyze attendance patterns and generate reports
           </p>
         </div>
@@ -226,8 +542,20 @@ export const AttendanceReport: React.FC = () => {
           >
             {loading ? (
               <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
               </svg>
             ) : (
               <ArrowPathIcon className="w-5 h-5" />
@@ -237,23 +565,23 @@ export const AttendanceReport: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               <DocumentArrowDownIcon className="w-5 h-5" />
               Export
             </button>
             {showExportMenu && (
-              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                 <button
-                  onClick={() => handleExport('pdf')}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50"
+                  onClick={() => handleExport("pdf")}
+                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   <DocumentTextIcon className="w-4 h-4" />
                   PDF
                 </button>
                 <button
-                  onClick={() => handleExport('excel')}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors hover:bg-gray-50"
+                  onClick={() => handleExport("excel")}
+                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-300 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   <ChartBarIcon className="w-4 h-4" />
                   Excel
@@ -265,35 +593,43 @@ export const AttendanceReport: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Date From</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Date From
+            </label>
             <input
               type="date"
               value={filters.date_from}
-              onChange={(e) => handleFilterChange('date_from', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              onChange={(e) => handleFilterChange("date_from", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Date To</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Date To
+            </label>
             <input
               type="date"
               value={filters.date_to}
-              onChange={(e) => handleFilterChange('date_to', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              onChange={(e) => handleFilterChange("date_to", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Department</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Department
+            </label>
             <select
               value={filters.department_id}
-              onChange={(e) => handleFilterChange('department_id', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              onChange={(e) =>
+                handleFilterChange("department_id", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Departments</option>
-              {mockDepartments.map((dept) => (
+              {departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
                   {dept.name}
                 </option>
@@ -301,14 +637,18 @@ export const AttendanceReport: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Employee</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Employee
+            </label>
             <select
               value={filters.employee_id}
-              onChange={(e) => handleFilterChange('employee_id', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              onChange={(e) =>
+                handleFilterChange("employee_id", e.target.value)
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Employees</option>
-              {mockEmployees.map((emp) => (
+              {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.employee_code} - {emp.name}
                 </option>
@@ -316,11 +656,13 @@ export const AttendanceReport: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Status</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Status
+            </label>
             <select
               value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              onChange={(e) => handleFilterChange("status", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="">All Status</option>
               <option value="present">Present</option>
@@ -335,59 +677,69 @@ export const AttendanceReport: React.FC = () => {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 lg:grid-cols-7">
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Total Days</p>
-          <p className="text-xl font-bold text-gray-900">{summaryData.length}</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Days</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            {summaryData.length}
+          </p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <CheckBadgeIcon className="w-4 h-4 text-green-500" />
-            <p className="text-xs text-gray-500">Present</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Present</p>
           </div>
           <p className="text-xl font-bold text-green-600">
             {summaryData.reduce((sum, d) => sum + d.present, 0)}
           </p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <XMarkIcon className="w-4 h-4 text-red-500" />
-            <p className="text-xs text-gray-500">Absent</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Absent</p>
           </div>
           <p className="text-xl font-bold text-red-600">
             {summaryData.reduce((sum, d) => sum + d.absent, 0)}
           </p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <ClockIcon className="w-4 h-4 text-yellow-500" />
-            <p className="text-xs text-gray-500">Late</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Late</p>
           </div>
           <p className="text-xl font-bold text-yellow-600">
             {summaryData.reduce((sum, d) => sum + d.late, 0)}
           </p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <ClockIcon className="w-4 h-4 text-blue-500" />
-            <p className="text-xs text-gray-500">Half Day</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Half Day</p>
           </div>
           <p className="text-xl font-bold text-blue-600">
             {summaryData.reduce((sum, d) => sum + d.half_day, 0)}
           </p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-center gap-1">
             <CalendarIcon className="w-4 h-4 text-purple-500" />
-            <p className="text-xs text-gray-500">On Leave</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">On Leave</p>
           </div>
           <p className="text-xl font-bold text-purple-600">
             {summaryData.reduce((sum, d) => sum + d.on_leave, 0)}
           </p>
         </div>
-        <div className="p-3 text-center bg-white border border-gray-100 shadow-sm rounded-xl">
-          <p className="text-xs text-gray-500">Avg Attendance</p>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Avg Attendance</p>
           <p className="text-xl font-bold text-primary-600">
-            {Math.round(summaryData.reduce((sum, d) => sum + d.present_percentage, 0) / summaryData.length)}%
+            {summaryData.length > 0
+              ? Math.round(
+                  summaryData.reduce(
+                    (sum, d) => sum + d.present_percentage,
+                    0,
+                  ) / summaryData.length,
+                )
+              : 0}
+            %
           </p>
         </div>
       </div>
@@ -395,21 +747,23 @@ export const AttendanceReport: React.FC = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-2">
         {/* Daily Trends */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-900">Daily Attendance Trends</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Daily Attendance Trends
+            </h3>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                <span className="text-xs text-gray-500">Present</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Present</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                <span className="text-xs text-gray-500">Absent</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Absent</span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                <span className="text-xs text-gray-500">Late</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Late</span>
               </div>
             </div>
           </div>
@@ -438,8 +792,10 @@ export const AttendanceReport: React.FC = () => {
         </div>
 
         {/* Status Distribution */}
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
-          <h3 className="mb-4 text-sm font-semibold text-gray-900">Attendance Status Distribution</h3>
+        <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Attendance Status Distribution
+          </h3>
           <div className="h-[250px] flex items-center justify-center">
             <Doughnut
               data={statusDistributionData}
@@ -448,7 +804,7 @@ export const AttendanceReport: React.FC = () => {
                 maintainAspectRatio: false,
                 plugins: {
                   legend: {
-                    position: 'right',
+                    position: "right",
                   },
                 },
               }}
@@ -458,8 +814,10 @@ export const AttendanceReport: React.FC = () => {
       </div>
 
       {/* Department Attendance Rate */}
-      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
-        <h3 className="mb-4 text-sm font-semibold text-gray-900">Attendance Rate by Department</h3>
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+        <h3 className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
+          Attendance Rate by Department
+        </h3>
         <div className="h-[200px]">
           <Bar
             data={departmentRateData}
@@ -476,8 +834,8 @@ export const AttendanceReport: React.FC = () => {
                   beginAtZero: true,
                   max: 100,
                   ticks: {
-                    callback: function(value) {
-                      return value + '%';
+                    callback: function (value) {
+                      return value + "%";
                     },
                   },
                 },
@@ -487,75 +845,105 @@ export const AttendanceReport: React.FC = () => {
         </div>
       </div>
 
-      {/* Employee Summary Table */}
-      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-xl">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-900">Employee Attendance Summary</h3>
-          <span className="text-xs text-gray-500">{employeeSummary.length} employees</span>
+      {/* Employee Summary Table with Photos */}
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Employee Attendance Summary
+          </h3>
+          <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+            {employeeSummary.length} employees
+          </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Employee
                 </th>
-                <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Department
                 </th>
-                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Present
                 </th>
-                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Absent
                 </th>
-                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Late
                 </th>
-                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Half Day
                 </th>
-                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-center text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Leave
                 </th>
-                <th className="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-right text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Rate
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {employeeSummary.map((emp) => (
-                <tr key={emp.employee_id} className="transition-colors hover:bg-gray-50">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {employeeSummary.map((emp, index) => (
+                <tr key={index} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary-100">
-                        <span className="text-xs font-medium text-primary-700">
-                          {emp.employee_name.charAt(0)}
-                        </span>
-                      </div>
+                      {emp.photo ? (
+                        <img
+                          src={getPhotoUrl(emp.photo)}
+                          alt={emp.employee_name}
+                          className="flex-shrink-0 object-cover rounded-full w-8 h-8"
+                        />
+                      ) : (
+                        <div
+                          className={`flex items-center justify-center w-8 h-8 rounded-full ${getRandomColor(index + 1)}`}
+                        >
+                          <span className="text-xs font-medium">
+                            {getInitials(emp.employee_name)}
+                          </span>
+                        </div>
+                      )}
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{emp.employee_name}</p>
-                        <p className="text-xs text-gray-500">{emp.employee_code}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {emp.employee_name}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                          {emp.employee_code}
+                        </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{emp.department}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
+                      {emp.department}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-green-600">{emp.present}</span>
+                    <span className="text-sm font-medium text-green-600">
+                      {emp.present}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-red-600">{emp.absent}</span>
+                    <span className="text-sm font-medium text-red-600">
+                      {emp.absent}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-yellow-600">{emp.late}</span>
+                    <span className="text-sm font-medium text-yellow-600">
+                      {emp.late}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-blue-600">{emp.half_day}</span>
+                    <span className="text-sm font-medium text-blue-600">
+                      {emp.half_day}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-purple-600">{emp.on_leave}</span>
+                    <span className="text-sm font-medium text-purple-600">
+                      {emp.on_leave}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -565,7 +953,7 @@ export const AttendanceReport: React.FC = () => {
                           style={{ width: `${emp.attendance_rate}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {emp.attendance_rate}%
                       </span>
                     </div>

@@ -242,8 +242,8 @@ export const Settings: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Company Settings</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Company Settings</h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage your company information and preferences
           </p>
         </div>
@@ -284,7 +284,7 @@ export const Settings: React.FC = () => {
                   });
                   setLogoPreview(null);
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
@@ -321,18 +321,18 @@ export const Settings: React.FC = () => {
       )}
 
       {/* Company Info Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         {/* Header with Logo */}
-        <div className="p-6 border-b border-gray-200 bg-gray-50">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
           <div className="flex items-center gap-6">
             <div className="relative">
-              <div className="h-24 w-24 rounded-xl bg-white border-2 border-gray-200 flex items-center justify-center overflow-hidden">
+              <div className="h-24 w-24 rounded-xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden">
                 {logoPreview ? (
                   <img src={logoPreview} alt="Company Logo" className="h-full w-full object-cover" />
                 ) : settings.company_logo ? (
                   <img src={settings.company_logo} alt="Company Logo" className="h-full w-full object-cover" />
                 ) : (
-                  <BuildingOfficeIcon className="h-12 w-12 text-gray-400" />
+                  <BuildingOfficeIcon className="h-12 w-12 text-gray-400 dark:text-gray-500" />
                 )}
               </div>
               {isEditing && (
@@ -354,35 +354,35 @@ export const Settings: React.FC = () => {
               )}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {isEditing ? (
                   <input
                     type="text"
                     name="company_name"
                     value={formData.company_name}
                     onChange={handleChange}
-                    className="text-xl font-bold text-gray-900 bg-transparent border-b border-gray-300 focus:border-primary-500 outline-none"
+                    className="text-xl font-bold text-gray-900 dark:text-gray-100 bg-transparent border-b border-gray-300 dark:border-gray-600 focus:border-primary-500 outline-none"
                     placeholder="Company Name"
                   />
                 ) : (
                   settings.company_name
                 )}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
                 {isEditing ? (
                   <input
                     type="text"
                     name="company_code"
                     value={formData.company_code}
                     onChange={handleChange}
-                    className="text-sm text-gray-500 bg-transparent border-b border-gray-300 focus:border-primary-500 outline-none"
+                    className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 bg-transparent border-b border-gray-300 dark:border-gray-600 focus:border-primary-500 outline-none"
                     placeholder="Company Code"
                   />
                 ) : (
                   `Code: ${settings.company_code}`
                 )}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                 Last updated: {new Date(settings.updated_at).toLocaleString()}
               </p>
             </div>
@@ -394,13 +394,13 @@ export const Settings: React.FC = () => {
           <div className="p-6 space-y-6">
             {/* Basic Information */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <BuildingOfficeIcon className="h-5 w-5 text-gray-400" />
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <BuildingOfficeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Company Name *
                   </label>
                   {isEditing ? (
@@ -410,18 +410,18 @@ export const Settings: React.FC = () => {
                       value={formData.company_name}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.company_name ? 'border-red-300' : 'border-gray-300'
+                        errors.company_name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_name}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_name}</p>
                   )}
                   {errors.company_name && (
                     <p className="mt-1 text-sm text-red-600">{errors.company_name}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Company Code *
                   </label>
                   {isEditing ? (
@@ -431,11 +431,11 @@ export const Settings: React.FC = () => {
                       value={formData.company_code}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.company_code ? 'border-red-300' : 'border-gray-300'
+                        errors.company_code ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_code}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_code}</p>
                   )}
                   {errors.company_code && (
                     <p className="mt-1 text-sm text-red-600">{errors.company_code}</p>
@@ -445,20 +445,20 @@ export const Settings: React.FC = () => {
             </div>
 
             {/* Contact Information */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 Contact Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Email *
                   </label>
                   {isEditing ? (
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <EnvelopeIcon className="h-5 w-5 text-gray-400" />
+                        <EnvelopeIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                       </div>
                       <input
                         type="email"
@@ -466,25 +466,25 @@ export const Settings: React.FC = () => {
                         value={formData.company_email}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                          errors.company_email ? 'border-red-300' : 'border-gray-300'
+                          errors.company_email ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                         }`}
                       />
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_email}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_email}</p>
                   )}
                   {errors.company_email && (
                     <p className="mt-1 text-sm text-red-600">{errors.company_email}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Phone *
                   </label>
                   {isEditing ? (
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <PhoneIcon className="h-5 w-5 text-gray-400" />
+                        <PhoneIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                       </div>
                       <input
                         type="tel"
@@ -492,51 +492,51 @@ export const Settings: React.FC = () => {
                         value={formData.company_phone}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                          errors.company_phone ? 'border-red-300' : 'border-gray-300'
+                          errors.company_phone ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                         }`}
                       />
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_phone}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_phone}</p>
                   )}
                   {errors.company_phone && (
                     <p className="mt-1 text-sm text-red-600">{errors.company_phone}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Website
                   </label>
                   {isEditing ? (
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <GlobeAltIcon className="h-5 w-5 text-gray-400" />
+                        <GlobeAltIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                       </div>
                       <input
                         type="url"
                         name="company_website"
                         value={formData.company_website}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                         placeholder="https://example.com"
                       />
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_website || 'N/A'}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_website || 'N/A'}</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Address */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <MapPinIcon className="h-5 w-5 text-gray-400" />
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <MapPinIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 Address
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Address
                   </label>
                   {isEditing ? (
@@ -545,14 +545,14 @@ export const Settings: React.FC = () => {
                       value={formData.company_address}
                       onChange={handleChange}
                       rows={2}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_address}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_address}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     City
                   </label>
                   {isEditing ? (
@@ -561,14 +561,14 @@ export const Settings: React.FC = () => {
                       name="company_city"
                       value={formData.company_city}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_city}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_city}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     State/Province
                   </label>
                   {isEditing ? (
@@ -577,14 +577,14 @@ export const Settings: React.FC = () => {
                       name="company_state"
                       value={formData.company_state}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_state}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_state}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Country
                   </label>
                   {isEditing ? (
@@ -593,14 +593,14 @@ export const Settings: React.FC = () => {
                       name="company_country"
                       value={formData.company_country}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_country}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_country}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     ZIP/Postal Code
                   </label>
                   {isEditing ? (
@@ -609,24 +609,24 @@ export const Settings: React.FC = () => {
                       name="company_zip"
                       value={formData.company_zip}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.company_zip}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_zip}</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Tax & Registration */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <DocumentTextIcon className="h-5 w-5 text-gray-400" />
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <DocumentTextIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 Tax & Registration
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Tax ID
                   </label>
                   {isEditing ? (
@@ -635,14 +635,14 @@ export const Settings: React.FC = () => {
                       name="tax_id"
                       value={formData.tax_id}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.tax_id || 'N/A'}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.tax_id || 'N/A'}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Registration Number
                   </label>
                   {isEditing ? (
@@ -651,24 +651,24 @@ export const Settings: React.FC = () => {
                       name="registration_number"
                       value={formData.registration_number}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.registration_number || 'N/A'}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.registration_number || 'N/A'}</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Localization */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <GlobeAltIcon className="h-5 w-5 text-gray-400" />
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <GlobeAltIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 Localization
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Timezone *
                   </label>
                   {isEditing ? (
@@ -677,7 +677,7 @@ export const Settings: React.FC = () => {
                       value={formData.timezone}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.timezone ? 'border-red-300' : 'border-gray-300'
+                        errors.timezone ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     >
                       {timezones.map((tz) => (
@@ -685,14 +685,14 @@ export const Settings: React.FC = () => {
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.timezone}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.timezone}</p>
                   )}
                   {errors.timezone && (
                     <p className="mt-1 text-sm text-red-600">{errors.timezone}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Currency *
                   </label>
                   {isEditing ? (
@@ -701,7 +701,7 @@ export const Settings: React.FC = () => {
                       value={formData.currency}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.currency ? 'border-red-300' : 'border-gray-300'
+                        errors.currency ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
                       }`}
                     >
                       {currencies.map((c) => (
@@ -711,7 +711,7 @@ export const Settings: React.FC = () => {
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
                       {getCurrencySymbol(settings.currency)} {settings.currency}
                     </p>
                   )}
@@ -720,7 +720,7 @@ export const Settings: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Date Format
                   </label>
                   {isEditing ? (
@@ -728,18 +728,18 @@ export const Settings: React.FC = () => {
                       name="date_format"
                       value={formData.date_format}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       {dateFormats.map((df) => (
                         <option key={df.value} value={df.value}>{df.label}</option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.date_format}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.date_format}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Time Format
                   </label>
                   {isEditing ? (
@@ -747,18 +747,18 @@ export const Settings: React.FC = () => {
                       name="time_format"
                       value={formData.time_format}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       {timeFormats.map((tf) => (
                         <option key={tf.value} value={tf.value}>{tf.label}</option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.time_format}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.time_format}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Week Start Day
                   </label>
                   {isEditing ? (
@@ -766,28 +766,28 @@ export const Settings: React.FC = () => {
                       name="week_start_day"
                       value={formData.week_start_day}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       {weekStartDays.map((day) => (
                         <option key={day} value={day}>{day}</option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900">{settings.week_start_day}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.week_start_day}</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Fiscal Year */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5 text-gray-400" />
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                 Fiscal Year
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Fiscal Year Start
                   </label>
                   {isEditing ? (
@@ -796,16 +796,16 @@ export const Settings: React.FC = () => {
                       name="fiscal_year_start"
                       value={formData.fiscal_year_start}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
                       {new Date(settings.fiscal_year_start).toLocaleDateString()}
                     </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Fiscal Year End
                   </label>
                   {isEditing ? (
@@ -814,10 +814,10 @@ export const Settings: React.FC = () => {
                       name="fiscal_year_end"
                       value={formData.fiscal_year_end}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
                       {new Date(settings.fiscal_year_end).toLocaleDateString()}
                     </p>
                   )}
@@ -829,21 +829,21 @@ export const Settings: React.FC = () => {
       </div>
 
       {/* System Info */}
-      <div className="mt-6 bg-gray-50 rounded-xl border border-gray-200 p-4">
+      <div className="mt-6 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-gray-500">System Version</p>
-            <p className="text-sm font-medium text-gray-900">HRMS Pro v2.0.0</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">System Version</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">HRMS Pro v2.0.0</p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">Last Updated</p>
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Last Updated</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {new Date(settings.updated_at).toLocaleString()}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500">Settings ID</p>
-            <p className="text-sm font-medium text-gray-900">#{settings.id}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Settings ID</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">#{settings.id}</p>
           </div>
         </div>
       </div>

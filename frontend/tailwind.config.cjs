@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -11,7 +12,7 @@ module.exports = {
           300: "#80a6f5",
           400: "#4d7ad4",
           500: "#264eb3",
-          600: "#002a80", 
+          600: "#002a80",
           700: "#002060",
           800: "#001540",
           900: "#000a20",
@@ -73,12 +74,23 @@ module.exports = {
           DEFAULT: "#ffffff",
           secondary: "#f9fafb",
           tertiary: "#f3f4f6",
+          dark: "#111827",
+          "dark-secondary": "#1f2937",
+          "dark-tertiary": "#374151",
         },
         text: {
           primary: "#111827",
           secondary: "#6b7280",
           tertiary: "#9ca3af",
           inverse: "#ffffff",
+          dark: "#f9fafb",
+          "dark-secondary": "#d1d5db",
+          "dark-tertiary": "#9ca3af",
+        },
+        gray: {
+          850: "#1f2937",
+          900: "#111827",
+          950: "#0b0f19",
         },
       },
       fontSize: {
@@ -112,6 +124,7 @@ module.exports = {
           "0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
         modal:
           "0 20px 25px -5px rgb(0 0 0 / 0.12), 0 8px 10px -6px rgb(0 0 0 / 0.06)",
+        glow: "0 0 15px rgba(38, 78, 179, 0.3)",
       },
     },
   },

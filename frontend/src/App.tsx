@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  BrowserRouter,
   Routes,
   Route,
   Navigate,
@@ -88,8 +87,7 @@ const ProtectedLayout = () => (
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -193,9 +191,11 @@ function App() {
         {/* Default Routes */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/admin/reports/attendance" element={<AttendanceReport />} />
       </Routes>
-    </BrowserRouter>
-  );
-}
+    );
+  }
+
 
 export default App;
+
