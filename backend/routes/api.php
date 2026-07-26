@@ -122,14 +122,24 @@ Route::prefix('v1')->group(function () {
     |------------------------------------------------------------------
     */
     Route::middleware(['auth:sanctum'])->group(function () {
-        Route::get('leave-requests', [LeaveController::class, 'index'])->middleware('permission:leave.view');
-        Route::post('leave-requests', [LeaveController::class, 'store'])->middleware('permission:leave.create');
-        Route::get('leave-requests/{leave_request}', [LeaveController::class, 'show'])->middleware('permission:leave.view');
-        Route::put('leave-requests/{leave_request}', [LeaveController::class, 'update'])->middleware('permission:leave.view');
-        Route::delete('leave-requests/{leave_request}', [LeaveController::class, 'destroy'])->middleware('permission:leave.view');
-        Route::put('leave-requests/{leave_request}/approve', [LeaveController::class, 'approve'])->middleware('permission:leave.approve');
-        Route::put('leave-requests/{leave_request}/reject', [LeaveController::class, 'reject'])->middleware('permission:leave.reject');
-        Route::post('leave-requests/{leave_request}/attachment', [LeaveController::class, 'uploadAttachment'])->middleware('permission:leave.create');
+        // Leave Types
+        Route::get('leave-types/active', [\App\Http\Controllers\Api\Leave\LeaveTypeController::class, 'getActiveTypes']);
+        Route::get('leave-types', [\App\Http\Controllers\Api\Leave\LeaveTypeController::class, 'index'])->middleware('permission:leave.view');
+        Route::post('leave-types', [\App\Http\Controllers\Api\Leave\LeaveTypeController::class, 'store'])->middleware('permission:leave.create');
+        Route::get('leave-types/{leave_type}', [\App\Http\Controllers\Api\Leave\LeaveTypeController::class, 'show'])->middleware('permission:leave.view');
+        Route::put('leave-types/{leave_type}', [\App\Http\Controllers\Api\Leave\LeaveTypeController::class, 'update'])->middleware('permission:leave.update');
+        Route::delete('leave-types/{leave_type}', [\App\Http\Controllers\Api\Leave\LeaveTypeController::class, 'destroy'])->middleware('permission:leave.delete');
+
+        // Leave Requests
+        Route::get('leave-requests/balance', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'getBalance']);
+        Route::get('leave-requests', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'index'])->middleware('permission:leave.view');
+        Route::post('leave-requests', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'store'])->middleware('permission:leave.create');
+        Route::get('leave-requests/{leave_request}', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'show'])->middleware('permission:leave.view');
+        Route::put('leave-requests/{leave_request}', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'update'])->middleware('permission:leave.update');
+        Route::delete('leave-requests/{leave_request}', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'destroy'])->middleware('permission:leave.delete');
+        Route::post('leave-requests/{leave_request}/approve', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'approve'])->middleware('permission:leave.approve');
+        Route::post('leave-requests/{leave_request}/reject', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'reject'])->middleware('permission:leave.reject');
+        Route::post('leave-requests/{leave_request}/attachment', [\App\Http\Controllers\Api\Leave\LeaveController::class, 'uploadAttachment'])->middleware('permission:leave.create');
     });
 
     /*

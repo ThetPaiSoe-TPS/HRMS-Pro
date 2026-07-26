@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+﻿import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
   CalendarIcon,
@@ -9,21 +9,22 @@ import {
   ExclamationTriangleIcon,
   CurrencyDollarIcon,
   UserGroupIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
+import { leaveTypeApi } from "../../../api/leave/leaveApi";
 
 // Mock data - Replace with API call
 const mockLeaveType = {
   id: 1,
-  name: 'Annual Leave',
-  code: 'ANNUAL',
-  description: 'Regular paid annual leave',
+  name: "Annual Leave",
+  code: "ANNUAL",
+  description: "Regular paid annual leave",
   days_per_year: 20,
   is_paid: true,
   requires_approval: true,
   max_consecutive_days: 15,
   carry_forward: true,
   carry_forward_limit: 5,
-  status: 'active' as const,
+  status: "active" as const,
 };
 
 export const EditLeaveType: React.FC = () => {
@@ -32,16 +33,16 @@ export const EditLeaveType: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
-    name: '',
-    code: '',
-    description: '',
+    name: "",
+    code: "",
+    description: "",
     days_per_year: 0,
     is_paid: true,
     requires_approval: true,
     max_consecutive_days: null as number | null,
     carry_forward: true,
     carry_forward_limit: null as number | null,
-    status: 'active' as const,
+    status: "active" as const,
   });
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export const EditLeaveType: React.FC = () => {
     setFormData({
       name: mockLeaveType.name,
       code: mockLeaveType.code,
-      description: mockLeaveType.description || '',
+      description: mockLeaveType.description || "",
       days_per_year: mockLeaveType.days_per_year,
       is_paid: mockLeaveType.is_paid,
       requires_approval: mockLeaveType.requires_approval,
@@ -60,38 +61,70 @@ export const EditLeaveType: React.FC = () => {
     });
   }, [id]);
 
+  useEffect(() => {
+    const fetchLeaveType = async () => {
+      if (!id) return;
+      try {
+        const type = await leaveTypeApi.getLeaveType(parseInt(id));
+        setFormData({
+          name: type.name,
+          code: type.code,
+          description: type.description || "",
+          days_per_year: type.days_per_year,
+          is_paid: type.is_paid,
+          requires_approval: type.requires_approval,
+          max_consecutive_days: type.max_consecutive_days,
+          carry_forward: type.carry_forward,
+          carry_forward_limit: type.carry_forward_limit,
+          status: type.status,
+        });
+      } catch (error) {
+        console.error("Failed to fetch leave type:", error);
+      }
+    };
+    fetchLeaveType();
+  }, [id]);
+
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     });
     if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) {
-      newErrors.name = 'Leave type name is required';
+      newErrors.name = "Leave type name is required";
     }
     if (!formData.code.trim()) {
-      newErrors.code = 'Code is required';
+      newErrors.code = "Code is required";
     } else if (!/^[A-Z_]+$/.test(formData.code)) {
-      newErrors.code = 'Code must be uppercase letters and underscores only';
+      newErrors.code = "Code must be uppercase letters and underscores only";
     }
     if (formData.days_per_year < 0) {
-      newErrors.days_per_year = 'Days per year must be greater than 0';
+      newErrors.days_per_year = "Days per year must be greater than 0";
     }
     if (formData.max_consecutive_days && formData.max_consecutive_days < 0) {
-      newErrors.max_consecutive_days = 'Max consecutive days must be greater than 0';
+      newErrors.max_consecutive_days =
+        "Max consecutive days must be greater than 0";
     }
-    if (formData.carry_forward && formData.carry_forward_limit && formData.carry_forward_limit < 0) {
-      newErrors.carry_forward_limit = 'Carry forward limit must be greater than 0';
+    if (
+      formData.carry_forward &&
+      formData.carry_forward_limit &&
+      formData.carry_forward_limit < 0
+    ) {
+      newErrors.carry_forward_limit =
+        "Carry forward limit must be greater than 0";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -103,12 +136,12 @@ export const EditLeaveType: React.FC = () => {
 
     setLoading(true);
     try {
-      // TODO: API call to update leave type
-      console.log('Updating leave type:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/admin/leave-types');
+      await leaveTypeApi.updateLeaveType(parseInt(id!), formData);
+      navigate("/admin/leave-types");
     } catch (error: any) {
-      setErrors({ general: error.response?.data?.message || 'Failed to update leave type' });
+      setErrors({
+        general: error.response?.data?.message || "Failed to update leave type",
+      });
     } finally {
       setLoading(false);
     }
@@ -118,11 +151,16 @@ export const EditLeaveType: React.FC = () => {
     <div className="max-w-3xl p-4 mx-auto sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/admin/leave-types" className="p-2 transition-colors rounded-lg hover:bg-gray-100">
+        <Link
+          to="/admin/leave-types"
+          className="p-2 transition-colors rounded-lg hover:bg-gray-100"
+        >
           <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Leave Type</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Edit Leave Type
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Update leave type policies
           </p>
@@ -130,7 +168,7 @@ export const EditLeaveType: React.FC = () => {
       </div>
 
       {/* Form Card */}
-      <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+      <div className="p-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="flex items-start gap-3 p-3 border border-red-200 rounded-lg bg-red-50">
@@ -155,7 +193,9 @@ export const EditLeaveType: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                    errors.name
+                      ? "border-red-300"
+                      : "border-gray-300 dark:border-gray-600"
                   }`}
                 />
               </div>
@@ -176,11 +216,13 @@ export const EditLeaveType: React.FC = () => {
                 <input
                   type="text"
                   value={formData.code}
-                  className="w-full py-2 pl-10 pr-3 text-gray-500 dark:text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-gray-600 rounded-lg cursor-not-allowed bg-gray-50 dark:bg-gray-700"
+                  className="w-full py-2 pl-10 pr-3 text-gray-500 border border-gray-300 rounded-lg cursor-not-allowed dark:text-gray-400 dark:text-gray-500 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
                   disabled
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Code cannot be changed</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Code cannot be changed
+              </p>
             </div>
           </div>
 
@@ -194,7 +236,7 @@ export const EditLeaveType: React.FC = () => {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
 
@@ -211,11 +253,15 @@ export const EditLeaveType: React.FC = () => {
                 onChange={handleChange}
                 min="0"
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.days_per_year ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                  errors.days_per_year
+                    ? "border-red-300"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
               />
               {errors.days_per_year && (
-                <p className="mt-1 text-sm text-red-600">{errors.days_per_year}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.days_per_year}
+                </p>
               )}
             </div>
 
@@ -227,16 +273,20 @@ export const EditLeaveType: React.FC = () => {
               <input
                 type="number"
                 name="max_consecutive_days"
-                value={formData.max_consecutive_days || ''}
+                value={formData.max_consecutive_days || ""}
                 onChange={handleChange}
                 min="0"
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.max_consecutive_days ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                  errors.max_consecutive_days
+                    ? "border-red-300"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
                 placeholder="Leave blank for unlimited"
               />
               {errors.max_consecutive_days && (
-                <p className="mt-1 text-sm text-red-600">{errors.max_consecutive_days}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.max_consecutive_days}
+                </p>
               )}
             </div>
           </div>
@@ -255,13 +305,15 @@ export const EditLeaveType: React.FC = () => {
                 />
                 <div
                   className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                    formData.is_paid ? 'bg-primary-600' : 'bg-gray-300'
+                    formData.is_paid ? "bg-primary-600" : "bg-gray-300"
                   }`}
-                  onClick={() => setFormData({ ...formData, is_paid: !formData.is_paid })}
+                  onClick={() =>
+                    setFormData({ ...formData, is_paid: !formData.is_paid })
+                  }
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform transition-transform ${
-                      formData.is_paid ? 'translate-x-6' : 'translate-x-0.5'
+                      formData.is_paid ? "translate-x-6" : "translate-x-0.5"
                     } mt-0.5`}
                   />
                 </div>
@@ -284,13 +336,22 @@ export const EditLeaveType: React.FC = () => {
                 />
                 <div
                   className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                    formData.requires_approval ? 'bg-primary-600' : 'bg-gray-300'
+                    formData.requires_approval
+                      ? "bg-primary-600"
+                      : "bg-gray-300"
                   }`}
-                  onClick={() => setFormData({ ...formData, requires_approval: !formData.requires_approval })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      requires_approval: !formData.requires_approval,
+                    })
+                  }
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform transition-transform ${
-                      formData.requires_approval ? 'translate-x-6' : 'translate-x-0.5'
+                      formData.requires_approval
+                        ? "translate-x-6"
+                        : "translate-x-0.5"
                     } mt-0.5`}
                   />
                 </div>
@@ -303,7 +364,7 @@ export const EditLeaveType: React.FC = () => {
           </div>
 
           {/* Carry Forward */}
-          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div className="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="relative inline-flex items-center">
                 <input
@@ -315,13 +376,20 @@ export const EditLeaveType: React.FC = () => {
                 />
                 <div
                   className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                    formData.carry_forward ? 'bg-primary-600' : 'bg-gray-300'
+                    formData.carry_forward ? "bg-primary-600" : "bg-gray-300"
                   }`}
-                  onClick={() => setFormData({ ...formData, carry_forward: !formData.carry_forward })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      carry_forward: !formData.carry_forward,
+                    })
+                  }
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform transition-transform ${
-                      formData.carry_forward ? 'translate-x-6' : 'translate-x-0.5'
+                      formData.carry_forward
+                        ? "translate-x-6"
+                        : "translate-x-0.5"
                     } mt-0.5`}
                   />
                 </div>
@@ -340,16 +408,20 @@ export const EditLeaveType: React.FC = () => {
                 <input
                   type="number"
                   name="carry_forward_limit"
-                  value={formData.carry_forward_limit || ''}
+                  value={formData.carry_forward_limit || ""}
                   onChange={handleChange}
                   min="0"
                   className={`w-full sm:w-48 px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.carry_forward_limit ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                    errors.carry_forward_limit
+                      ? "border-red-300"
+                      : "border-gray-300 dark:border-gray-600"
                   }`}
                   placeholder="Max days to carry forward"
                 />
                 {errors.carry_forward_limit && (
-                  <p className="mt-1 text-sm text-red-600">{errors.carry_forward_limit}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.carry_forward_limit}
+                  </p>
                 )}
               </div>
             )}
@@ -364,7 +436,7 @@ export const EditLeaveType: React.FC = () => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -375,8 +447,8 @@ export const EditLeaveType: React.FC = () => {
           <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
-              onClick={() => navigate('/admin/leave-types')}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+              onClick={() => navigate("/admin/leave-types")}
+              className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               Cancel
             </button>
@@ -385,7 +457,7 @@ export const EditLeaveType: React.FC = () => {
               disabled={loading}
               className="flex-1 px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Updating...' : 'Update Leave Type'}
+              {loading ? "Updating..." : "Update Leave Type"}
             </button>
           </div>
         </form>

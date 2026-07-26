@@ -1,5 +1,4 @@
-﻿
-export interface LeaveType {
+﻿export interface LeaveType {
   id: number;
   name: string;
   code: string;
@@ -10,7 +9,7 @@ export interface LeaveType {
   max_consecutive_days: number | null;
   carry_forward: boolean;
   carry_forward_limit: number | null;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   created_at: string;
   updated_at: string;
 }
@@ -22,14 +21,9 @@ export interface LeaveRequest {
     id: number;
     name: string;
     employee_code: string;
-    department: {
-      id: number;
-      name: string;
-    };
-    position: {
-      id: number;
-      title: string;
-    };
+    photo?: string | null; // ✅ Add this
+    department?: { id: number; name: string };
+    position?: { id: number; title: string };
   };
   leave_type_id: number;
   leave_type?: LeaveType;
@@ -37,24 +31,18 @@ export interface LeaveRequest {
   end_date: string;
   days: number;
   reason: string;
-  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
-  attachment?: string;
-  attachment_name?: string;
-  approved_by?: number;
-  approver?: {
-    id: number;
-    name: string;
-  };
-  approved_at?: string;
-  rejected_by?: number;
-  rejected_at?: string;
-  rejection_reason?: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  attachment?: string | null;
+  attachment_name?: string | null;
+  approved_by?: number | null;
+  approver?: { id: number; name: string };
+  approved_at?: string | null;
+  rejection_reason?: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface LeaveFormData {
-  employee_id: number;
+export interface LeaveRequestFormData {
   leave_type_id: number;
   start_date: string;
   end_date: string;
@@ -68,6 +56,7 @@ export interface LeaveFilters {
   status: string;
   date_from: string;
   date_to: string;
+  search: string;
   page: number;
   per_page: number;
 }
@@ -82,7 +71,12 @@ export interface LeaveBalance {
   carry_forward: number;
 }
 
-export interface LeaveApprovalData {
-  status: 'approved' | 'rejected';
-  rejection_reason?: string;
+export interface PaginatedResponse<T> {
+  data: T[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
 }

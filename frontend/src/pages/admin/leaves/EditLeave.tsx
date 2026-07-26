@@ -1,5 +1,5 @@
-﻿import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
   CalendarIcon,
@@ -7,106 +7,61 @@ import {
   DocumentTextIcon,
   PaperClipIcon,
   CheckBadgeIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { leaveApi, leaveTypeApi } from "../../../api/leave/leaveApi";
-import type {
-  LeaveType,
-  LeaveRequestFormData,
-} from "../../../types/leave.types";
-import { getStorageUrl } from "../../../api/axios";
-import { employeeApi } from "../../../api/employeeApi";
+import type { LeaveType, LeaveRequest } from "../../../types/leave.types";
 
-export const ApplyLeave: React.FC = () => {
+export const EditLeave: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [employee, setEmployee] = useState<any>(null);
-
-  const [formData, setFormData] = useState<LeaveRequestFormData>({
+  const [formData, setFormData] = useState({
     leave_type_id: 0,
     start_date: "",
     end_date: "",
     reason: "",
-    attachment: null,
+    attachment: null as File | null,
   });
+  const [existingAttachment, setExistingAttachment] = useState<string | null>(
+    null,
+  );
+  const [currentStatus, setCurrentStatus] = useState<string>("");
 
-  const getPhotoUrl = (photo: string | null): string | null => {
-    return getStorageUrl(photo);
-  };
-
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n.charAt(0))
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const getRandomColor = (id: number): string => {
-    const colors = [
-      "bg-blue-100 text-blue-700",
-      "bg-green-100 text-green-700",
-      "bg-purple-100 text-purple-700",
-      "bg-pink-100 text-pink-700",
-      "bg-yellow-100 text-yellow-700",
-      "bg-indigo-100 text-indigo-700",
-      "bg-red-100 text-red-700",
-      "bg-teal-100 text-teal-700",
-      "bg-orange-100 text-orange-700",
-      "bg-cyan-100 text-cyan-700",
-    ];
-    return colors[id % colors.length];
-  };
-
+  // Fetch leave types and leave data
   useEffect(() => {
-    const fetchEmployee = async () => {
+    const fetchData = async () => {
+      if (!id) return;
+
       try {
-        const result = await employeeApi.getEmployees({
-          search: "",
-          department_id: "",
-          position_id: "",
-          status: "active",
-          page: 1,
-          per_page: 1,
+        // Fetch leave types
+        const types = await leaveTypeApi.getActiveLeaveTypes();
+        setLeaveTypes(types);
+
+        // Fetch leave request
+        const leave = await leaveApi.getLeaveRequest(parseInt(id));
+        setFormData({
+          leave_type_id: leave.leave_type_id || 0,
+          start_date: leave.start_date || "",
+          end_date: leave.end_date || "",
+          reason: leave.reason || "",
+          attachment: null,
         });
-        if (result.data.length > 0) {
-          setEmployee(result.data[0]);
-        }
+        setExistingAttachment(leave.attachment || null);
+        setCurrentStatus(leave.status);
       } catch (error) {
-        console.error("Failed to fetch employee:", error);
+        console.error("Failed to fetch data:", error);
+        setErrors({ general: "Failed to load leave request data" });
+      } finally {
+        setFetching(false);
       }
     };
-    fetchEmployee();
-  }, []);
-  // Fetch leave types
-  useEffect(() => {
-    const fetchLeaveTypes = async () => {
-      try {
-        const result = await leaveTypeApi.getActiveLeaveTypes();
-        setLeaveTypes(result);
-      } catch (error) {
-        console.error("Failed to fetch leave types:", error);
-      }
-    };
-    fetchLeaveTypes();
-  }, []);
 
-  // Calculate days when date changes
-  useEffect(() => {
-    if (formData.start_date && formData.end_date) {
-      const start = new Date(formData.start_date);
-      const end = new Date(formData.end_date);
-      if (end >= start) {
-        const diffTime = Math.abs(end.getTime() - start.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        // You can display this somewhere
-        console.log("Days:", diffDays);
-      }
-    }
-  }, [formData.start_date, formData.end_date]);
+    fetchData();
+  }, [id]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -123,7 +78,6 @@ export const ApplyLeave: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setErrors({
           ...errors,
@@ -132,6 +86,7 @@ export const ApplyLeave: React.FC = () => {
         return;
       }
       setFormData({ ...formData, attachment: file });
+      setExistingAttachment(null); // Remove existing attachment when new file is selected
     }
   };
 
@@ -166,22 +121,78 @@ export const ApplyLeave: React.FC = () => {
 
     setLoading(true);
     try {
-      await leaveApi.createLeaveRequest(formData);
+      await leaveApi.updateLeaveRequest(parseInt(id!), formData);
       navigate("/admin/leaves");
     } catch (error: any) {
       setErrors({
         general:
-          error.response?.data?.message || "Failed to create leave request",
+          error.response?.data?.message || "Failed to update leave request",
       });
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDeleteAttachment = async () => {
+    // You can add API call to delete attachment if needed
+    setExistingAttachment(null);
+    setFormData({ ...formData, attachment: null });
+  };
+
   // Get selected leave type details
   const selectedLeaveType = leaveTypes.find(
     (t) => t.id === formData.leave_type_id,
   );
+
+  if (fetching) {
+    return (
+      <div className="flex justify-center py-16">
+        <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>
+      </div>
+    );
+  }
+
+  // Only allow editing if status is pending
+  const isEditable = currentStatus === "pending";
+
+  if (!isEditable) {
+    return (
+      <div className="max-w-2xl p-4 mx-auto sm:p-6 lg:p-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Link
+            to="/admin/leaves"
+            className="p-2 transition-colors rounded-lg hover:bg-gray-100"
+          >
+            <ArrowLeftIcon className="w-5 h-5 text-gray-500" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Edit Leave Request
+            </h1>
+          </div>
+        </div>
+        <div className="p-6 bg-white border border-yellow-200 shadow-sm rounded-xl">
+          <div className="flex items-center gap-3 p-4 border border-yellow-200 rounded-lg bg-yellow-50">
+            <ExclamationTriangleIcon className="w-6 h-6 text-yellow-600" />
+            <div>
+              <p className="text-sm font-medium text-yellow-800">Cannot Edit</p>
+              <p className="text-sm text-yellow-700">
+                This leave request has already been{" "}
+                <strong>{currentStatus}</strong>. Only pending requests can be
+                edited.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate("/admin/leaves")}
+            className="px-4 py-2 mt-4 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
+          >
+            Back to Leave Requests
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl p-4 mx-auto sm:p-6 lg:p-8">
@@ -194,55 +205,39 @@ export const ApplyLeave: React.FC = () => {
           <ArrowLeftIcon className="w-5 h-5 text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Apply for Leave</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Edit Leave Request
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Submit a new leave request
+            Update your leave request details
           </p>
         </div>
       </div>
 
       {/* Form Card */}
       <div className="p-6 bg-white border border-gray-100 shadow-sm rounded-xl">
-        {/* Employee Card with Photo */}
-        {employee && (
-          <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl">
-            <div className="flex items-center gap-3">
-              {employee.photo ? (
-                <img
-                  src={getPhotoUrl(employee.photo)}
-                  alt={employee.name}
-                  className="flex-shrink-0 object-cover w-12 h-12 rounded-full"
-                />
-              ) : (
-                <div
-                  className={`flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-full ${getRandomColor(employee.id)}`}
-                >
-                  <span className="text-base font-medium">
-                    {getInitials(employee.name)}
-                  </span>
-                </div>
-              )}
-              <div>
-                <p className="text-sm font-semibold text-gray-900">
-                  {employee.name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {employee.employee_code}
-                </p>
-                <p className="text-xs text-gray-400">
-                  {employee.department?.name || "No Department"} •{" "}
-                  {employee.position?.title || "No Position"}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="p-3 border border-red-200 rounded-lg bg-red-50">
               <p className="text-sm text-red-600">{errors.general}</p>
             </div>
           )}
+
+          {/* Status Badge */}
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-gray-50">
+            <span className="text-sm text-gray-500">Current Status:</span>
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                currentStatus === "pending"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : currentStatus === "approved"
+                    ? "bg-green-100 text-green-800"
+                    : "bg-red-100 text-red-800"
+              }`}
+            >
+              {currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)}
+            </span>
+          </div>
 
           {/* Leave Type */}
           <div>
@@ -299,7 +294,6 @@ export const ApplyLeave: React.FC = () => {
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
                     errors.start_date ? "border-red-300" : "border-gray-300"
                   }`}
-                  min={new Date().toISOString().split("T")[0]}
                 />
               </div>
               {errors.start_date && (
@@ -322,10 +316,6 @@ export const ApplyLeave: React.FC = () => {
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
                     errors.end_date ? "border-red-300" : "border-gray-300"
                   }`}
-                  min={
-                    formData.start_date ||
-                    new Date().toISOString().split("T")[0]
-                  }
                 />
               </div>
               {errors.end_date && (
@@ -364,22 +354,41 @@ export const ApplyLeave: React.FC = () => {
             <label className="block mb-1 text-sm font-medium text-gray-700">
               Attachment (Optional)
             </label>
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                <PaperClipIcon className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-600">Upload File</span>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
-              {formData.attachment && (
-                <span className="text-sm text-gray-600">
-                  {formData.attachment.name}
-                </span>
+            <div className="flex flex-col gap-2">
+              {existingAttachment && (
+                <div className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg">
+                  <PaperClipIcon className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-600">
+                    Current file attached
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleDeleteAttachment}
+                    className="text-sm text-red-600 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
+                </div>
               )}
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <PaperClipIcon className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm text-gray-600">
+                    {existingAttachment ? "Change File" : "Upload File"}
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+                </label>
+                {formData.attachment && (
+                  <span className="text-sm text-gray-600">
+                    {formData.attachment.name}
+                  </span>
+                )}
+              </div>
             </div>
             <p className="mt-1 text-xs text-gray-500">
               Max file size: 5MB. Allowed: PDF, DOC, DOCX, JPG, PNG
@@ -421,10 +430,10 @@ export const ApplyLeave: React.FC = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Submitting...
+                  Updating...
                 </span>
               ) : (
-                "Submit Request"
+                "Update Request"
               )}
             </button>
           </div>
@@ -434,4 +443,4 @@ export const ApplyLeave: React.FC = () => {
   );
 };
 
-export default ApplyLeave;
+export default EditLeave;

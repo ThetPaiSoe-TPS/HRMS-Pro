@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+﻿import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
   CalendarIcon,
@@ -9,57 +9,66 @@ import {
   ExclamationTriangleIcon,
   CurrencyDollarIcon,
   UserGroupIcon,
-} from '@heroicons/react/24/outline';
+} from "@heroicons/react/24/outline";
+import { leaveTypeApi } from "../../../api/leave/leaveApi";
 
 export const CreateLeaveType: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
-    name: '',
-    code: '',
-    description: '',
+    name: "",
+    code: "",
+    description: "",
     days_per_year: 20,
     is_paid: true,
     requires_approval: true,
     max_consecutive_days: 15,
     carry_forward: true,
     carry_forward_limit: 5,
-    status: 'active' as const,
+    status: "active" as const,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     });
     if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) {
-      newErrors.name = 'Leave type name is required';
+      newErrors.name = "Leave type name is required";
     }
     if (!formData.code.trim()) {
-      newErrors.code = 'Code is required';
+      newErrors.code = "Code is required";
     } else if (!/^[A-Z_]+$/.test(formData.code)) {
-      newErrors.code = 'Code must be uppercase letters and underscores only';
+      newErrors.code = "Code must be uppercase letters and underscores only";
     }
     if (formData.days_per_year < 0) {
-      newErrors.days_per_year = 'Days per year must be greater than 0';
+      newErrors.days_per_year = "Days per year must be greater than 0";
     }
     if (formData.max_consecutive_days && formData.max_consecutive_days < 0) {
-      newErrors.max_consecutive_days = 'Max consecutive days must be greater than 0';
+      newErrors.max_consecutive_days =
+        "Max consecutive days must be greater than 0";
     }
-    if (formData.carry_forward && formData.carry_forward_limit && formData.carry_forward_limit < 0) {
-      newErrors.carry_forward_limit = 'Carry forward limit must be greater than 0';
+    if (
+      formData.carry_forward &&
+      formData.carry_forward_limit &&
+      formData.carry_forward_limit < 0
+    ) {
+      newErrors.carry_forward_limit =
+        "Carry forward limit must be greater than 0";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -71,12 +80,12 @@ export const CreateLeaveType: React.FC = () => {
 
     setLoading(true);
     try {
-      // TODO: API call to create leave type
-      console.log('Creating leave type:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate('/admin/leave-types');
+      await leaveTypeApi.createLeaveType(formData);
+      navigate("/admin/leave-types");
     } catch (error: any) {
-      setErrors({ general: error.response?.data?.message || 'Failed to create leave type' });
+      setErrors({
+        general: error.response?.data?.message || "Failed to create leave type",
+      });
     } finally {
       setLoading(false);
     }
@@ -86,11 +95,16 @@ export const CreateLeaveType: React.FC = () => {
     <div className="max-w-3xl p-4 mx-auto sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/admin/leave-types" className="p-2 transition-colors rounded-lg hover:bg-gray-100">
+        <Link
+          to="/admin/leave-types"
+          className="p-2 transition-colors rounded-lg hover:bg-gray-100"
+        >
           <ArrowLeftIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create Leave Type</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Create Leave Type
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Define a new leave type and its policies
           </p>
@@ -98,7 +112,7 @@ export const CreateLeaveType: React.FC = () => {
       </div>
 
       {/* Form Card */}
-      <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+      <div className="p-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
         <form onSubmit={handleSubmit} className="space-y-6">
           {errors.general && (
             <div className="flex items-start gap-3 p-3 border border-red-200 rounded-lg bg-red-50">
@@ -123,7 +137,9 @@ export const CreateLeaveType: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                    errors.name
+                      ? "border-red-300"
+                      : "border-gray-300 dark:border-gray-600"
                   }`}
                   placeholder="e.g., Annual Leave"
                 />
@@ -148,7 +164,9 @@ export const CreateLeaveType: React.FC = () => {
                   value={formData.code}
                   onChange={handleChange}
                   className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.code ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                    errors.code
+                      ? "border-red-300"
+                      : "border-gray-300 dark:border-gray-600"
                   }`}
                   placeholder="e.g., ANNUAL"
                 />
@@ -157,7 +175,8 @@ export const CreateLeaveType: React.FC = () => {
                 <p className="mt-1 text-sm text-red-600">{errors.code}</p>
               )}
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                Uppercase letters and underscores only (e.g., ANNUAL, SICK_LEAVE)
+                Uppercase letters and underscores only (e.g., ANNUAL,
+                SICK_LEAVE)
               </p>
             </div>
           </div>
@@ -172,7 +191,7 @@ export const CreateLeaveType: React.FC = () => {
               value={formData.description}
               onChange={handleChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
               placeholder="Describe the leave type and its purpose..."
             />
           </div>
@@ -190,11 +209,15 @@ export const CreateLeaveType: React.FC = () => {
                 onChange={handleChange}
                 min="0"
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.days_per_year ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                  errors.days_per_year
+                    ? "border-red-300"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
               />
               {errors.days_per_year && (
-                <p className="mt-1 text-sm text-red-600">{errors.days_per_year}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.days_per_year}
+                </p>
               )}
             </div>
 
@@ -206,16 +229,20 @@ export const CreateLeaveType: React.FC = () => {
               <input
                 type="number"
                 name="max_consecutive_days"
-                value={formData.max_consecutive_days || ''}
+                value={formData.max_consecutive_days || ""}
                 onChange={handleChange}
                 min="0"
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                  errors.max_consecutive_days ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                  errors.max_consecutive_days
+                    ? "border-red-300"
+                    : "border-gray-300 dark:border-gray-600"
                 }`}
                 placeholder="Leave blank for unlimited"
               />
               {errors.max_consecutive_days && (
-                <p className="mt-1 text-sm text-red-600">{errors.max_consecutive_days}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.max_consecutive_days}
+                </p>
               )}
             </div>
           </div>
@@ -234,13 +261,15 @@ export const CreateLeaveType: React.FC = () => {
                 />
                 <div
                   className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                    formData.is_paid ? 'bg-primary-600' : 'bg-gray-300'
+                    formData.is_paid ? "bg-primary-600" : "bg-gray-300"
                   }`}
-                  onClick={() => setFormData({ ...formData, is_paid: !formData.is_paid })}
+                  onClick={() =>
+                    setFormData({ ...formData, is_paid: !formData.is_paid })
+                  }
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform transition-transform ${
-                      formData.is_paid ? 'translate-x-6' : 'translate-x-0.5'
+                      formData.is_paid ? "translate-x-6" : "translate-x-0.5"
                     } mt-0.5`}
                   />
                 </div>
@@ -263,13 +292,22 @@ export const CreateLeaveType: React.FC = () => {
                 />
                 <div
                   className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                    formData.requires_approval ? 'bg-primary-600' : 'bg-gray-300'
+                    formData.requires_approval
+                      ? "bg-primary-600"
+                      : "bg-gray-300"
                   }`}
-                  onClick={() => setFormData({ ...formData, requires_approval: !formData.requires_approval })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      requires_approval: !formData.requires_approval,
+                    })
+                  }
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform transition-transform ${
-                      formData.requires_approval ? 'translate-x-6' : 'translate-x-0.5'
+                      formData.requires_approval
+                        ? "translate-x-6"
+                        : "translate-x-0.5"
                     } mt-0.5`}
                   />
                 </div>
@@ -282,7 +320,7 @@ export const CreateLeaveType: React.FC = () => {
           </div>
 
           {/* Carry Forward */}
-          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <div className="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
             <div className="flex items-center gap-3">
               <div className="relative inline-flex items-center">
                 <input
@@ -294,13 +332,20 @@ export const CreateLeaveType: React.FC = () => {
                 />
                 <div
                   className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${
-                    formData.carry_forward ? 'bg-primary-600' : 'bg-gray-300'
+                    formData.carry_forward ? "bg-primary-600" : "bg-gray-300"
                   }`}
-                  onClick={() => setFormData({ ...formData, carry_forward: !formData.carry_forward })}
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      carry_forward: !formData.carry_forward,
+                    })
+                  }
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform transition-transform ${
-                      formData.carry_forward ? 'translate-x-6' : 'translate-x-0.5'
+                      formData.carry_forward
+                        ? "translate-x-6"
+                        : "translate-x-0.5"
                     } mt-0.5`}
                   />
                 </div>
@@ -319,16 +364,20 @@ export const CreateLeaveType: React.FC = () => {
                 <input
                   type="number"
                   name="carry_forward_limit"
-                  value={formData.carry_forward_limit || ''}
+                  value={formData.carry_forward_limit || ""}
                   onChange={handleChange}
                   min="0"
                   className={`w-full sm:w-48 px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                    errors.carry_forward_limit ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                    errors.carry_forward_limit
+                      ? "border-red-300"
+                      : "border-gray-300 dark:border-gray-600"
                   }`}
                   placeholder="Max days to carry forward"
                 />
                 {errors.carry_forward_limit && (
-                  <p className="mt-1 text-sm text-red-600">{errors.carry_forward_limit}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.carry_forward_limit}
+                  </p>
                 )}
               </div>
             )}
@@ -343,7 +392,7 @@ export const CreateLeaveType: React.FC = () => {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
             >
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
@@ -352,7 +401,9 @@ export const CreateLeaveType: React.FC = () => {
 
           {/* Preview */}
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Preview</h4>
+            <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Preview
+            </h4>
             <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
               <div className="flex items-center gap-4">
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-100">
@@ -360,7 +411,11 @@ export const CreateLeaveType: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {formData.name || <span className="text-gray-400 dark:text-gray-500">Leave Type Name</span>}
+                    {formData.name || (
+                      <span className="text-gray-400 dark:text-gray-500">
+                        Leave Type Name
+                      </span>
+                    )}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     {formData.code && (
@@ -377,12 +432,17 @@ export const CreateLeaveType: React.FC = () => {
                         Paid
                       </span>
                     )}
-                    <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium ${formData.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {formData.status.charAt(0).toUpperCase() + formData.status.slice(1)}
+                    <span
+                      className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs font-medium ${formData.status === "active" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
+                    >
+                      {formData.status.charAt(0).toUpperCase() +
+                        formData.status.slice(1)}
                     </span>
                   </div>
                   {formData.description && (
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">{formData.description}</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                      {formData.description}
+                    </p>
                   )}
                 </div>
               </div>
@@ -393,8 +453,8 @@ export const CreateLeaveType: React.FC = () => {
           <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
             <button
               type="button"
-              onClick={() => navigate('/admin/leave-types')}
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+              onClick={() => navigate("/admin/leave-types")}
+              className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
             >
               Cancel
             </button>
@@ -406,13 +466,25 @@ export const CreateLeaveType: React.FC = () => {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Creating...
                 </span>
               ) : (
-                'Create Leave Type'
+                "Create Leave Type"
               )}
             </button>
           </div>
