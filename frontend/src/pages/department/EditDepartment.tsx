@@ -266,7 +266,7 @@ export const EditDepartment: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 text-white transition-colors rounded-lg bg-primary-900 hover:bg-secondary-900 hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Updating..." : "Update Department"}
             </button>

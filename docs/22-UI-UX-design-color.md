@@ -645,3 +645,381 @@ For every screen provide:
 6. Empty/loading/error states
 
 Maintain the same design language throughout the entire HRMS-Pro application.
+
+
+
+
+xxxxxxxxxxxxxxxxx
+
+
+
+final color:
+
+
+Complete Color System
+1. Brand Colors
+Purpose	Color	Hex
+Primary	Deep Blue	#002A80
+Primary Hover	Darker Blue	#001F5E
+Primary Light	Light Blue	#E9F1FF
+Secondary	Gold	#FCC71E
+Secondary Hover	Dark Gold	#E4AF00
+Secondary Light	Light Gold	#FFF7D9
+2. Background
+Item	Color
+Main Background	#F4F6F9
+Form Background	#F8F9FA ✅
+Card Background	#FFFFFF
+Sidebar	#002A80
+Navbar	#FFFFFF
+3. Text Colors
+Purpose	Color
+Main Text	#1F2937
+Secondary Text	#6B7280
+Disabled	#9CA3AF
+White Text	#FFFFFF
+4. Buttons
+Primary Button
+
+Background
+
+#002A80
+
+Text
+
+#FFFFFF
+
+Hover
+
+#001F5E
+Secondary Button
+
+Background
+
+#FCC71E
+
+Text
+
+#1F2937
+
+Hover
+
+#E4AF00
+Success Button
+
+Since your theme uses blue and gold, a modern emerald green works well.
+
+Background
+
+#16A34A
+
+Hover
+
+#15803D
+
+Text
+
+#FFFFFF
+Warning Button
+
+Background
+
+#F59E0B
+
+Hover
+
+#D97706
+
+Text
+
+#FFFFFF
+Error / Delete Button
+
+Background
+
+#DC2626
+
+Hover
+
+#B91C1C
+
+Text
+
+#FFFFFF
+Cancel Button
+
+Use a neutral gray rather than red.
+
+Background
+
+#6B7280
+
+Hover
+
+#4B5563
+
+Text
+
+#FFFFFF
+Info Button
+
+Background
+
+#0EA5E9
+
+Hover
+
+#0284C7
+
+Text
+
+#FFFFFF
+5. Form
+Input
+
+Background
+
+#FFFFFF
+
+Border
+
+#D1D5DB
+
+Focus Border
+
+#002A80
+
+Focus Shadow
+
+rgba(0,42,128,.15)
+
+Placeholder
+
+#9CA3AF
+6. Cards
+
+Background
+
+#FFFFFF
+
+Border
+
+#E5E7EB
+
+Shadow
+
+0 2px 10px rgba(0,0,0,.06)
+
+Hover Shadow
+
+0 8px 24px rgba(0,0,0,.12)
+7. Table
+
+Header Background
+
+#002A80
+
+Header Text
+
+#FFFFFF
+
+Row Hover
+
+#F3F8FF
+
+Border
+
+#E5E7EB
+
+Alternate Row
+
+#FAFAFA
+8. Sidebar
+
+Background
+
+#002A80
+
+Menu Text
+
+#FFFFFF
+
+Active Menu
+
+#FCC71E
+
+Active Text
+
+#002A80
+
+Hover
+
+rgba(255,255,255,.12)
+9. Navbar
+
+Background
+
+#FFFFFF
+
+Border Bottom
+
+#E5E7EB
+
+Icon
+
+#002A80
+
+Notification Badge
+
+#DC2626
+10. Status Badges
+Status	Background	Text
+Success	#DCFCE7	#166534
+Pending	#FEF3C7	#92400E
+Rejected	#FEE2E2	#991B1B
+Processing	#DBEAFE	#1D4ED8
+Inactive	#F3F4F6	#4B5563
+11. Alert / Message Boxes
+Success
+
+Background
+
+#DCFCE7
+
+Border
+
+#22C55E
+
+Title
+
+#166534
+
+Icon
+
+#16A34A
+Warning
+
+Background
+
+#FEF3C7
+
+Border
+
+#F59E0B
+
+Text
+
+#92400E
+Error
+
+Background
+
+#FEE2E2
+
+Border
+
+#DC2626
+
+Text
+
+#991B1B
+Info
+
+Background
+
+#E0F2FE
+
+Border
+
+#0EA5E9
+
+Text
+
+#075985
+12. Modal
+
+Background
+
+#FFFFFF
+
+Header
+
+#002A80
+
+Header Text
+
+#FFFFFF
+
+Footer
+
+#F8F9FA
+13. Pagination
+
+Active
+
+#002A80
+
+Hover
+
+#001F5E
+
+Inactive
+
+#FFFFFF
+
+Border
+
+#D1D5DB
+14. Links
+
+Normal
+
+#002A80
+
+Hover
+
+#001F5E
+
+Visited
+
+#1D4ED8
+15. Toggle Switch
+
+On
+
+#002A80
+
+Off
+
+#D1D5DB
+
+Thumb
+
+#FFFFFF
+16. Progress Bar
+
+Background
+
+#E5E7EB
+
+Progress
+
+#002A80
+
+Success Progress
+
+#16A34A
+17. Dashboard Cards
+Card	Accent
+Employees	#002A80
+Attendance	#0EA5E9
+Payroll	#16A34A
+Leave	#FCC71E
+Departments	#8B5CF6
+Reports	#DC2626
+Recommended Design Ratio (60/30/10)
+60% – Neutral backgrounds: #F4F6F9, #F8F9FA, #FFFFFF
+30% – Primary blue: #002A80 (sidebar, headers, primary buttons, links)
+10% – Accent gold: #FCC71E (active navigation, highlights, key secondary actions)
+
+This palette provides a professional enterprise appearance suitable for HRMS, ERP, CRM, finance, or other business portals while maintaining good contrast and accessibility.

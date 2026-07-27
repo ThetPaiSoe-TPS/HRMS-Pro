@@ -149,7 +149,7 @@ export const Departments: React.FC = () => {
         </div>
         <button
           onClick={() => navigate("/admin/departments/create")}
-          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700"
+          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-900 hover:text-black hover:bg-secondary-900"
         >
           <PlusIcon className="w-5 h-5" />
           Create Department
@@ -403,7 +403,7 @@ export const Departments: React.FC = () => {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleView(department)}
-                            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+                            className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-900 rounded-lg hover:bg-primary-50 transition-colors"
                             title="View"
                           >
                             <EyeIcon className="w-4 h-4" />
@@ -470,8 +470,8 @@ export const Departments: React.FC = () => {
                       onClick={() => handlePageChange(page)}
                       className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                         page === filters.page
-                          ? "bg-primary-600 text-white"
-                          : "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                          ? "bg-primary-900 text-white"
+                          : "border border-gray-300 dark:border-gray-600 hover:bg-secondary-900 dark:hover:bg-gray-700 dark:bg-gray-700"
                       }`}
                     >
                       {page}
@@ -611,7 +611,7 @@ export const Departments: React.FC = () => {
                   setShowViewModal(false);
                   handleEdit(selectedDepartment);
                 }}
-                className="px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
+                className="px-4 py-2 text-white transition-colors rounded-lg bg-primary-900 hover:text-black hover:bg-secondary-900"
               >
                 Edit Department
               </button>

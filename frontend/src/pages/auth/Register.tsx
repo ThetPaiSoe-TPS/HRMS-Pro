@@ -195,7 +195,7 @@ export const Register: React.FC = () => {
 
         <div className="text-small text-center">
           <span className="text-text-secondary">Already have an account?</span>{' '}
-          <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+          <Link to="/login" className="font-medium text-primary-900 hover:text-secondary-500 transition-colors">
             Sign in
           </Link>
         </div>

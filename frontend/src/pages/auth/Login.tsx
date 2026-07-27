@@ -1,29 +1,74 @@
-﻿import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { useAuth } from '../../hooks/useAuth';
-import { loginSchema, type LoginFormData } from '../../validations/auth.validation';
-import { AuthLayout } from '../../components/auth/AuthLayout';
-import { Input } from '../../components/common/Input/Input';
-import { Button } from '../../components/common/Button/Button';
+﻿import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+  UserIcon,
+  ShieldCheckIcon,
+  UsersIcon,
+} from "@heroicons/react/24/outline";
+import { useAuth } from "../../hooks/useAuth";
+import {
+  loginSchema,
+  type LoginFormData,
+} from "../../validations/auth.validation";
+import { AuthLayout } from "../../components/auth/AuthLayout";
+import { Input } from "../../components/common/Input/Input";
+import { Button } from "../../components/common/Button/Button";
+
+// Demo credentials by role
+const DEMO_CREDENTIALS = {
+  super_admin: {
+    email: "super.admin@hrms.com",
+    password: "asd123!@#",
+    label: "Super Admin",
+    icon: ShieldCheckIcon,
+    color: "bg-purple-600 hover:bg-purple-700",
+  },
+  admin: {
+    email: "admin@hrms.com",
+    password: "password123",
+    label: "Admin",
+    icon: ShieldCheckIcon,
+    color: "bg-[#002A80] hover:bg-[#002060]",
+  },
+  manager: {
+    email: "manager@hrms.com",
+    password: "password123",
+    label: "Manager",
+    icon: UserIcon,
+    color: "bg-blue-600 hover:bg-blue-700",
+  },
+  employee: {
+    email: "employee@hrms.com",
+    password: "password123",
+    label: "Employee",
+    icon: UsersIcon,
+    color: "bg-green-600 hover:bg-green-700",
+  },
+};
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, touchedFields },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       remember: false,
     },
   });
@@ -32,10 +77,38 @@ export const Login: React.FC = () => {
     try {
       setError(null);
       await login(data.email, data.password, data.remember);
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+      setError(
+        err.response?.data?.message || "Invalid credentials. Please try again.",
+      );
     }
+  };
+
+  const handleDemoLogin = async (role: keyof typeof DEMO_CREDENTIALS) => {
+    try {
+      setError(null);
+      const creds = DEMO_CREDENTIALS[role];
+      setValue("email", creds.email);
+      setValue("password", creds.password);
+      setValue("remember", true);
+      setSelectedRole(role);
+
+      await login(creds.email, creds.password, true);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || "Demo login failed. Please try again.",
+      );
+    }
+  };
+
+  const fillDemoCredentials = (role: keyof typeof DEMO_CREDENTIALS) => {
+    const creds = DEMO_CREDENTIALS[role];
+    setValue("email", creds.email);
+    setValue("password", creds.password);
+    setValue("remember", true);
+    setSelectedRole(role);
   };
 
   return (
@@ -50,6 +123,90 @@ export const Login: React.FC = () => {
           </div>
         )}
 
+        {/* Demo Login Buttons */}
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
+            Quick Demo Login
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {(
+              Object.keys(DEMO_CREDENTIALS) as Array<
+                keyof typeof DEMO_CREDENTIALS
+              >
+            ).map((role) => {
+              const creds = DEMO_CREDENTIALS[role];
+              const Icon = creds.icon;
+              return (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => handleDemoLogin(role)}
+                  disabled={isLoading}
+                  className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-btn font-medium text-white transition-all duration-200 ${creds.color} hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="text-sm">{creds.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-text-secondary">
+              Or sign in with
+            </span>
+          </div>
+        </div>
+
+        {/* Demo Credentials Info */}
+        <div className="bg-blue-50 border border-blue-200 rounded-input p-3">
+          <p className="text-xs font-medium text-blue-700 text-center mb-2">
+            Demo Credentials
+          </p>
+          <div className="grid grid-cols-2 gap-1 text-xs">
+            <div>
+              <span className="font-medium text-blue-700">Super Admin:</span>
+              <br />
+              <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
+                super.admin@hrms.com
+              </code>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">Admin:</span>
+              <br />
+              <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
+                admin@hrms.com
+              </code>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">Manager:</span>
+              <br />
+              <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
+                manager@hrms.com
+              </code>
+            </div>
+            <div>
+              <span className="font-medium text-blue-700">Employee:</span>
+              <br />
+              <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
+                employee@hrms.com
+              </code>
+            </div>
+          </div>
+          <p className="text-xs text-blue-600 text-center mt-1">
+            Password:{" "}
+            <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
+              asd123!@#
+            </code>{" "}
+            for all
+          </p>
+        </div>
+
         <Input
           label="Email address"
           type="email"
@@ -57,12 +214,12 @@ export const Login: React.FC = () => {
           leftIcon={<EnvelopeIcon className="h-5 w-5" />}
           error={errors.email?.message}
           touched={!!touchedFields.email}
-          {...register('email')}
+          {...register("email")}
         />
 
         <Input
           label="Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           placeholder="Enter your password"
           leftIcon={<LockClosedIcon className="h-5 w-5" />}
           rightIcon={
@@ -80,7 +237,7 @@ export const Login: React.FC = () => {
           }
           error={errors.password?.message}
           touched={!!touchedFields.password}
-          {...register('password')}
+          {...register("password")}
         />
 
         <div className="flex items-center justify-between">
@@ -89,16 +246,19 @@ export const Login: React.FC = () => {
               id="remember"
               type="checkbox"
               className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded-input"
-              {...register('remember')}
+              {...register("remember")}
             />
-            <label htmlFor="remember" className="ml-2 block text-small text-text-primary">
+            <label
+              htmlFor="remember"
+              className="ml-2 block text-small text-text-primary"
+            >
               Remember me
             </label>
           </div>
 
           <Link
             to="/forgot-password"
-            className="text-small font-medium text-primary-600 hover:text-primary-500 transition-colors"
+            className="text-small font-medium text-primary-900 hover:text-secondary-900 transition-colors"
           >
             Forgot password?
           </Link>
@@ -109,14 +269,17 @@ export const Login: React.FC = () => {
           variant="primary"
           fullWidth
           loading={isLoading}
-          size="lg"
+          size="lg"          
         >
           Sign in
         </Button>
 
         <div className="text-small text-center">
-          <span className="text-text-secondary">Don't have an account?</span>{' '}
-          <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+          <span className="text-text-secondary">Don't have an account?</span>{" "}
+          <Link
+            to="/register"
+            className="font-medium text-primary-900 hover:text-secondary-900 transition-colors"
+          >
             Create one now
           </Link>
         </div>

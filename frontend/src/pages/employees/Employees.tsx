@@ -175,7 +175,7 @@ export const Employees: React.FC = () => {
         </div>
         <button
           onClick={() => navigate("/admin/employees/create")}
-          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700"
+          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-900 hover:bg-secondary-900 hover:text-black"
         >
           <PlusIcon className="w-5 h-5" />
           Add Employee
@@ -471,7 +471,7 @@ export const Employees: React.FC = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleView(employee)}
-                        className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors dark:hover:bg-primary-900/30"
+                        className="p-1.5 text-gray-400 hover:text-primary-900 rounded-lg hover:bg-primary-50 transition-colors dark:hover:bg-primary-900/30"
                         title="View"
                       >
                         <EyeIcon className="w-4 h-4" />
@@ -543,7 +543,7 @@ export const Employees: React.FC = () => {
                   onClick={() => handlePageChange(page)}
                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                     page === filters.page
-                      ? "bg-primary-600 text-white"
+                      ? "bg-primary-900 text-white"
                       : "border border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
                   }`}
                 >
@@ -729,7 +729,7 @@ export const Employees: React.FC = () => {
                   setShowViewModal(false);
                   handleEdit(selectedEmployee);
                 }}
-                className="w-full sm:w-auto px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
+                className="w-full sm:w-auto px-4 py-2 text-white transition-colors rounded-lg bg-primary-900 hover:bg-secondary-900 hover:text-black"
               >
                 Edit Employee
               </button>

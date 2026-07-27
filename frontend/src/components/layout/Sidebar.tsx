@@ -23,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     "Leave Management",
     "Payroll",
     "Reports",
-    "Administration", // Administration is now expanded by default
+    "Administration",
   ]);
 
   const toggleExpand = (name: string) => {
@@ -59,7 +59,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     const isItemActive =
       isActive(item.href) || (hasChildren && isChildActive(item.children));
 
-    // Check if any child has a badge
     const hasBadge = item.children?.some((child) => child.badge);
     const totalBadge = item.children?.reduce(
       (sum, child) => sum + (child.badge || 0),
@@ -76,24 +75,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               transition-all duration-200
               ${
                 isItemActive
-                  ? "bg-primary-50 text-primary-700"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  ? "bg-secondary-900 text-gray-900" // Active: #FCC71E
+                  : "bg-primary-900 text-white hover:bg-primary-600/50" // Normal: #D7E2FF
               }
             `}
           >
             <item.icon
-              className={`h-5 w-5 flex-shrink-0 ${isItemActive ? "text-primary-600" : "text-gray-400"}`}
+              className={`h-5 w-5 flex-shrink-0 ${
+                // isItemActive ? "text-gray-900" : "text-gray-600"
+                isItemActive ? "text-gray-900" : "text-white"
+              }`}
             />
             <span className="flex-1 text-left">{item.name}</span>
             {hasBadge && totalBadge > 0 && (
-              <span className="bg-primary-100 text-primary-700 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-gray-900/20 text-gray-900 text-xs px-2 py-0.5 rounded-full">
                 {totalBadge}
               </span>
             )}
             {isExpanded ? (
-              <ChevronDownIcon className="w-4 h-4 text-gray-400" />
+              <ChevronDownIcon className="w-4 h-4 text-gray-600" />
             ) : (
-              <ChevronRightIcon className="w-4 h-4 text-gray-400" />
+              <ChevronRightIcon className="w-4 h-4 text-gray-600" />
             )}
           </button>
 
@@ -109,17 +111,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     transition-all duration-200
                     ${
                       isActive(child.href)
-                        ? "bg-primary-50 text-primary-700 font-medium"
-                        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                        ? "bg-secondary-900 text-gray-900 font-medium" // Active child: #FCC71E
+                        : "bg-primary-900 text-white hover:bg-primary-600/30" // Normal child: #D7E2FF/50
                     }
                   `}
                 >
                   <child.icon
-                    className={`h-4 w-4 flex-shrink-0 ${isActive(child.href) ? "text-primary-500" : "text-gray-400"}`}
+                    className={`h-4 w-4 flex-shrink-0 ${
+                      isActive(child.href) ? "text-gray-900" : "text-white"
+                    }`}
                   />
                   <span className="flex-1">{child.name}</span>
                   {child.badge && child.badge > 0 && (
-                    <span className="bg-primary-100 text-primary-700 text-xs px-2 py-0.5 rounded-full">
+                    <span className="border border-white text-white text-xs px-2 py-0.5 rounded-full">
                       {child.badge}
                     </span>
                   )}
@@ -141,17 +145,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           transition-all duration-200
           ${
             isActive(item.href)
-              ? "bg-primary-50 text-primary-700"
-              : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+              ? "bg-secondary-900 text-gray-900" // Active: #FCC71E
+              : "bg-primary-900 text-white hover:bg-primary-600/50" // Normal: #D7E2FF
           }
         `}
       >
         <item.icon
-          className={`h-5 w-5 flex-shrink-0 ${isActive(item.href) ? "text-primary-600" : "text-gray-400"}`}
+          className={`h-5 w-5 flex-shrink-0 ${
+            isActive(item.href) ? "text-gray-900" : "text-white"
+          }`}
         />
         {item.name}
         {item.badge && item.badge > 0 && (
-          <span className="ml-auto bg-primary-100 text-primary-700 text-xs px-2 py-0.5 rounded-full">
+          <span className="ml-auto bg-gray-900/20 text-gray-900 text-xs px-2 py-0.5 rounded-full">
             {item.badge}
           </span>
         )}
@@ -172,28 +178,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200
+          fixed inset-y-0 left-0 z-50 w-64 bg-primary-900 text-white
           flex flex-col transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          lg:translate-x-0 lg:static lg:z-auto dark:bg-gray-900 dark:border-gray-700
+          lg:translate-x-0 lg:static lg:z-auto
         `}
       >
         {/* Logo */}
-        {/* Logo */}
-        <div className="flex items-center flex-shrink-0 h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center flex-shrink-0 h-16 px-4 border-b border-white/10">
           <Link
             to="/dashboard"
             className="flex items-center gap-3"
             onClick={onClose}
           >
-            <div className="flex items-center justify-center w-12 h-12 overflow-hidden border rounded-full">
+            <div className="flex items-center justify-center w-12 h-12 overflow-hidden border-2 border-white/20 rounded-full">
               <img
                 src="/HRSM-pro.png"
                 alt="Logo"
                 className="object-cover w-full h-full"
               />
             </div>
-            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">HRMS Pro</span>
+            <span className="text-lg font-bold text-white">HRMS Pro</span>
           </Link>
         </div>
 
@@ -203,31 +208,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </nav>
 
         {/* Bottom Section - User Profile & Logout */}
-        <div className="flex-shrink-0 p-3 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex-shrink-0 p-3 border-t border-white/10">
           <Link
             to="/profile"
             onClick={onClose}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-all duration-200 mb-1 dark:hover:bg-gray-800"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 mb-1"
           >
-            <div className="flex items-center justify-center flex-shrink-0 rounded-full h-9 w-9 bg-primary-100 dark:bg-primary-900">
-              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+            <div className="flex items-center justify-center flex-shrink-0 rounded-full h-9 w-9 bg-white/20">
+              <span className="text-sm font-medium text-white">
                 {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-100">
+              <p className="text-sm font-medium text-white truncate">
                 {user?.name || "User"}
               </p>
-              <p className="text-xs text-gray-500 capitalize truncate dark:text-gray-400">
+              <p className="text-xs text-white/70 capitalize truncate">
                 {String(user?.role ?? "").replace("_", " ") || "Employee"}
               </p>
             </div>
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
           </Link>
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-all duration-200 dark:hover:bg-red-900/20"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/80 hover:bg-white/10 hover:text-white transition-all duration-200"
           >
             <ArrowRightOnRectangleIcon className="w-5 h-5" />
             Logout
