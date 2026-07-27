@@ -1,5 +1,4 @@
-﻿
-export interface Payroll {
+﻿export interface Payroll {
   id: number;
   employee_id: number;
   employee?: {
@@ -31,10 +30,10 @@ export interface Payroll {
   total_deductions: number;
   gross_salary: number;
   net_salary: number;
-  payment_method: 'bank_transfer' | 'cash' | 'check' | null;
+  payment_method: "bank_transfer" | "cash" | "check" | null;
   bank_name: string | null;
   bank_account: string | null;
-  payment_status: 'pending' | 'processing' | 'paid' | 'rejected' | 'cancelled';
+  payment_status: "pending" | "processing" | "paid" | "rejected" | "cancelled";
   payment_date: string | null;
   notes: string | null;
   created_by: number;
@@ -57,6 +56,21 @@ export interface PayrollGenerateData {
   year: number;
   employee_ids?: number[];
 }
+
+export const CURRENCY = {
+  code: "MMK",
+  symbol: "K",
+  locale: "my-MM",
+};
+
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat("my-MM", {
+    style: "currency",
+    currency: "MMK",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+};
 
 export interface PayrollFilters {
   employee_id: string;
@@ -88,7 +102,7 @@ export interface PayrollUpdateData {
 }
 
 export interface PayrollPaymentData {
-  payment_method: 'bank_transfer' | 'cash' | 'check';
+  payment_method: "bank_transfer" | "cash" | "check";
   bank_name?: string;
   bank_account?: string;
   payment_date?: string;

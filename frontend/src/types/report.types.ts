@@ -1,11 +1,10 @@
-﻿
-export interface ReportFilters {
+﻿export interface ReportFilters {
   date_from: string;
   date_to: string;
   department_id: string;
   employee_id: string;
   status?: string;
-  format?: 'pdf' | 'excel' | 'csv';
+  format?: "pdf" | "excel" | "csv";
 }
 
 export interface EmployeeReportData {
@@ -15,12 +14,25 @@ export interface EmployeeReportData {
   department: string;
   position: string;
   email: string;
-  phone: string | null;
+  phone: string;
   hire_date: string;
-  employment_status: string;
+  employment_status: "active" | "inactive" | "resigned" | "terminated";
   gender: string;
-  age: number;
+  age: number | null;
   tenure_years: number;
+}
+
+export interface AttendanceReportData {
+  employee_id: number;
+  employee_name: string;
+  employee_code: string;
+  department: string;
+  date: string;
+  check_in: string;
+  check_out: string;
+  status: "present" | "absent" | "late" | "half_day" | "leave";
+  work_hours: number;
+  overtime_hours: number;
 }
 
 export interface LeaveReportData {
@@ -32,7 +44,7 @@ export interface LeaveReportData {
   start_date: string;
   end_date: string;
   days: number;
-  status: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
   reason: string;
 }
 

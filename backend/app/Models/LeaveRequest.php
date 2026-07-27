@@ -12,7 +12,7 @@ class LeaveRequest extends Model
 
     protected $fillable = [
         'employee_id',
-        'leave_type_id',
+        'leave_type_id',      // Foreign key to leave_types
         'start_date',
         'end_date',
         'total_days',
@@ -35,12 +35,11 @@ class LeaveRequest extends Model
         'attachment_size' => 'integer',
     ];
 
-    protected $appends = ['days', 'attachment_url'];
+    protected $appends = ['days', 'attachment_url', 'leave_type_name'];
 
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id')
-            ->select(['id', 'name', 'employee_code', 'photo', 'department_id', 'position_id'])
             ->with(['department', 'position']);
     }
 
@@ -60,6 +59,11 @@ class LeaveRequest extends Model
             return $this->start_date->diffInDays($this->end_date) + 1;
         }
         return $this->total_days ?? 1;
+    }
+
+    public function getLeaveTypeNameAttribute()
+    {
+        return $this->leaveType ? $this->leaveType->name : ($this->leave_type ?? 'N/A');
     }
 
     public function getAttachmentUrlAttribute()

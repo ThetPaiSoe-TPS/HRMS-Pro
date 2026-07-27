@@ -178,6 +178,8 @@ Route::prefix('v1')->group(function () {
         Route::get('attendance', [ReportController::class, 'attendance']);
         Route::get('leave', [ReportController::class, 'leave']);
         Route::get('payroll', [ReportController::class, 'payroll']);
+        Route::get('{type}/export', [ReportController::class, 'export']); // Add this
+        Route::get('{type}/stats', [ReportController::class, 'stats']);  //
     });
 
     Route::prefix('dashboard')->middleware('auth:sanctum')->group(function () {

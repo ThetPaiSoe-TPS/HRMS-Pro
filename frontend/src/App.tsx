@@ -55,6 +55,7 @@ import CreateLeaveType from "./pages/admin/leaves/CreateLeaveTypes";
 import EditLeaveType from "./pages/admin/leaves/EditLeaveType";
 import Settings from "./pages/settings/Settings";
 import EditLeave from "./pages/admin/leaves/EditLeave";
+import PayslipView from "./pages/admin/payroll/PayslipView";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -148,12 +149,15 @@ function App() {
         {/* Payroll */}
         <Route path="/admin/payroll" element={<PayrollList />} />
         <Route path="/admin/payroll/generate" element={<GeneratePayroll />} />
+        <Route path="/admin/payroll/payslips" element={<Payslips />} />
+        <Route path="/admin/payroll/:id" element={<PayslipView />} />
 
         {/* Reports */}
         <Route path="/admin/reports/employees" element={<EmployeeReport />} />
         <Route path="/admin/reports/leaves" element={<LeaveReport />} />
         <Route path="/admin/reports/payroll" element={<PayrollReport />} />
         <Route path="/reports/attendance" element={<AttendanceReportPage />} />
+        
 
         {/* Announcements */}
         <Route path="/announcements" element={<Announcements />} />

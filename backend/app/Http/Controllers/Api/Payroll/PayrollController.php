@@ -36,8 +36,9 @@ class PayrollController extends Controller
         }
 
         $payrolls = Payroll::with([
-            'employee:id,name,employee_code,department_id',
+            'employee:id,name,employee_code,department_id,position_id,photo', // ✅ Added photo
             'employee.department:id,name',
+            'employee.position:id,title',
             'creator:id,name',
         ]);
 
@@ -74,7 +75,7 @@ class PayrollController extends Controller
         }
 
         $payroll->load([
-            'employee:id,name,employee_code,department_id,position_id',
+            'employee:id,name,employee_code,department_id,position_id,photo', // ✅ Added photo
             'employee.department:id,name',
             'employee.position:id,title',
             'creator:id,name',
