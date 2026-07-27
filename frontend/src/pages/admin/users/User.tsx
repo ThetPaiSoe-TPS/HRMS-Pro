@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -14,163 +14,135 @@ import {
   CalendarIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
-} from '@heroicons/react/24/outline';
-import type { User } from '../../../types/auth.types';
-import { useAuth } from '../../../hooks/useAuth';
-import type { UserFilters } from '../../../types/user.types';
+} from "@heroicons/react/24/outline";
+import type { User } from "../../../types/auth.types";
+import { useAuth } from "../../../hooks/useAuth";
+import type { UserFilters } from "../../../types/user.types";
+import { userApi } from "../../../api/user/userApi";
+import { getStorageUrl } from "../../../api/axios";
 
-// Mock data - Replace with API calls
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john.doe@company.com',
-    role: 'super_admin',
-    email_verified_at: '2024-01-01T00:00:00.000000Z',
-    created_at: '2024-01-01T00:00:00.000000Z',
-    updated_at: '2024-01-01T00:00:00.000000Z',
-    employee: {
-      id: 1,
-      name: 'John Doe',
-      employee_code: 'EMP001',
-      department: { id: 1, name: 'Engineering' },
-      position: { id: 1, title: 'Senior Developer' },
-    },
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane.smith@company.com',
-    role: 'hr_manager',
-    email_verified_at: '2024-01-02T00:00:00.000000Z',
-    created_at: '2024-01-02T00:00:00.000000Z',
-    updated_at: '2024-01-02T00:00:00.000000Z',
-    employee: {
-      id: 2,
-      name: 'Jane Smith',
-      employee_code: 'EMP002',
-      department: { id: 2, name: 'Human Resources' },
-      position: { id: 4, title: 'HR Manager' },
-    },
-  },
-  {
-    id: 3,
-    name: 'Robert Johnson',
-    email: 'robert.johnson@company.com',
-    role: 'department_manager',
-    email_verified_at: '2024-01-03T00:00:00.000000Z',
-    created_at: '2024-01-03T00:00:00.000000Z',
-    updated_at: '2024-01-03T00:00:00.000000Z',
-    employee: {
-      id: 3,
-      name: 'Robert Johnson',
-      employee_code: 'EMP003',
-      department: { id: 1, name: 'Engineering' },
-      position: { id: 3, title: 'DevOps Engineer' },
-    },
-  },
-  {
-    id: 4,
-    name: 'Sarah Williams',
-    email: 'sarah.williams@company.com',
-    role: 'employee',
-    email_verified_at: null,
-    created_at: '2024-01-04T00:00:00.000000Z',
-    updated_at: '2024-01-04T00:00:00.000000Z',
-    employee: {
-      id: 4,
-      name: 'Sarah Williams',
-      employee_code: 'EMP004',
-      department: { id: 3, name: 'Finance' },
-      position: { id: 6, title: 'Accountant' },
-    },
-  },
-  {
-    id: 5,
-    name: 'Michael Brown',
-    email: 'michael.brown@company.com',
-    role: 'employee',
-    email_verified_at: '2024-01-05T00:00:00.000000Z',
-    created_at: '2024-01-05T00:00:00.000000Z',
-    updated_at: '2024-01-05T00:00:00.000000Z',
-    employee: {
-      id: 5,
-      name: 'Michael Brown',
-      employee_code: 'EMP005',
-      department: { id: 1, name: 'Engineering' },
-      position: { id: 5, title: 'Junior Developer' },
-    },
-  },
-];
+// Helper functions for photos
+const getPhotoUrl = (photo: string | null): string | null => {
+  return getStorageUrl(photo);
+};
+
+const getInitials = (name: string) => {
+  if (!name) return "U";
+  return name
+    .split(" ")
+    .map((n) => n.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+const getRandomColor = (id: number): string => {
+  const colors = [
+    "bg-blue-100 text-blue-700",
+    "bg-green-100 text-green-700",
+    "bg-purple-100 text-purple-700",
+    "bg-pink-100 text-pink-700",
+    "bg-yellow-100 text-yellow-700",
+    "bg-indigo-100 text-indigo-700",
+    "bg-red-100 text-red-700",
+    "bg-teal-100 text-teal-700",
+    "bg-orange-100 text-orange-700",
+    "bg-cyan-100 text-cyan-700",
+  ];
+  return colors[id % colors.length];
+};
 
 // Role badge colors
 const roleColors: Record<string, string> = {
-  super_admin: 'bg-purple-100 text-purple-800',
-  hr_manager: 'bg-blue-100 text-blue-800',
-  department_manager: 'bg-indigo-100 text-indigo-800',
-  employee: 'bg-gray-100 text-gray-800',
+  super_admin: "bg-purple-100 text-purple-800",
+  hr_manager: "bg-blue-100 text-blue-800",
+  department_manager: "bg-indigo-100 text-indigo-800",
+  employee: "bg-gray-100 text-gray-800",
 };
 
 const roleLabels: Record<string, string> = {
-  super_admin: 'Super Admin',
-  hr_manager: 'HR Manager',
-  department_manager: 'Dept Manager',
-  employee: 'Employee',
+  super_admin: "Super Admin",
+  hr_manager: "HR Manager",
+  department_manager: "Dept Manager",
+  employee: "Employee",
 };
 
-// Status badge colors
 const statusColors: Record<string, string> = {
-  verified: 'bg-green-100 text-green-800',
-  unverified: 'bg-yellow-100 text-yellow-800',
-  suspended: 'bg-red-100 text-red-800',
+  verified: "bg-green-100 text-green-800",
+  unverified: "bg-yellow-100 text-yellow-800",
+  suspended: "bg-red-100 text-red-800",
 };
 
 export const Users: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
-  
+
   // State
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<UserFilters>({
-    search: '',
-    role: '',
-    status: '',
+    search: "",
+    role: "",
+    status: "",
     page: 1,
     per_page: 10,
+  });
+  const [pagination, setPagination] = useState({
+    total: 0,
+    last_page: 1,
+    current_page: 1,
+    per_page: 10,
+    from: 0,
+    to: 0,
   });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
 
-  // Filter users
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = !filters.role || user.role === filters.role;
-    const matchesStatus = !filters.status || 
-      (filters.status === 'verified' && user.email_verified_at) ||
-      (filters.status === 'unverified' && !user.email_verified_at);
-    return matchesSearch && matchesRole && matchesStatus;
-  });
-
-  // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / filters.per_page);
-  const paginatedUsers = filteredUsers.slice(
-    (filters.page - 1) * filters.per_page,
-    filters.page * filters.per_page
-  );
-
-  // Handlers
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setFilters({ ...filters, page: 1 });
+  // Fetch users
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const result = await userApi.getUsers(filters);
+      setUsers(result.data);
+      setPagination({
+        total: result.total,
+        last_page: result.last_page,
+        current_page: result.current_page,
+        per_page: result.per_page,
+        from: result.from || 0,
+        to: result.to || 0,
+      });
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleFilterChange = (key: keyof UserFilters, value: string) => {
-    setFilters({ ...filters, [key]: value, page: 1 });
+  useEffect(() => {
+    fetchUsers();
+  }, [filters]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, search: searchTerm, page: 1 }));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleFilterChange = (
+    key: keyof UserFilters,
+    value: string | number,
+  ) => {
+    setFilters({ ...filters, [key]: value as any, page: 1 });
   };
 
   const handlePageChange = (page: number) => {
@@ -184,10 +156,14 @@ export const Users: React.FC = () => {
 
   const confirmDelete = async () => {
     if (!selectedUser) return;
-    // TODO: API call to delete user
-    setUsers(users.filter(u => u.id !== selectedUser.id));
-    setShowDeleteModal(false);
-    setSelectedUser(null);
+    try {
+      await userApi.deleteUser(selectedUser.id);
+      setShowDeleteModal(false);
+      setSelectedUser(null);
+      fetchUsers();
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+    }
   };
 
   const handleView = (user: User) => {
@@ -200,81 +176,105 @@ export const Users: React.FC = () => {
   };
 
   const getStatus = (user: User) => {
-    if (user.email_verified_at) return 'verified';
-    return 'unverified';
+    if (user.email_verified_at) return "verified";
+    return "unverified";
   };
 
   const getRoleBadge = (role: string) => {
-    return roleColors[role] || 'bg-gray-100 text-gray-800';
+    return roleColors[role] || "bg-gray-100 text-gray-800";
   };
+
+  if (loading && users.length === 0) {
+    return (
+      <div className="flex justify-center py-16">
+        <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            User Management
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage system users and their permissions
           </p>
         </div>
         <button
-          onClick={() => navigate('/admin/users/create')}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+          onClick={() => navigate("/admin/users/create")}
+          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700"
         >
-          <PlusIcon className="h-5 w-5" />
+          <PlusIcon className="w-5 h-5" />
           Add User
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+      <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <UserGroupIcon className="h-5 w-5 text-blue-600" />
+              <UserGroupIcon className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Total Users</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{users.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Total Users
+              </p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                {pagination.total}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">
-              <CheckBadgeIcon className="h-5 w-5 text-green-600" />
+              <CheckBadgeIcon className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Verified</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Verified
+              </p>
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {users.filter(u => u.email_verified_at).length}
+                {users.filter((u) => u.email_verified_at).length}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-100 rounded-lg">
-              <XMarkIcon className="h-5 w-5 text-yellow-600" />
+              <XMarkIcon className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Unverified</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Unverified
+              </p>
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {users.filter(u => !u.email_verified_at).length}
+                {users.filter((u) => !u.email_verified_at).length}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+        <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
-              <UserGroupIcon className="h-5 w-5 text-purple-600" />
+              <UserGroupIcon className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Admins</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Admins
+              </p>
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {users.filter(u => u.role === 'super_admin' || u.role === 'hr_manager').length}
+                {
+                  users.filter(
+                    (u) => u.role === "super_admin" || u.role === "hr_manager",
+                  ).length
+                }
               </p>
             </div>
           </div>
@@ -282,46 +282,56 @@ export const Users: React.FC = () => {
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+      <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2 dark:text-gray-500" />
             <input
               type="text"
               placeholder="Search users by name or email..."
               value={searchTerm}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
           >
-            <FunnelIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
-            <span className="text-sm text-gray-700 dark:text-gray-300">Filters</span>
+            <FunnelIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Filters
+            </span>
           </button>
           <button
             onClick={() => {
-              setSearchTerm('');
-              setFilters({ search: '', role: '', status: '', page: 1, per_page: 10 });
+              setSearchTerm("");
+              setFilters({
+                search: "",
+                role: "",
+                status: "",
+                page: 1,
+                per_page: 10,
+              });
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 transition-colors dark:text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:text-gray-300"
           >
-            <ArrowPathIcon className="h-5 w-5" />
+            <ArrowPathIcon className="w-5 h-5" />
             <span className="text-sm">Reset</span>
           </button>
         </div>
 
         {/* Filter Options */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700 sm:grid-cols-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Role
+              </label>
               <select
                 value={filters.role}
-                onChange={(e) => handleFilterChange('role', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                onChange={(e) => handleFilterChange("role", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Roles</option>
                 <option value="super_admin">Super Admin</option>
@@ -331,11 +341,13 @@ export const Users: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Status
+              </label>
               <select
                 value={filters.status}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">All Status</option>
                 <option value="verified">Verified</option>
@@ -343,11 +355,15 @@ export const Users: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Per Page</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Per Page
+              </label>
               <select
                 value={filters.per_page}
-                onChange={(e) => handleFilterChange('per_page', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                onChange={(e) =>
+                  handleFilterChange("per_page", parseInt(e.target.value))
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
@@ -360,46 +376,62 @@ export const Users: React.FC = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="overflow-hidden bg-white border border-gray-100 shadow-sm dark:bg-gray-800 rounded-xl dark:border-gray-700">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-gray-200 bg-gray-50 dark:bg-gray-700 dark:border-gray-700">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   User
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   Email
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   Role
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   Joined
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {paginatedUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors">
+              {users.map((user) => (
+                <tr
+                  key={user.id}
+                  className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary-700 font-medium text-sm">
-                          {user.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      {user.avatar ? (
+                        <img
+                          src={getPhotoUrl(user.avatar)}
+                          alt={user.name}
+                          className="flex-shrink-0 object-cover rounded-full h-9 w-9"
+                        />
+                      ) : (
+                        <div
+                          className={`h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 ${getRandomColor(user.id)}`}
+                        >
+                          <span className="text-sm font-medium">
+                            {getInitials(user.name)}
+                          </span>
+                        </div>
+                      )}
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {user.name}
+                        </p>
                         {user.employee && (
                           <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                            {user.employee.employee_code} • {user.employee.department?.name}
+                            {user.employee.employee_code} •{" "}
+                            {user.employee.department?.name}
                           </p>
                         )}
                       </div>
@@ -407,25 +439,31 @@ export const Users: React.FC = () => {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      <EnvelopeIcon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">{user.email}</span>
+                      <EnvelopeIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500">
+                        {user.email}
+                      </span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(user.role)}`}>
+                    <span
+                      className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(user.role)}`}
+                    >
                       {roleLabels[user.role] || user.role}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[getStatus(user)]}`}>
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[getStatus(user)]}`}
+                    >
                       {user.email_verified_at ? (
                         <>
-                          <CheckBadgeIcon className="h-3 w-3" />
+                          <CheckBadgeIcon className="w-3 h-3" />
                           Verified
                         </>
                       ) : (
                         <>
-                          <XMarkIcon className="h-3 w-3" />
+                          <XMarkIcon className="w-3 h-3" />
                           Unverified
                         </>
                       )}
@@ -433,7 +471,7 @@ export const Users: React.FC = () => {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                      <CalendarIcon className="h-4 w-4" />
+                      <CalendarIcon className="w-4 h-4" />
                       {new Date(user.created_at).toLocaleDateString()}
                     </div>
                   </td>
@@ -444,21 +482,21 @@ export const Users: React.FC = () => {
                         className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
                         title="View"
                       >
-                        <EyeIcon className="h-4 w-4" />
+                        <EyeIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleEdit(user)}
                         className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                         title="Edit"
                       >
-                        <PencilSquareIcon className="h-4 w-4" />
+                        <PencilSquareIcon className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(user)}
                         className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                         title="Delete"
                       >
-                        <TrashIcon className="h-4 w-4" />
+                        <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -469,10 +507,12 @@ export const Users: React.FC = () => {
         </div>
 
         {/* Empty State */}
-        {paginatedUsers.length === 0 && (
-          <div className="text-center py-12">
-            <UserGroupIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No users found</h3>
+        {users.length === 0 && (
+          <div className="py-12 text-center">
+            <UserGroupIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              No users found
+            </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
               Try adjusting your search or filters
             </p>
@@ -480,28 +520,31 @@ export const Users: React.FC = () => {
         )}
 
         {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        {pagination.last_page > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-              Showing {paginatedUsers.length > 0 ? (filters.page - 1) * filters.per_page + 1 : 0} to{' '}
-              {Math.min(filters.page * filters.per_page, filteredUsers.length)} of {filteredUsers.length} users
+              Showing {pagination.from} to {pagination.to} of {pagination.total}{" "}
+              users
             </p>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => handlePageChange(filters.page - 1)}
                 disabled={filters.page === 1}
-                className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Previous
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              {Array.from(
+                { length: pagination.last_page },
+                (_, i) => i + 1,
+              ).map((page) => (
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
                   className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                     page === filters.page
-                      ? 'bg-primary-600 text-white'
-                      : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700'
+                      ? "bg-primary-600 text-white"
+                      : "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                   }`}
                 >
                   {page}
@@ -509,8 +552,8 @@ export const Users: React.FC = () => {
               ))}
               <button
                 onClick={() => handlePageChange(filters.page + 1)}
-                disabled={filters.page === totalPages}
-                className="px-3 py-1 rounded-lg border border-gray-300 dark:border-gray-600 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
+                disabled={filters.page === pagination.last_page}
+                className="px-3 py-1 text-sm transition-colors border border-gray-300 rounded-lg dark:border-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Next
               </button>
@@ -519,88 +562,130 @@ export const Users: React.FC = () => {
         )}
       </div>
 
-      {/* ==========================================
-          VIEW USER MODAL
-          ========================================== */}
+      {/* View Modal */}
       {showViewModal && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center">
-                  <span className="text-primary-700 text-lg font-bold">
-                    {selectedUser.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                {selectedUser.avatar ? (
+                  <img
+                    src={getPhotoUrl(selectedUser.avatar)}
+                    alt={selectedUser.name}
+                    className="object-cover w-12 h-12 rounded-full"
+                  />
+                ) : (
+                  <div
+                    className={`h-12 w-12 rounded-full flex items-center justify-center ${getRandomColor(selectedUser.id)}`}
+                  >
+                    <span className="text-lg font-bold">
+                      {getInitials(selectedUser.name)}
+                    </span>
+                  </div>
+                )}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{selectedUser.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">{selectedUser.email}</p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {selectedUser.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                    {selectedUser.email}
+                  </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
               >
-                <XMarkIcon className="h-5 w-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Role</label>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                    Role
+                  </label>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
-                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(selectedUser.role)}`}>
+                    <span
+                      className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleBadge(selectedUser.role)}`}
+                    >
                       {roleLabels[selectedUser.role] || selectedUser.role}
                     </span>
                   </p>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Status</label>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                    Status
+                  </label>
                   <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[getStatus(selectedUser)]}`}>
-                      {selectedUser.email_verified_at ? 'Verified' : 'Unverified'}
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[getStatus(selectedUser)]}`}
+                    >
+                      {selectedUser.email_verified_at
+                        ? "Verified"
+                        : "Unverified"}
                     </span>
                   </p>
                 </div>
               </div>
 
               {selectedUser.employee && (
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Employee Details</h4>
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 className="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">
+                    Employee Details
+                  </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Employee Code</label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.employee_code}</p>
+                      <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                        Employee Code
+                      </label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                        {selectedUser.employee.employee_code}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Department</label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.department?.name}</p>
+                      <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                        Department
+                      </label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                        {selectedUser.employee.department?.name}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Position</label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.position?.title}</p>
+                      <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                        Position
+                      </label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                        {selectedUser.employee.position?.title}
+                      </p>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Employee Name</label>
-                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">{selectedUser.employee.name}</p>
+                      <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                        Employee Name
+                      </label>
+                      <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                        {selectedUser.employee.name}
+                      </p>
                     </div>
                   </div>
                 </div>
               )}
 
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Joined</label>
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                      Joined
+                    </label>
                     <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(selectedUser.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-500 uppercase tracking-wider">Last Updated</label>
+                    <label className="block text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400 dark:text-gray-500">
+                      Last Updated
+                    </label>
                     <p className="mt-1 text-sm text-gray-900 dark:text-gray-100">
                       {new Date(selectedUser.updated_at).toLocaleDateString()}
                     </p>
@@ -609,11 +694,10 @@ export const Users: React.FC = () => {
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
+                className="px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
               >
                 Close
               </button>
@@ -622,7 +706,7 @@ export const Users: React.FC = () => {
                   setShowViewModal(false);
                   handleEdit(selectedUser);
                 }}
-                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                className="px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
               >
                 Edit User
               </button>
@@ -631,35 +715,36 @@ export const Users: React.FC = () => {
         </div>
       )}
 
-      {/* ==========================================
-          DELETE CONFIRMATION MODAL
-          ========================================== */}
+      {/* Delete Modal */}
       {showDeleteModal && selectedUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-md w-full">
+          <div className="w-full max-w-md bg-white shadow-lg dark:bg-gray-800 rounded-xl">
             <div className="p-6">
               <div className="flex items-center justify-center mb-4">
-                <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
-                  <ExclamationTriangleIcon className="h-6 w-6 text-red-600" />
+                <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
                 </div>
               </div>
-              <h3 className="text-lg font-semibold text-center text-gray-900 dark:text-gray-100 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
                 Delete User
               </h3>
               <p className="text-sm text-center text-gray-500 dark:text-gray-400 dark:text-gray-500">
-                Are you sure you want to delete <span className="font-medium text-gray-900 dark:text-gray-100">{selectedUser.name}</span>?
-                This action cannot be undone.
+                Are you sure you want to delete{" "}
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {selectedUser.name}
+                </span>
+                ? This action cannot be undone.
               </p>
-              <div className="mt-6 flex items-center gap-3">
+              <div className="flex items-center gap-3 mt-6">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition-colors"
+                  className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:border-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDelete}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex-1 px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
                 >
                   Delete User
                 </button>
