@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 26, 2026 at 07:15 PM
+-- Generation Time: Jul 28, 2026 at 12:22 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `hrms-pro-230726`
+-- Database: `hrms-pro`
 --
 
 -- --------------------------------------------------------
@@ -56,6 +56,98 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `description`, `data`, `
 (8, 1, 'password_change', 'Changed password', '{\"current_password\":\"123123123\",\"new_password\":\"asd123!@#\",\"new_password_confirmation\":\"asd123!@#\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'http://localhost:8000/api/v1/auth/change-password', 'PUT', '2026-07-24 09:02:22', '2026-07-24 09:02:22'),
 (9, 1, 'password_change', 'Changed password', '{\"current_password\":\"123123123\",\"new_password\":\"asd123!@#\",\"new_password_confirmation\":\"asd123!@#\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'http://localhost:8000/api/v1/auth/change-password', 'PUT', '2026-07-24 09:05:04', '2026-07-24 09:05:04'),
 (10, 1, 'password_change', 'Changed password', '{\"current_password\":\"123123123\"}', '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'http://localhost:8000/api/v1/auth/change-password', 'PUT', '2026-07-24 09:06:26', '2026-07-24 09:06:26');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcements`
+--
+
+CREATE TABLE `announcements` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` longtext NOT NULL,
+  `summary` varchar(255) DEFAULT NULL,
+  `type` enum('general','hr','payroll','event','policy','emergency') NOT NULL DEFAULT 'general',
+  `priority` enum('low','medium','high','urgent') NOT NULL DEFAULT 'medium',
+  `status` enum('draft','published','archived') NOT NULL DEFAULT 'draft',
+  `is_pinned` tinyint(1) NOT NULL DEFAULT 0,
+  `is_important` tinyint(1) NOT NULL DEFAULT 0,
+  `target_type` enum('all','department','role','specific') NOT NULL DEFAULT 'all',
+  `target_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `start_date` timestamp NULL DEFAULT NULL,
+  `end_date` timestamp NULL DEFAULT NULL,
+  `created_by` bigint(20) UNSIGNED NOT NULL,
+  `published_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `announcements`
+--
+
+INSERT INTO `announcements` (`id`, `title`, `content`, `summary`, `type`, `priority`, `status`, `is_pinned`, `is_important`, `target_type`, `target_id`, `start_date`, `end_date`, `created_by`, `published_at`, `deleted_at`, `created_at`, `updated_at`) VALUES
+(1, 'Welcome to HRMS Pro!', 'We are excited to announce the launch of our new HRMS Pro system. This system will help us manage our human resources more efficiently.', 'HRMS Pro system launch announcement', 'general', 'high', 'published', 1, 1, 'all', NULL, '2026-07-28 03:11:46', '2026-08-27 03:11:46', 1, '2026-07-28 03:11:46', NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(2, 'Important: Upcoming HR Policy Changes', 'Please review the updated HR policies regarding work from home arrangements and flexible working hours.', 'HR policy updates effective next month', 'hr', 'high', 'published', 0, 1, 'all', NULL, '2026-07-28 03:11:46', '2026-08-12 03:11:46', 1, '2026-07-26 03:11:46', NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(3, 'Payroll Schedule Change for December', 'Due to the upcoming holiday season, payroll for December will be processed earlier than usual.', 'Early payroll processing for December', 'payroll', 'medium', 'draft', 0, 0, 'all', NULL, NULL, NULL, 1, NULL, NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(4, 'Welcome to HRMS Pro!', 'We are excited to announce the launch of our new HRMS Pro system. This system will help us manage our human resources more efficiently.', 'HRMS Pro system launch announcement', 'general', 'high', 'published', 1, 1, 'all', NULL, '2026-07-28 03:11:46', '2026-08-27 03:11:46', 3, '2026-07-28 03:11:46', NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(5, 'Important: Upcoming HR Policy Changes', 'Please review the updated HR policies regarding work from home arrangements and flexible working hours.', 'HR policy updates effective next month', 'hr', 'high', 'published', 0, 1, 'all', NULL, '2026-07-28 03:11:46', '2026-08-12 03:11:46', 3, '2026-07-26 03:11:46', NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(6, 'Payroll Schedule Change for December', 'Due to the upcoming holiday season, payroll for December will be processed earlier than usual.', 'Early payroll processing for December', 'payroll', 'medium', 'draft', 0, 0, 'all', NULL, NULL, NULL, 3, NULL, NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(7, 'Welcome to HRMS Pro!', 'We are excited to announce the launch of our new HRMS Pro system. This system will help us manage our human resources more efficiently.', 'HRMS Pro system launch announcement', 'general', 'high', 'published', 1, 1, 'all', NULL, '2026-07-28 03:11:46', '2026-08-27 03:11:46', 4, '2026-07-28 03:11:46', NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(8, 'Important: Upcoming HR Policy Changes', 'Please review the updated HR policies regarding work from home arrangements and flexible working hours.', 'HR policy updates effective next month', 'hr', 'high', 'published', 0, 1, 'all', NULL, '2026-07-28 03:11:46', '2026-08-12 03:11:46', 4, '2026-07-26 03:11:46', NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46'),
+(9, 'Payroll Schedule Change for December', 'Due to the upcoming holiday season, payroll for December will be processed earlier than usual.', 'Early payroll processing for December', 'payroll', 'medium', 'draft', 0, 0, 'all', NULL, NULL, NULL, 4, NULL, NULL, '2026-07-28 03:11:46', '2026-07-28 03:11:46');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcement_attachments`
+--
+
+CREATE TABLE `announcement_attachments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `announcement_id` bigint(20) UNSIGNED NOT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `file_size` bigint(20) UNSIGNED NOT NULL,
+  `mime_type` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcement_notifications`
+--
+
+CREATE TABLE `announcement_notifications` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `announcement_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `sent_at` timestamp NULL DEFAULT NULL,
+  `channel` enum('email','in_app','both') NOT NULL DEFAULT 'both',
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `read_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcement_views`
+--
+
+CREATE TABLE `announcement_views` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `announcement_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `viewed_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -202,13 +294,37 @@ CREATE TABLE `cache_locks` (
 CREATE TABLE `company_settings` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `company_name` varchar(255) NOT NULL,
+  `company_code` varchar(50) DEFAULT NULL,
   `company_email` varchar(255) DEFAULT NULL,
   `company_phone` varchar(50) DEFAULT NULL,
   `company_address` text DEFAULT NULL,
+  `company_city` varchar(100) DEFAULT NULL,
+  `company_state` varchar(100) DEFAULT NULL,
+  `company_country` varchar(100) DEFAULT NULL,
+  `company_zip` varchar(20) DEFAULT NULL,
+  `company_website` varchar(255) DEFAULT NULL,
+  `company_logo` varchar(255) DEFAULT NULL,
+  `tax_id` varchar(50) DEFAULT NULL,
+  `registration_number` varchar(50) DEFAULT NULL,
+  `timezone` varchar(50) NOT NULL DEFAULT 'UTC',
+  `date_format` varchar(20) NOT NULL DEFAULT 'YYYY-MM-DD',
+  `time_format` varchar(20) NOT NULL DEFAULT 'HH:mm',
+  `currency` varchar(10) NOT NULL DEFAULT 'USD',
+  `currency_symbol` varchar(10) NOT NULL DEFAULT '$',
+  `fiscal_year_start` date DEFAULT NULL,
+  `fiscal_year_end` date DEFAULT NULL,
+  `week_start_day` varchar(20) NOT NULL DEFAULT 'Monday',
   `logo` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `company_settings`
+--
+
+INSERT INTO `company_settings` (`id`, `company_name`, `company_code`, `company_email`, `company_phone`, `company_address`, `company_city`, `company_state`, `company_country`, `company_zip`, `company_website`, `company_logo`, `tax_id`, `registration_number`, `timezone`, `date_format`, `time_format`, `currency`, `currency_symbol`, `fiscal_year_start`, `fiscal_year_end`, `week_start_day`, `logo`, `created_at`, `updated_at`) VALUES
+(1, 'HRMS Pro Inc.', NULL, 'info@hrmspro.com', '+95 9 123 456 789', 'No. 123, Main Street, Yangon', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'UTC', 'YYYY-MM-DD', 'HH:mm', 'USD', '$', NULL, NULL, 'Monday', NULL, '2026-07-28 02:35:12', '2026-07-28 02:35:12');
 
 -- --------------------------------------------------------
 
@@ -560,7 +676,15 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (46, '2026_07_25_170546_add_location_fields_to_attendances_table', 15),
 (47, '2026_07_26_163721_create_leave_types_table', 16),
 (48, '2026_07_26_163753_add_leave_type_id_to_leave_requests_table', 17),
-(49, '2026_07_26_165155_drop_leave_type_column_from_leave_requests', 18);
+(49, '2026_07_26_165155_drop_leave_type_column_from_leave_requests', 18),
+(50, '2026_07_27_161644_update_payroll_currency_to_mmk', 19),
+(51, '2026_07_28_081609_add_missing_columns_to_roles_table', 20),
+(52, '2026_07_28_081900_add_missing_columns_to_permissions_table', 20),
+(53, '2026_07_28_090429_add_missing_columns_to_company_settings_table', 21),
+(54, '2026_07_28_093006_create_announcements_table', 22),
+(55, '2026_07_28_093032_create_announcement_attachments_table', 22),
+(56, '2026_07_28_093048_create_announcement_views_table', 22),
+(57, '2026_07_28_093105_create_announcement_notifications_table', 22);
 
 -- --------------------------------------------------------
 
@@ -600,6 +724,7 @@ CREATE TABLE `payrolls` (
   `unpaid_leave_deduction` decimal(15,2) NOT NULL DEFAULT 0.00,
   `other_deductions` decimal(15,2) NOT NULL DEFAULT 0.00,
   `net_salary` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `currency` varchar(10) NOT NULL DEFAULT 'MMK',
   `status` enum('draft','calculated','pending_approval','approved','paid','cancelled') NOT NULL DEFAULT 'draft',
   `payment_date` date DEFAULT NULL,
   `payment_method` varchar(50) DEFAULT NULL,
@@ -623,11 +748,50 @@ CREATE TABLE `payrolls` (
 -- Dumping data for table `payrolls`
 --
 
-INSERT INTO `payrolls` (`id`, `employee_id`, `payroll_month`, `basic_salary`, `daily_salary`, `hourly_salary`, `total_allowances`, `total_overtime`, `total_bonus`, `gross_salary`, `total_deductions`, `tax_amount`, `loan_deduction`, `advance_salary`, `late_deduction`, `absent_deduction`, `unpaid_leave_deduction`, `other_deductions`, `net_salary`, `status`, `payment_date`, `payment_method`, `bank_name`, `bank_account`, `transaction_number`, `general_notes`, `created_by`, `created_at`, `updated_at`, `paid_by`, `hr_notes`, `finance_notes`, `employee_notes`, `approved_by`, `approved_at`, `paid_at`) VALUES
-(1, 1, '2026-07-01', 500000.00, 21739.13, 2717.39, 0.00, 0.00, 0.00, 500000.00, 12500.00, 12500.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 487500.00, 'pending_approval', '2026-07-20', NULL, NULL, NULL, NULL, 'Updated payroll for Aung Kyaw', 1, '2026-07-19 22:51:32', '2026-07-20 23:04:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(4, 2, '2026-07-01', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'paid', '2026-07-15', 'bank_transfer', 'Myanmar National Bank', 'ACC1234567890', 'TXN-20260715-001', NULL, 1, '2026-07-20 21:31:56', '2026-07-21 00:10:19', 1, NULL, NULL, NULL, 1, '2026-07-21 00:09:56', '2026-07-21 00:10:19'),
-(5, 3, '2026-07-01', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'cancelled', NULL, NULL, NULL, NULL, NULL, 'Cancellation: \'Customer requested cancellation due to duplicate payment', 1, '2026-07-20 21:31:56', '2026-07-21 00:13:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(6, 2, '2026-01-01', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'paid', '2026-07-15', 'bank_transfer', 'Myanmar National Bank', 'ACC1234567890', 'TXN-20260715-001', NULL, 5, '2026-07-22 01:16:29', '2026-07-22 01:22:45', 1, NULL, NULL, NULL, 1, '2026-07-22 01:21:52', '2026-07-22 01:22:45');
+INSERT INTO `payrolls` (`id`, `employee_id`, `payroll_month`, `basic_salary`, `daily_salary`, `hourly_salary`, `total_allowances`, `total_overtime`, `total_bonus`, `gross_salary`, `total_deductions`, `tax_amount`, `loan_deduction`, `advance_salary`, `late_deduction`, `absent_deduction`, `unpaid_leave_deduction`, `other_deductions`, `net_salary`, `currency`, `status`, `payment_date`, `payment_method`, `bank_name`, `bank_account`, `transaction_number`, `general_notes`, `created_by`, `created_at`, `updated_at`, `paid_by`, `hr_notes`, `finance_notes`, `employee_notes`, `approved_by`, `approved_at`, `paid_at`) VALUES
+(1, 1, '2026-07-01', 500000.00, 21739.13, 2717.39, 0.00, 0.00, 0.00, 500000.00, 12500.00, 12500.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 487500.00, 'MMK', 'pending_approval', '2026-07-20', NULL, NULL, NULL, NULL, 'Updated payroll for Aung Kyaw', 1, '2026-07-19 22:51:32', '2026-07-20 23:04:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 2, '2026-07-01', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'MMK', 'paid', '2026-07-15', 'bank_transfer', 'Myanmar National Bank', 'ACC1234567890', 'TXN-20260715-001', NULL, 1, '2026-07-20 21:31:56', '2026-07-21 00:10:19', 1, NULL, NULL, NULL, 1, '2026-07-21 00:09:56', '2026-07-21 00:10:19'),
+(5, 3, '2026-07-01', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'MMK', 'cancelled', NULL, NULL, NULL, NULL, NULL, 'Cancellation: \'Customer requested cancellation due to duplicate payment', 1, '2026-07-20 21:31:56', '2026-07-21 00:13:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 2, '2026-01-01', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'MMK', 'paid', '2026-07-15', 'bank_transfer', 'Myanmar National Bank', 'ACC1234567890', 'TXN-20260715-001', NULL, 5, '2026-07-22 01:16:29', '2026-07-22 01:22:45', 1, NULL, NULL, NULL, 1, '2026-07-22 01:21:52', '2026-07-22 01:22:45'),
+(7, 1, '2026-05-01', 48653.00, 2211.50, 276.44, 7813.00, 507.00, 2414.00, 59387.00, 8064.00, 3656.00, 413.00, 1816.00, 353.00, 297.00, 396.00, 424.00, 47667.00, 'MMK', 'paid', '2026-07-13', 'check', NULL, NULL, 'TXN-UDTXRHGV', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-23 09:42:32', '2026-07-22 09:42:32'),
+(8, 11, '2026-05-01', 62893.00, 2858.77, 357.35, 10685.00, 2922.00, 768.00, 77268.00, 14517.00, 4771.00, 310.00, 320.00, 469.00, 704.00, 145.00, 326.00, 57980.00, 'MMK', 'paid', '2026-07-24', 'bank_transfer', 'First Bank', '4865084313', 'TXN-5SKMZANL', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-22 09:42:32', '2026-07-23 09:42:32'),
+(9, 21, '2026-05-01', 47830.00, 2174.09, 271.76, 11356.00, 1170.00, 4356.00, 64712.00, 10106.00, 5070.00, 843.00, 1396.00, 441.00, 862.00, 305.00, 277.00, 49536.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-17 09:42:32', NULL),
+(10, 2, '2026-05-01', 56445.00, 2565.68, 320.71, 14222.00, 1534.00, 3016.00, 75217.00, 7812.00, 6186.00, 635.00, 1048.00, 476.00, 648.00, 477.00, 101.00, 61219.00, 'MMK', 'paid', '2026-07-24', 'bank_transfer', 'Global Bank', '4040790612', 'TXN-X1C0FDDA', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-19 09:42:32', '2026-07-24 09:42:32'),
+(11, 7, '2026-05-01', 56027.00, 2546.68, 318.34, 14479.00, 2350.00, 4794.00, 77650.00, 9946.00, 5212.00, 212.00, 1523.00, 248.00, 576.00, 87.00, 302.00, 62492.00, 'MMK', 'paid', '2026-07-25', 'check', NULL, NULL, 'TXN-FLCX9L0W', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-26 09:42:32', '2026-07-23 09:42:32'),
+(12, 20, '2026-05-01', 59275.00, 2694.32, 336.79, 13150.00, 1898.00, 3423.00, 77746.00, 13654.00, 3916.00, 628.00, 591.00, 433.00, 798.00, 276.00, 484.00, 60176.00, 'MMK', 'paid', '2026-07-13', 'cash', NULL, NULL, 'TXN-IJWN3LLC', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-24 09:42:32', '2026-07-26 09:42:32'),
+(13, 22, '2026-05-01', 56004.00, 2545.64, 318.20, 5493.00, 1279.00, 4968.00, 67744.00, 9690.00, 3458.00, 830.00, 8.00, 380.00, 898.00, 473.00, 327.00, 54596.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-18 09:42:32', NULL),
+(14, 29, '2026-05-01', 79960.00, 3634.55, 454.32, 10847.00, 53.00, 8.00, 90868.00, 16186.00, 8305.00, 309.00, 1221.00, 433.00, 276.00, 370.00, 125.00, 66377.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-26 09:42:32', NULL),
+(15, 10, '2026-05-01', 45668.00, 2075.82, 259.48, 12223.00, 1544.00, 3430.00, 62865.00, 11205.00, 5800.00, 489.00, 1153.00, 314.00, 979.00, 365.00, 216.00, 45860.00, 'MMK', 'paid', '2026-07-20', 'check', NULL, NULL, 'TXN-3RIQZICV', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-19 09:42:32', '2026-07-24 09:42:32'),
+(16, 23, '2026-05-01', 62049.00, 2820.41, 352.55, 14153.00, 2532.00, 4175.00, 82909.00, 11407.00, 5235.00, 286.00, 728.00, 335.00, 754.00, 1.00, 191.00, 66267.00, 'MMK', 'paid', '2026-07-16', 'cash', NULL, NULL, 'TXN-TLVHVUTM', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-23 09:42:32', '2026-07-26 09:42:32'),
+(17, 28, '2026-05-01', 79420.00, 3610.00, 451.25, 10443.00, 2561.00, 876.00, 93300.00, 14435.00, 5640.00, 938.00, 1823.00, 172.00, 620.00, 389.00, 468.00, 73225.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-22 09:42:32', NULL),
+(18, 15, '2026-05-01', 39791.00, 1808.68, 226.09, 5388.00, 2462.00, 3242.00, 50883.00, 8888.00, 4666.00, 720.00, 1008.00, 154.00, 520.00, 408.00, 153.00, 37329.00, 'MMK', 'paid', '2026-07-20', 'bank_transfer', 'Global Bank', '2010413148', 'TXN-TBHYEOVS', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-23 09:42:32', '2026-07-23 09:42:32'),
+(19, 16, '2026-05-01', 32784.00, 1490.18, 186.27, 6979.00, 624.00, 429.00, 40816.00, 4813.00, 2277.00, 90.00, 1548.00, 281.00, 105.00, 302.00, 430.00, 33726.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-24 09:42:32', NULL),
+(20, 25, '2026-05-01', 49128.00, 2233.09, 279.14, 14476.00, 1791.00, 4174.00, 69569.00, 9048.00, 4314.00, 346.00, 112.00, 47.00, 741.00, 402.00, 203.00, 56207.00, 'MMK', 'paid', '2026-07-26', 'check', NULL, NULL, 'TXN-A9ORHB0X', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-17 09:42:32', '2026-07-23 09:42:32'),
+(21, 26, '2026-05-01', 71791.00, 3263.23, 407.90, 13385.00, 745.00, 4454.00, 90375.00, 10040.00, 7184.00, 624.00, 1209.00, 363.00, 253.00, 286.00, 110.00, 73151.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-23 09:42:32', NULL),
+(22, 27, '2026-05-01', 63506.00, 2886.64, 360.83, 12710.00, 2309.00, 4748.00, 83273.00, 14184.00, 5742.00, 627.00, 820.00, 135.00, 90.00, 328.00, 109.00, 63347.00, 'MMK', 'paid', '2026-07-16', 'check', NULL, NULL, 'TXN-UC9OX0ZB', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-17 09:42:32', '2026-07-26 09:42:32'),
+(23, 11, '2026-06-01', 68951.00, 3134.14, 391.77, 13971.00, 1747.00, 4924.00, 89593.00, 11351.00, 8599.00, 283.00, 322.00, 182.00, 615.00, 254.00, 425.00, 69643.00, 'MMK', 'paid', '2026-07-13', 'bank_transfer', 'ABC Bank', '1265267091', 'TXN-BW55JZIP', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-19 09:42:32', '2026-07-26 09:42:32'),
+(24, 19, '2026-06-01', 39309.00, 1786.77, 223.35, 10135.00, 211.00, 1413.00, 51068.00, 7870.00, 3534.00, 807.00, 1861.00, 26.00, 840.00, 215.00, 461.00, 39664.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-20 09:42:32', NULL),
+(25, 21, '2026-06-01', 60301.00, 2740.95, 342.62, 6209.00, 1854.00, 4983.00, 73347.00, 13657.00, 4540.00, 914.00, 1786.00, 374.00, 553.00, 443.00, 157.00, 55150.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-22 09:42:32', NULL),
+(26, 7, '2026-06-01', 66128.00, 3005.82, 375.73, 12715.00, 2183.00, 3418.00, 84444.00, 10343.00, 6618.00, 301.00, 84.00, 286.00, 180.00, 362.00, 48.00, 67483.00, 'MMK', 'paid', '2026-07-13', 'check', NULL, NULL, 'TXN-BWGCP5IS', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-24 09:42:32', '2026-07-23 09:42:32'),
+(27, 18, '2026-06-01', 42090.00, 1913.18, 239.15, 7548.00, 2666.00, 4881.00, 57185.00, 10538.00, 3884.00, 127.00, 109.00, 391.00, 812.00, 376.00, 377.00, 42763.00, 'MMK', 'pending_approval', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(28, 20, '2026-06-01', 44924.00, 2042.00, 255.25, 11341.00, 351.00, 3055.00, 59671.00, 6435.00, 4020.00, 45.00, 1101.00, 107.00, 979.00, 149.00, 97.00, 49216.00, 'MMK', 'paid', '2026-07-16', 'check', NULL, NULL, 'TXN-3BI008VH', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-21 09:42:32', '2026-07-27 09:42:32'),
+(29, 22, '2026-06-01', 76123.00, 3460.14, 432.52, 11362.00, 342.00, 69.00, 87896.00, 15434.00, 8471.00, 991.00, 1669.00, 469.00, 562.00, 496.00, 82.00, 63991.00, 'MMK', 'pending_approval', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(30, 29, '2026-06-01', 74654.00, 3393.36, 424.17, 7309.00, 722.00, 1200.00, 83885.00, 8955.00, 5925.00, 246.00, 1440.00, 24.00, 473.00, 187.00, 5.00, 69005.00, 'MMK', 'paid', '2026-07-25', 'cash', NULL, NULL, 'TXN-W6V8N1BB', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-21 09:42:32', '2026-07-25 09:42:32'),
+(31, 10, '2026-06-01', 30298.00, 1377.18, 172.15, 14661.00, 2532.00, 224.00, 47715.00, 9335.00, 4498.00, 302.00, 157.00, 295.00, 229.00, 141.00, 235.00, 33882.00, 'MMK', 'pending_approval', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(32, 24, '2026-06-01', 73857.00, 3357.14, 419.64, 8590.00, 105.00, 4493.00, 87045.00, 12274.00, 6601.00, 671.00, 801.00, 293.00, 442.00, 332.00, 243.00, 68170.00, 'MMK', 'paid', '2026-07-13', 'bank_transfer', 'ABC Bank', '6986786602', 'TXN-7XBSABDH', NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', 1, NULL, NULL, NULL, 1, '2026-07-26 09:42:32', '2026-07-27 09:42:32'),
+(33, 15, '2026-06-01', 40484.00, 1840.18, 230.02, 10229.00, 984.00, 3606.00, 55303.00, 7342.00, 4197.00, 186.00, 354.00, 374.00, 78.00, 129.00, 426.00, 43764.00, 'MMK', 'approved', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, 1, '2026-07-20 09:42:32', NULL),
+(34, 16, '2026-06-01', 49681.00, 2258.23, 282.28, 5232.00, 1849.00, 2714.00, 59476.00, 6767.00, 3786.00, 881.00, 884.00, 377.00, 813.00, 231.00, 284.00, 48923.00, 'MMK', 'pending_approval', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(35, 11, '2026-07-01', 55180.00, 2508.18, 313.52, 11839.00, 799.00, 2046.00, 69864.00, 13017.00, 5635.00, 540.00, 1219.00, 208.00, 242.00, 284.00, 216.00, 51212.00, 'MMK', 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(36, 19, '2026-07-01', 34128.00, 1551.27, 193.91, 13286.00, 1766.00, 3030.00, 52210.00, 6530.00, 5085.00, 518.00, 1261.00, 33.00, 155.00, 101.00, 313.00, 40595.00, 'MMK', 'calculated', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(37, 7, '2026-07-01', 48298.00, 2195.36, 274.42, 8072.00, 504.00, 2395.00, 59269.00, 6832.00, 4858.00, 862.00, 1910.00, 162.00, 55.00, 325.00, 219.00, 47579.00, 'MMK', 'calculated', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(38, 29, '2026-07-01', 64709.00, 2941.32, 367.66, 6693.00, 2620.00, 3952.00, 77974.00, 9513.00, 5694.00, 354.00, 652.00, 300.00, 724.00, 97.00, 255.00, 62767.00, 'MMK', 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(39, 10, '2026-07-01', 36993.00, 1681.50, 210.19, 11932.00, 2757.00, 3626.00, 55308.00, 9016.00, 4128.00, 577.00, 265.00, 195.00, 375.00, 18.00, 64.00, 42164.00, 'MMK', 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(40, 23, '2026-07-01', 52469.00, 2384.95, 298.12, 11672.00, 1610.00, 4493.00, 70244.00, 10233.00, 6010.00, 54.00, 895.00, 305.00, 268.00, 107.00, 107.00, 54001.00, 'MMK', 'calculated', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(41, 24, '2026-07-01', 59219.00, 2691.77, 336.47, 5436.00, 1489.00, 1030.00, 67174.00, 8602.00, 6354.00, 347.00, 1320.00, 444.00, 313.00, 163.00, 209.00, 52218.00, 'MMK', 'calculated', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(42, 28, '2026-07-01', 68539.00, 3115.41, 389.43, 11022.00, 1795.00, 4068.00, 85424.00, 15339.00, 6966.00, 524.00, 1392.00, 242.00, 781.00, 266.00, 26.00, 63119.00, 'MMK', 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(43, 16, '2026-07-01', 61754.00, 2807.00, 350.88, 12494.00, 1747.00, 3843.00, 79838.00, 15186.00, 6115.00, 449.00, 1517.00, 89.00, 204.00, 274.00, 371.00, 58537.00, 'MMK', 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(44, 26, '2026-07-01', 51665.00, 2348.41, 293.55, 11256.00, 2549.00, 4185.00, 69655.00, 10499.00, 4903.00, 764.00, 1214.00, 30.00, 754.00, 220.00, 361.00, 54253.00, 'MMK', 'pending_approval', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(45, 27, '2026-07-01', 48372.00, 2198.73, 274.84, 11722.00, 1080.00, 2816.00, 63990.00, 8212.00, 4317.00, 392.00, 1823.00, 409.00, 540.00, 213.00, 145.00, 51461.00, 'MMK', 'pending_approval', NULL, NULL, NULL, NULL, NULL, NULL, 1, '2026-07-27 09:42:32', '2026-07-27 09:42:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -687,6 +851,9 @@ CREATE TABLE `payroll_settings` (
 CREATE TABLE `permissions` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
+  `module` varchar(255) NOT NULL DEFAULT 'general',
+  `description` text DEFAULT NULL,
+  `guard_name` varchar(255) NOT NULL DEFAULT 'api',
   `slug` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -696,43 +863,62 @@ CREATE TABLE `permissions` (
 -- Dumping data for table `permissions`
 --
 
-INSERT INTO `permissions` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
-(1, 'View Employees', 'employee.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(2, 'Create Employees', 'employee.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(3, 'Update Employees', 'employee.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(4, 'Delete Employees', 'employee.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(5, 'View Departments', 'department.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(6, 'Create Departments', 'department.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(7, 'Update Departments', 'department.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(8, 'Delete Departments', 'department.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(9, 'View Positions', 'position.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(10, 'Create Positions', 'position.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(11, 'Update Positions', 'position.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(12, 'Delete Positions', 'position.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(13, 'View Attendance', 'attendance.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(14, 'Create Attendance', 'attendance.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(15, 'Update Attendance', 'attendance.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(16, 'View Leave', 'leave.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(17, 'Create Leave', 'leave.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(18, 'Approve Leave', 'leave.approve', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(19, 'Reject Leave', 'leave.reject', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(20, 'View Payroll', 'payroll.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(21, 'Generate Payroll', 'payroll.generate', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(22, 'View Reports', 'report.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(23, 'View Users', 'user.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(24, 'Create Users', 'user.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(25, 'Update Users', 'user.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(26, 'Delete Users', 'user.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(27, 'View Roles', 'role.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(28, 'Create Roles', 'role.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(29, 'Update Roles', 'role.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(30, 'Delete Roles', 'role.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(31, 'Update Settings', 'setting.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(32, 'Update Payroll', 'payroll.update', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
-(33, 'Approve Payroll', 'payroll.approve', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
-(34, 'Pay Payroll', 'payroll.pay', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
-(35, 'View Salary', 'salary.view', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
-(36, 'Update Salary', 'salary.update', '2026-07-19 23:00:04', '2026-07-19 23:00:04');
+INSERT INTO `permissions` (`id`, `name`, `module`, `description`, `guard_name`, `slug`, `created_at`, `updated_at`) VALUES
+(1, 'View Employees', 'general', NULL, 'api', 'employee.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(2, 'Create Employees', 'general', NULL, 'api', 'employee.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(3, 'Update Employees', 'general', NULL, 'api', 'employee.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(4, 'Delete Employees', 'general', NULL, 'api', 'employee.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(5, 'View Departments', 'general', NULL, 'api', 'department.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(6, 'Create Departments', 'general', NULL, 'api', 'department.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(7, 'Update Departments', 'general', NULL, 'api', 'department.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(8, 'Delete Departments', 'general', NULL, 'api', 'department.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(9, 'View Positions', 'general', NULL, 'api', 'position.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(10, 'Create Positions', 'general', NULL, 'api', 'position.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(11, 'Update Positions', 'general', NULL, 'api', 'position.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(12, 'Delete Positions', 'general', NULL, 'api', 'position.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(13, 'View Attendance', 'general', NULL, 'api', 'attendance.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(14, 'Create Attendance', 'general', NULL, 'api', 'attendance.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(15, 'Update Attendance', 'general', NULL, 'api', 'attendance.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(16, 'View Leave', 'general', NULL, 'api', 'leave.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(17, 'Create Leave', 'general', NULL, 'api', 'leave.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(18, 'Approve Leave', 'general', NULL, 'api', 'leave.approve', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(19, 'Reject Leave', 'general', NULL, 'api', 'leave.reject', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(20, 'View Payroll', 'general', NULL, 'api', 'payroll.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(21, 'Generate Payroll', 'general', NULL, 'api', 'payroll.generate', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(22, 'View Reports', 'general', NULL, 'api', 'report.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(23, 'View Users', 'general', NULL, 'api', 'user.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(24, 'Create Users', 'general', NULL, 'api', 'user.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(25, 'Update Users', 'general', NULL, 'api', 'user.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(26, 'Delete Users', 'general', NULL, 'api', 'user.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(27, 'View Roles', 'general', NULL, 'api', 'role.view', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(28, 'Create Roles', 'general', NULL, 'api', 'role.create', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(29, 'Update Roles', 'general', NULL, 'api', 'role.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(30, 'Delete Roles', 'general', NULL, 'api', 'role.delete', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(31, 'Update Settings', 'general', NULL, 'api', 'setting.update', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
+(32, 'Update Payroll', 'general', NULL, 'api', 'payroll.update', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
+(33, 'Approve Payroll', 'general', NULL, 'api', 'payroll.approve', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
+(34, 'Pay Payroll', 'general', NULL, 'api', 'payroll.pay', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
+(35, 'View Salary', 'general', NULL, 'api', 'salary.view', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
+(36, 'Update Salary', 'general', NULL, 'api', 'salary.update', '2026-07-19 23:00:04', '2026-07-19 23:00:04'),
+(38, 'dashboard.view', 'general', NULL, 'api', 'dashboard.view', '2026-07-28 01:39:11', '2026-07-28 01:39:11'),
+(40, 'employee.export', 'general', NULL, 'api', 'employee.export', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(41, 'attendance.delete', 'general', NULL, 'api', 'attendance.delete', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(42, 'attendance.report', 'general', NULL, 'api', 'attendance.report', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(43, 'leave.update', 'general', NULL, 'api', 'leave.update', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(44, 'leave.delete', 'general', NULL, 'api', 'leave.delete', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(45, 'leave.report', 'general', NULL, 'api', 'leave.report', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(46, 'payroll.create', 'general', NULL, 'api', 'payroll.create', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(47, 'payroll.delete', 'general', NULL, 'api', 'payroll.delete', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(48, 'payroll.export', 'general', NULL, 'api', 'payroll.export', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(49, 'report.export', 'general', NULL, 'api', 'report.export', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(50, 'permission.view', 'general', NULL, 'api', 'permission.view', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(51, 'permission.create', 'general', NULL, 'api', 'permission.create', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(52, 'permission.update', 'general', NULL, 'api', 'permission.update', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(53, 'permission.delete', 'general', NULL, 'api', 'permission.delete', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(54, 'profile.view', 'general', NULL, 'api', 'profile.view', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(55, 'profile.update', 'general', NULL, 'api', 'profile.update', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(56, 'profile.avatar', 'general', NULL, 'api', 'profile.avatar', '2026-07-28 01:57:49', '2026-07-28 01:57:49'),
+(57, 'setting.view', 'general', NULL, 'api', 'setting.view', '2026-07-28 01:57:49', '2026-07-28 01:57:49');
 
 -- --------------------------------------------------------
 
@@ -787,7 +973,8 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (28, 'App\\Models\\User', 1, 'hrms-pro', 'fed8ed1f48af1863f17e434a8bb0d7628d2d8916e36eeeb6f3272e65139e4f73', '[\"*\"]', NULL, NULL, '2026-07-23 01:38:58', '2026-07-23 01:38:58'),
 (37, 'App\\Models\\User', 1, 'hrms-pro', '98d9470a229b99b5b32f6b9b75b5ebafe159d5d6f08562340dfd1a0e9427d9a4', '[\"*\"]', '2026-07-24 22:31:32', NULL, '2026-07-24 09:59:00', '2026-07-24 22:31:32'),
 (38, 'App\\Models\\User', 1, 'hrms-pro', 'b014baa557f1262ea38e9e720e9e9ed780a1305d94065086b02b1122dcd77792', '[\"*\"]', NULL, NULL, '2026-07-25 08:34:02', '2026-07-25 08:34:02'),
-(40, 'App\\Models\\User', 1, 'hrms-pro', 'bbbc6351510cb053dc05569d222ec6bb199a3eaf99b64a37d2fd5dec37931e43', '[\"*\"]', '2026-07-26 10:43:35', NULL, '2026-07-26 08:17:46', '2026-07-26 10:43:35');
+(40, 'App\\Models\\User', 1, 'hrms-pro', 'bbbc6351510cb053dc05569d222ec6bb199a3eaf99b64a37d2fd5dec37931e43', '[\"*\"]', '2026-07-27 10:35:52', NULL, '2026-07-26 08:17:46', '2026-07-27 10:35:52'),
+(42, 'App\\Models\\User', 1, 'hrms-pro', 'cc99874d90616384f218192e29f13b8be6d83bbeac4a8190b77e0769f819e62d', '[\"*\"]', '2026-07-28 03:47:05', NULL, '2026-07-28 02:47:32', '2026-07-28 03:47:05');
 
 -- --------------------------------------------------------
 
@@ -840,6 +1027,9 @@ INSERT INTO `positions` (`id`, `title`, `code`, `description`, `min_salary`, `ma
 CREATE TABLE `roles` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
+  `display_name` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `guard_name` varchar(255) NOT NULL DEFAULT 'api',
   `slug` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -849,59 +1039,63 @@ CREATE TABLE `roles` (
 -- Dumping data for table `roles`
 --
 
-INSERT INTO `roles` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
-(1, 'Super Admin', 'super-admin', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(2, 'HR Manager', 'hr-manager', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(3, 'Department Manager', 'dept-manager', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(4, 'Employee', 'employee', '2026-07-19 22:27:29', '2026-07-19 22:27:29'),
-(6, 'Chief Executive Officer', 'ceo', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(7, 'Chief Technology Officer', 'cto', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(8, 'Chief Financial Officer', 'cfo', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(9, 'Chief Operating Officer', 'coo', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(10, 'HR Director', 'hr-director', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(11, 'HR Business Partner', 'hr-business-partner', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(12, 'Recruitment Manager', 'recruitment-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(13, 'Training & Development Manager', 'training-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(14, 'Compensation & Benefits Manager', 'compensation-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(15, 'HR Operations Manager', 'hr-operations-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(16, 'Engineering Manager', 'engineering-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(17, 'Software Development Manager', 'dev-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(18, 'QA Manager', 'qa-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(19, 'DevOps Manager', 'devops-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(20, 'Product Manager', 'product-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(21, 'Project Manager', 'project-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(22, 'Marketing Manager', 'marketing-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(23, 'Sales Manager', 'sales-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(24, 'Finance Manager', 'finance-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(25, 'Operations Manager', 'operations-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(26, 'IT Manager', 'it-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(27, 'Customer Service Manager', 'cs-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(28, 'Senior Software Engineer', 'senior-software-engineer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(29, 'Software Engineer', 'software-engineer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(30, 'Junior Software Engineer', 'junior-software-engineer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(31, 'Frontend Developer', 'frontend-developer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(32, 'Backend Developer', 'backend-developer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(33, 'Full Stack Developer', 'fullstack-developer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(34, 'DevOps Engineer', 'devops-engineer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(35, 'QA Engineer', 'qa-engineer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(36, 'Data Analyst', 'data-analyst', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(37, 'Data Scientist', 'data-scientist', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(38, 'Business Analyst', 'business-analyst', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(39, 'UX/UI Designer', 'ux-designer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(40, 'Graphic Designer', 'graphic-designer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(41, 'Marketing Specialist', 'marketing-specialist', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(42, 'SEO Specialist', 'seo-specialist', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(43, 'Content Writer', 'content-writer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(44, 'Sales Representative', 'sales-representative', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(45, 'Account Manager', 'account-manager', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(46, 'Customer Support', 'customer-support', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(47, 'Finance Officer', 'finance-officer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(48, 'Accountant', 'accountant', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(49, 'HR Officer', 'hr-officer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(50, 'Recruitment Officer', 'recruitment-officer', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(51, 'Office Administrator', 'office-administrator', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(52, 'Receptionist', 'receptionist', '2026-07-24 09:25:36', '2026-07-24 09:25:36'),
-(53, 'Intern', 'intern', '2026-07-24 09:25:36', '2026-07-24 09:25:36');
+INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `guard_name`, `slug`, `created_at`, `updated_at`) VALUES
+(1, 'Super Admin', 'Super Administrator', 'Full system access with all permissions. Can manage users, roles, settings, and all modules.', 'api', 'super-admin', '2026-07-19 22:27:29', '2026-07-28 01:56:58'),
+(2, 'HR Manager', 'HR Manager', 'Human Resources Manager with access to employee management, attendance tracking, leave approval, payroll processing, and HR reports.', 'api', 'hr-manager', '2026-07-19 22:27:29', '2026-07-28 01:56:58'),
+(3, 'Department Manager', 'Department Manager', 'Department manager with team management capabilities. Can view team members, approve leave, view attendance, and generate team reports.', 'api', 'dept-manager', '2026-07-19 22:27:29', '2026-07-28 01:56:58'),
+(4, 'Employee', 'Employee', 'Standard employee access with self-service capabilities. Can view own profile, apply for leave, check in/out, and view personal attendance records.', 'api', 'employee', '2026-07-19 22:27:29', '2026-07-28 01:55:42'),
+(6, 'Chief Executive Officer', 'Chief Executive Officer', 'Executive leadership with full oversight of all operations. Can view all reports and strategic data.', 'api', 'ceo', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(7, 'Chief Technology Officer', 'Chief Technology Officer', 'Executive technology leadership. Can manage IT strategy, technology stack, and engineering teams.', 'api', 'cto', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(8, 'Chief Financial Officer', 'Chief Financial Officer', 'Executive financial leadership. Can manage financial operations, budgets, and payroll approvals.', 'api', 'cfo', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(9, 'Chief Operating Officer', 'Chief Operating Officer', 'Executive operations leadership. Can manage daily operations, processes, and cross-departmental coordination.', 'api', 'coo', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(10, 'HR Director', 'HR Director', 'HR leadership with strategic oversight. Can manage HR policies, employee relations, and organizational development.', 'api', 'hr-director', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(11, 'HR Business Partner', 'HR Business Partner', 'Strategic HR partner supporting business units. Can advise on workforce planning and talent management.', 'api', 'hr-business-partner', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(12, 'Recruitment Manager', 'Recruitment Manager', 'Manages recruitment processes, talent acquisition, and hiring strategies.', 'api', 'recruitment-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(13, 'Training & Development Manager', 'Training & Development Manager', 'Manages employee training programs, development plans, and learning initiatives.', 'api', 'training-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(14, 'Compensation & Benefits Manager', 'Compensation & Benefits Manager', 'Manages compensation structures, benefits programs, and salary reviews.', 'api', 'compensation-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(15, 'HR Operations Manager', 'HR Operations Manager', 'Manages HR operations, processes, and employee lifecycle management.', 'api', 'hr-operations-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(16, 'Engineering Manager', 'Engineering Manager', 'Leads engineering teams, manages technical projects, and ensures code quality.', 'api', 'engineering-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(17, 'Software Development Manager', 'Software Development Manager', 'Manages software development teams, agile processes, and delivery schedules.', 'api', 'dev-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(18, 'QA Manager', 'QA Manager', 'Manages quality assurance processes, testing strategies, and quality standards.', 'api', 'qa-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(19, 'DevOps Manager', 'DevOps Manager', 'Manages DevOps practices, CI/CD pipelines, and infrastructure automation.', 'api', 'devops-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(20, 'Product Manager', 'Product Manager', 'Manages product strategy, roadmap, and feature development.', 'api', 'product-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(21, 'Project Manager', 'Project Manager', 'Manages projects, timelines, resources, and stakeholder communication.', 'api', 'project-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(22, 'Marketing Manager', 'Marketing Manager', 'Manages marketing campaigns, brand strategy, and market positioning.', 'api', 'marketing-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(23, 'Sales Manager', 'Sales Manager', 'Manages sales teams, revenue targets, and client relationships.', 'api', 'sales-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(24, 'Finance Manager', 'Finance Manager', 'Manages financial operations, budgeting, reporting, and compliance.', 'api', 'finance-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(25, 'Operations Manager', 'Operations Manager', 'Manages daily operations, processes, and operational efficiency.', 'api', 'operations-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(26, 'IT Manager', 'IT Manager', 'Manages IT infrastructure, systems, and technology support.', 'api', 'it-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(27, 'Customer Service Manager', 'Customer Service Manager', 'Manages customer service teams, support processes, and client satisfaction.', 'api', 'cs-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(28, 'Senior Software Engineer', 'Senior Software Engineer', 'Leads technical development, mentors junior engineers, and contributes to architecture.', 'api', 'senior-software-engineer', '2026-07-24 09:25:36', '2026-07-28 01:56:58'),
+(29, 'Software Engineer', 'Software Engineer', 'Develops software solutions, writes code, and collaborates with team members.', 'api', 'software-engineer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(30, 'Junior Software Engineer', 'Junior Software Engineer', 'Entry-level software development, learning and contributing to codebase.', 'api', 'junior-software-engineer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(31, 'Frontend Developer', 'Frontend Developer', 'Develops user interfaces and frontend applications using modern frameworks.', 'api', 'frontend-developer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(32, 'Backend Developer', 'Backend Developer', 'Develops server-side applications, APIs, and database solutions.', 'api', 'backend-developer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(33, 'Full Stack Developer', 'Full Stack Developer', 'Develops both frontend and backend components of applications.', 'api', 'fullstack-developer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(34, 'DevOps Engineer', 'DevOps Engineer', 'Manages infrastructure, CI/CD pipelines, and cloud deployments.', 'api', 'devops-engineer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(35, 'QA Engineer', 'QA Engineer', 'Ensures software quality through testing, automation, and quality processes.', 'api', 'qa-engineer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(36, 'Data Analyst', 'Data Analyst', 'Analyzes data, creates reports, and provides insights for decision-making.', 'api', 'data-analyst', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(37, 'Data Scientist', 'Data Scientist', 'Develops machine learning models, performs advanced analytics, and provides data-driven solutions.', 'api', 'data-scientist', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(38, 'Business Analyst', 'Business Analyst', 'Analyzes business requirements, processes, and recommends solutions.', 'api', 'business-analyst', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(39, 'UX/UI Designer', 'UX/UI Designer', 'Designs user experiences and interfaces for applications and websites.', 'api', 'ux-designer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(40, 'Graphic Designer', 'Graphic Designer', 'Creates visual designs, graphics, and branding materials.', 'api', 'graphic-designer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(41, 'Marketing Specialist', 'Marketing Specialist', 'Executes marketing campaigns, content creation, and market research.', 'api', 'marketing-specialist', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(42, 'SEO Specialist', 'SEO Specialist', 'Optimizes content for search engines and manages SEO strategies.', 'api', 'seo-specialist', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(43, 'Content Writer', 'Content Writer', 'Creates content for websites, blogs, and marketing materials.', 'api', 'content-writer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(44, 'Sales Representative', 'Sales Representative', 'Sells products/services, manages client relationships, and achieves sales targets.', 'api', 'sales-representative', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(45, 'Account Manager', 'Account Manager', 'Manages client accounts, builds relationships, and ensures customer satisfaction.', 'api', 'account-manager', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(46, 'Customer Support', 'Customer Support', 'Provides customer support, resolves issues, and ensures satisfaction.', 'api', 'customer-support', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(47, 'Finance Officer', 'Finance Officer', 'Manages financial transactions, records, and compliance.', 'api', 'finance-officer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(48, 'Accountant', 'Accountant', 'Manages financial records, statements, and accounting processes.', 'api', 'accountant', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(49, 'HR Officer', 'HR Officer', 'Supports HR operations, employee records, and HR processes.', 'api', 'hr-officer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(50, 'Recruitment Officer', 'Recruitment Officer', 'Supports recruitment processes, candidate screening, and hiring.', 'api', 'recruitment-officer', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(51, 'Office Administrator', 'Office Administrator', 'Manages office operations, supplies, and administrative support.', 'api', 'office-administrator', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(52, 'Receptionist', 'Receptionist', 'Welcomes visitors, manages calls, and provides front desk support.', 'api', 'receptionist', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(53, 'Intern', 'Intern', 'Entry-level learning position, gaining experience in the field.', 'api', 'intern', '2026-07-24 09:25:36', '2026-07-28 01:56:59'),
+(54, 'Super Administrator', 'Super Administrator', 'Full system access with all permissions. Can manage users, roles, settings, and all modules.', 'api', 'super_admin', '2026-07-28 01:49:42', '2026-07-28 01:56:59'),
+(55, 'Administrator', 'Administrator', 'Administrative access with full control over HR operations. Can manage employees, attendance, leave, payroll, and reports.', 'api', 'admin', '2026-07-28 01:49:42', '2026-07-28 01:56:59'),
+(56, 'HR Manager', 'HR Manager', 'Human Resources Manager with access to employee management, attendance, leave approval, and payroll.', 'api', 'hr_manager', '2026-07-28 01:49:42', '2026-07-28 01:56:59'),
+(57, 'Department Manager', 'Department Manager', 'Department manager with team management capabilities. Can view team members, approve leave, and view attendance.', 'api', 'department_manager', '2026-07-28 01:49:42', '2026-07-28 01:56:59');
 
 -- --------------------------------------------------------
 
@@ -1016,11 +1210,9 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 (92, 3, 17, NULL, NULL),
 (93, 3, 18, NULL, NULL),
 (94, 3, 22, NULL, NULL),
-(96, 4, 13, NULL, NULL),
 (97, 4, 14, NULL, NULL),
 (98, 4, 16, NULL, NULL),
 (99, 4, 17, NULL, NULL),
-(100, 4, 20, NULL, NULL),
 (103, 2, 15, NULL, NULL),
 (104, 2, 4, NULL, NULL),
 (105, 2, 35, NULL, NULL),
@@ -1033,7 +1225,176 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 (112, 3, 21, NULL, NULL),
 (113, 3, 20, NULL, NULL),
 (114, 3, 9, NULL, NULL),
-(115, 3, 23, NULL, NULL);
+(115, 3, 23, NULL, NULL),
+(116, 54, 14, NULL, NULL),
+(117, 54, 15, NULL, NULL),
+(118, 54, 13, NULL, NULL),
+(119, 54, 38, NULL, NULL),
+(120, 54, 6, NULL, NULL),
+(121, 54, 8, NULL, NULL),
+(122, 54, 7, NULL, NULL),
+(123, 54, 5, NULL, NULL),
+(124, 54, 2, NULL, NULL),
+(125, 54, 4, NULL, NULL),
+(126, 54, 3, NULL, NULL),
+(127, 54, 1, NULL, NULL),
+(128, 54, 18, NULL, NULL),
+(129, 54, 17, NULL, NULL),
+(130, 54, 19, NULL, NULL),
+(131, 54, 16, NULL, NULL),
+(132, 54, 33, NULL, NULL),
+(133, 54, 21, NULL, NULL),
+(134, 54, 34, NULL, NULL),
+(135, 54, 32, NULL, NULL),
+(136, 54, 20, NULL, NULL),
+(137, 54, 10, NULL, NULL),
+(138, 54, 12, NULL, NULL),
+(139, 54, 11, NULL, NULL),
+(140, 54, 9, NULL, NULL),
+(141, 54, 22, NULL, NULL),
+(142, 54, 28, NULL, NULL),
+(143, 54, 30, NULL, NULL),
+(144, 54, 29, NULL, NULL),
+(145, 54, 27, NULL, NULL),
+(146, 54, 36, NULL, NULL),
+(147, 54, 35, NULL, NULL),
+(148, 54, 31, NULL, NULL),
+(149, 54, 24, NULL, NULL),
+(150, 54, 26, NULL, NULL),
+(151, 54, 25, NULL, NULL),
+(152, 54, 23, NULL, NULL),
+(153, 57, 14, NULL, NULL),
+(154, 57, 13, NULL, NULL),
+(155, 57, 38, NULL, NULL),
+(156, 57, 1, NULL, NULL),
+(157, 57, 18, NULL, NULL),
+(158, 57, 17, NULL, NULL),
+(159, 57, 19, NULL, NULL),
+(160, 57, 16, NULL, NULL),
+(161, 57, 22, NULL, NULL),
+(162, 4, 38, NULL, NULL),
+(163, 54, 41, NULL, NULL),
+(164, 54, 42, NULL, NULL),
+(165, 54, 40, NULL, NULL),
+(166, 54, 44, NULL, NULL),
+(167, 54, 45, NULL, NULL),
+(168, 54, 43, NULL, NULL),
+(169, 54, 46, NULL, NULL),
+(170, 54, 47, NULL, NULL),
+(171, 54, 48, NULL, NULL),
+(172, 54, 51, NULL, NULL),
+(173, 54, 53, NULL, NULL),
+(174, 54, 52, NULL, NULL),
+(175, 54, 50, NULL, NULL),
+(176, 54, 56, NULL, NULL),
+(177, 54, 55, NULL, NULL),
+(178, 54, 54, NULL, NULL),
+(179, 54, 49, NULL, NULL),
+(180, 54, 57, NULL, NULL),
+(181, 57, 55, NULL, NULL),
+(182, 57, 54, NULL, NULL),
+(183, 4, 56, NULL, NULL),
+(184, 4, 55, NULL, NULL),
+(185, 4, 54, NULL, NULL),
+(186, 12, 38, NULL, NULL),
+(187, 12, 2, NULL, NULL),
+(188, 12, 3, NULL, NULL),
+(189, 12, 1, NULL, NULL),
+(190, 12, 55, NULL, NULL),
+(191, 12, 54, NULL, NULL),
+(192, 12, 22, NULL, NULL),
+(193, 13, 38, NULL, NULL),
+(194, 13, 1, NULL, NULL),
+(195, 13, 55, NULL, NULL),
+(196, 13, 54, NULL, NULL),
+(197, 13, 22, NULL, NULL),
+(198, 14, 38, NULL, NULL),
+(199, 14, 1, NULL, NULL),
+(200, 14, 20, NULL, NULL),
+(201, 14, 55, NULL, NULL),
+(202, 14, 54, NULL, NULL),
+(203, 14, 22, NULL, NULL),
+(204, 16, 13, NULL, NULL),
+(205, 16, 38, NULL, NULL),
+(206, 16, 1, NULL, NULL),
+(207, 16, 18, NULL, NULL),
+(208, 16, 17, NULL, NULL),
+(209, 16, 16, NULL, NULL),
+(210, 16, 55, NULL, NULL),
+(211, 16, 54, NULL, NULL),
+(212, 16, 22, NULL, NULL),
+(213, 17, 13, NULL, NULL),
+(214, 17, 38, NULL, NULL),
+(215, 17, 1, NULL, NULL),
+(216, 17, 18, NULL, NULL),
+(217, 17, 17, NULL, NULL),
+(218, 17, 16, NULL, NULL),
+(219, 17, 55, NULL, NULL),
+(220, 17, 54, NULL, NULL),
+(221, 17, 22, NULL, NULL),
+(222, 18, 13, NULL, NULL),
+(223, 18, 38, NULL, NULL),
+(224, 18, 1, NULL, NULL),
+(225, 18, 18, NULL, NULL),
+(226, 18, 17, NULL, NULL),
+(227, 18, 16, NULL, NULL),
+(228, 18, 55, NULL, NULL),
+(229, 18, 54, NULL, NULL),
+(230, 18, 22, NULL, NULL),
+(231, 19, 13, NULL, NULL),
+(232, 19, 38, NULL, NULL),
+(233, 19, 1, NULL, NULL),
+(234, 19, 18, NULL, NULL),
+(235, 19, 17, NULL, NULL),
+(236, 19, 16, NULL, NULL),
+(237, 19, 55, NULL, NULL),
+(238, 19, 54, NULL, NULL),
+(239, 19, 22, NULL, NULL),
+(240, 20, 13, NULL, NULL),
+(241, 20, 38, NULL, NULL),
+(242, 20, 1, NULL, NULL),
+(243, 20, 18, NULL, NULL),
+(244, 20, 17, NULL, NULL),
+(245, 20, 16, NULL, NULL),
+(246, 20, 55, NULL, NULL),
+(247, 20, 54, NULL, NULL),
+(248, 20, 22, NULL, NULL),
+(249, 21, 13, NULL, NULL),
+(250, 21, 38, NULL, NULL),
+(251, 21, 1, NULL, NULL),
+(252, 21, 18, NULL, NULL),
+(253, 21, 17, NULL, NULL),
+(254, 21, 16, NULL, NULL),
+(255, 21, 55, NULL, NULL),
+(256, 21, 54, NULL, NULL),
+(257, 21, 22, NULL, NULL),
+(258, 22, 13, NULL, NULL),
+(259, 22, 38, NULL, NULL),
+(260, 22, 1, NULL, NULL),
+(261, 22, 18, NULL, NULL),
+(262, 22, 17, NULL, NULL),
+(263, 22, 16, NULL, NULL),
+(264, 22, 55, NULL, NULL),
+(265, 22, 54, NULL, NULL),
+(266, 22, 22, NULL, NULL),
+(267, 23, 13, NULL, NULL),
+(268, 23, 38, NULL, NULL),
+(269, 23, 1, NULL, NULL),
+(270, 23, 18, NULL, NULL),
+(271, 23, 17, NULL, NULL),
+(272, 23, 16, NULL, NULL),
+(273, 23, 55, NULL, NULL),
+(274, 23, 54, NULL, NULL),
+(275, 23, 22, NULL, NULL),
+(276, 27, 13, NULL, NULL),
+(277, 27, 38, NULL, NULL),
+(278, 27, 1, NULL, NULL),
+(279, 27, 18, NULL, NULL),
+(280, 27, 17, NULL, NULL),
+(281, 27, 16, NULL, NULL),
+(282, 27, 55, NULL, NULL),
+(283, 27, 54, NULL, NULL),
+(284, 27, 22, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1137,6 +1498,42 @@ ALTER TABLE `activity_logs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `activity_logs_user_id_created_at_index` (`user_id`,`created_at`),
   ADD KEY `activity_logs_action_index` (`action`);
+
+--
+-- Indexes for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `announcements_created_by_foreign` (`created_by`),
+  ADD KEY `announcements_status_published_at_index` (`status`,`published_at`),
+  ADD KEY `announcements_target_type_target_id_index` (`target_type`,`target_id`),
+  ADD KEY `announcements_is_pinned_index` (`is_pinned`),
+  ADD KEY `announcements_is_important_index` (`is_important`);
+
+--
+-- Indexes for table `announcement_attachments`
+--
+ALTER TABLE `announcement_attachments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `announcement_attachments_announcement_id_index` (`announcement_id`);
+
+--
+-- Indexes for table `announcement_notifications`
+--
+ALTER TABLE `announcement_notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `announcement_notifications_user_id_foreign` (`user_id`),
+  ADD KEY `announcement_notifications_announcement_id_user_id_index` (`announcement_id`,`user_id`),
+  ADD KEY `announcement_notifications_is_read_index` (`is_read`);
+
+--
+-- Indexes for table `announcement_views`
+--
+ALTER TABLE `announcement_views`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `announcement_views_announcement_id_user_id_unique` (`announcement_id`,`user_id`),
+  ADD KEY `announcement_views_user_id_foreign` (`user_id`),
+  ADD KEY `announcement_views_announcement_id_user_id_index` (`announcement_id`,`user_id`);
 
 --
 -- Indexes for table `attendances`
@@ -1337,6 +1734,30 @@ ALTER TABLE `activity_logs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT for table `announcements`
+--
+ALTER TABLE `announcements`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `announcement_attachments`
+--
+ALTER TABLE `announcement_attachments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `announcement_notifications`
+--
+ALTER TABLE `announcement_notifications`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `announcement_views`
+--
+ALTER TABLE `announcement_views`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `attendances`
 --
 ALTER TABLE `attendances`
@@ -1346,7 +1767,7 @@ ALTER TABLE `attendances`
 -- AUTO_INCREMENT for table `company_settings`
 --
 ALTER TABLE `company_settings`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `departments`
@@ -1394,13 +1815,13 @@ ALTER TABLE `leave_types`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `payrolls`
 --
 ALTER TABLE `payrolls`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `payroll_items`
@@ -1418,13 +1839,13 @@ ALTER TABLE `payroll_settings`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `positions`
@@ -1436,13 +1857,13 @@ ALTER TABLE `positions`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT for table `role_permissions`
 --
 ALTER TABLE `role_permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=285;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1459,6 +1880,32 @@ ALTER TABLE `users`
 --
 ALTER TABLE `activity_logs`
   ADD CONSTRAINT `activity_logs_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD CONSTRAINT `announcements_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `announcement_attachments`
+--
+ALTER TABLE `announcement_attachments`
+  ADD CONSTRAINT `announcement_attachments_announcement_id_foreign` FOREIGN KEY (`announcement_id`) REFERENCES `announcements` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `announcement_notifications`
+--
+ALTER TABLE `announcement_notifications`
+  ADD CONSTRAINT `announcement_notifications_announcement_id_foreign` FOREIGN KEY (`announcement_id`) REFERENCES `announcements` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `announcement_notifications_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `announcement_views`
+--
+ALTER TABLE `announcement_views`
+  ADD CONSTRAINT `announcement_views_announcement_id_foreign` FOREIGN KEY (`announcement_id`) REFERENCES `announcements` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `announcement_views_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `attendances`

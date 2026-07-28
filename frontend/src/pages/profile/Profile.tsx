@@ -253,7 +253,7 @@ const handleProfileUpdate = async () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Profile</h1>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Manage your personal information and account settings
             </p>
           </div>
@@ -261,7 +261,7 @@ const handleProfileUpdate = async () => {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
+                className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg bg-primary-900 hover:bg-secondary-900 hover:text-black"
               >
                 <PencilSquareIcon className="w-4 h-4" />
                 Edit Profile

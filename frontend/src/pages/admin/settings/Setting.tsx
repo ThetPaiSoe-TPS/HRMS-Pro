@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BuildingOfficeIcon,
   EnvelopeIcon,
@@ -17,158 +17,181 @@ import {
   ArrowPathIcon,
   PencilSquareIcon,
   DocumentTextIcon,
-} from '@heroicons/react/24/outline';
-import type { CompanySettings, SettingsFormData } from '../../../types/settings.types';
-
-// Mock data - Replace with API calls
-const mockSettings: CompanySettings = {
-  id: 1,
-  company_name: 'HRMS Pro Inc.',
-  company_code: 'HRMS',
-  company_email: 'info@hrmspro.com',
-  company_phone: '+1 (555) 123-4567',
-  company_address: '123 Business Street',
-  company_city: 'New York',
-  company_state: 'NY',
-  company_country: 'United States',
-  company_zip: '10001',
-  company_website: 'https://www.hrmspro.com',
-  company_logo: null,
-  tax_id: '12-3456789',
-  registration_number: 'REG-2024-001',
-  timezone: 'America/New_York',
-  date_format: 'YYYY-MM-DD',
-  time_format: 'HH:mm',
-  currency: 'USD',
-  currency_symbol: '$',
-  fiscal_year_start: '2024-01-01',
-  fiscal_year_end: '2024-12-31',
-  week_start_day: 'Monday',
-  created_at: '2024-01-01T00:00:00.000000Z',
-  updated_at: '2024-06-15T00:00:00.000000Z',
-};
+} from "@heroicons/react/24/outline";
+import type {
+  CompanySettings,
+  SettingsFormData,
+} from "../../../types/settings.types";
+import { settingsApi } from "../../../api/setting/settingsApi";
 
 // Timezone options
 const timezones = [
-  'UTC',
-  'America/New_York',
-  'America/Chicago',
-  'America/Denver',
-  'America/Los_Angeles',
-  'Europe/London',
-  'Europe/Paris',
-  'Europe/Berlin',
-  'Asia/Dubai',
-  'Asia/Kolkata',
-  'Asia/Singapore',
-  'Asia/Tokyo',
-  'Australia/Sydney',
-  'Pacific/Auckland',
+  "UTC",
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "Europe/London",
+  "Europe/Paris",
+  "Europe/Berlin",
+  "Asia/Dubai",
+  "Asia/Kolkata",
+  "Asia/Singapore",
+  "Asia/Tokyo",
+  "Australia/Sydney",
+  "Pacific/Auckland",
 ];
 
 const currencies = [
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'GBP', symbol: '£', name: 'British Pound' },
-  { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
-  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
-  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+  { code: "USD", symbol: "$", name: "US Dollar" },
+  { code: "EUR", symbol: "€", name: "Euro" },
+  { code: "GBP", symbol: "£", name: "British Pound" },
+  { code: "JPY", symbol: "¥", name: "Japanese Yen" },
+  { code: "CAD", symbol: "C$", name: "Canadian Dollar" },
+  { code: "AUD", symbol: "A$", name: "Australian Dollar" },
 ];
 
 const dateFormats = [
-  { value: 'YYYY-MM-DD', label: '2024-01-15' },
-  { value: 'MM/DD/YYYY', label: '01/15/2024' },
-  { value: 'DD/MM/YYYY', label: '15/01/2024' },
-  { value: 'MMM DD, YYYY', label: 'Jan 15, 2024' },
-  { value: 'DD MMM YYYY', label: '15 Jan 2024' },
+  { value: "YYYY-MM-DD", label: "2024-01-15" },
+  { value: "MM/DD/YYYY", label: "01/15/2024" },
+  { value: "DD/MM/YYYY", label: "15/01/2024" },
+  { value: "MMM DD, YYYY", label: "Jan 15, 2024" },
+  { value: "DD MMM YYYY", label: "15 Jan 2024" },
 ];
 
 const timeFormats = [
-  { value: 'HH:mm', label: '14:30' },
-  { value: 'hh:mm A', label: '02:30 PM' },
-  { value: 'HH:mm:ss', label: '14:30:00' },
+  { value: "HH:mm", label: "14:30" },
+  { value: "hh:mm A", label: "02:30 PM" },
+  { value: "HH:mm:ss", label: "14:30:00" },
 ];
 
-const weekStartDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const weekStartDays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+const defaultSettings: CompanySettings = {
+  id: 0,
+  company_name: "",
+  company_code: "",
+  company_email: "",
+  company_phone: "",
+  company_address: "",
+  company_city: "",
+  company_state: "",
+  company_country: "",
+  company_zip: "",
+  company_website: "",
+  company_logo: null,
+  tax_id: "",
+  registration_number: "",
+  timezone: "UTC",
+  date_format: "YYYY-MM-DD",
+  time_format: "HH:mm",
+  currency: "USD",
+  currency_symbol: "$",
+  fiscal_year_start: "",
+  fiscal_year_end: "",
+  week_start_day: "Monday",
+  created_at: "",
+  updated_at: "",
+};
 
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const [settings, setSettings] = useState<CompanySettings>(mockSettings);
+  const [settings, setSettings] = useState<CompanySettings>(defaultSettings);
   const [formData, setFormData] = useState<SettingsFormData>({
-    company_name: mockSettings.company_name,
-    company_code: mockSettings.company_code,
-    company_email: mockSettings.company_email,
-    company_phone: mockSettings.company_phone,
-    company_address: mockSettings.company_address,
-    company_city: mockSettings.company_city,
-    company_state: mockSettings.company_state,
-    company_country: mockSettings.company_country,
-    company_zip: mockSettings.company_zip,
-    company_website: mockSettings.company_website,
-    tax_id: mockSettings.tax_id,
-    registration_number: mockSettings.registration_number,
-    timezone: mockSettings.timezone,
-    date_format: mockSettings.date_format,
-    time_format: mockSettings.time_format,
-    currency: mockSettings.currency,
-    fiscal_year_start: mockSettings.fiscal_year_start,
-    fiscal_year_end: mockSettings.fiscal_year_end,
-    week_start_day: mockSettings.week_start_day,
+    company_name: "",
+    company_code: "",
+    company_email: "",
+    company_phone: "",
+    company_address: "",
+    company_city: "",
+    company_state: "",
+    company_country: "",
+    company_zip: "",
+    company_website: "",
+    tax_id: "",
+    registration_number: "",
+    timezone: "UTC",
+    date_format: "YYYY-MM-DD",
+    time_format: "HH:mm",
+    currency: "USD",
+    fiscal_year_start: "",
+    fiscal_year_end: "",
+    week_start_day: "Monday",
   });
 
-  // Load settings
+  // Fetch settings from API
   useEffect(() => {
-    // TODO: API call to fetch settings
-    setSettings(mockSettings);
-    setFormData({
-      company_name: mockSettings.company_name,
-      company_code: mockSettings.company_code,
-      company_email: mockSettings.company_email,
-      company_phone: mockSettings.company_phone,
-      company_address: mockSettings.company_address,
-      company_city: mockSettings.company_city,
-      company_state: mockSettings.company_state,
-      company_country: mockSettings.company_country,
-      company_zip: mockSettings.company_zip,
-      company_website: mockSettings.company_website,
-      tax_id: mockSettings.tax_id,
-      registration_number: mockSettings.registration_number,
-      timezone: mockSettings.timezone,
-      date_format: mockSettings.date_format,
-      time_format: mockSettings.time_format,
-      currency: mockSettings.currency,
-      fiscal_year_start: mockSettings.fiscal_year_start,
-      fiscal_year_end: mockSettings.fiscal_year_end,
-      week_start_day: mockSettings.week_start_day,
-    });
+    const fetchSettings = async () => {
+      setLoading(true);
+      try {
+        const data = await settingsApi.getSettings();
+        setSettings(data);
+        setFormData({
+          company_name: data.company_name || "",
+          company_code: data.company_code || "",
+          company_email: data.company_email || "",
+          company_phone: data.company_phone || "",
+          company_address: data.company_address || "",
+          company_city: data.company_city || "",
+          company_state: data.company_state || "",
+          company_country: data.company_country || "",
+          company_zip: data.company_zip || "",
+          company_website: data.company_website || "",
+          tax_id: data.tax_id || "",
+          registration_number: data.registration_number || "",
+          timezone: data.timezone || "UTC",
+          date_format: data.date_format || "YYYY-MM-DD",
+          time_format: data.time_format || "HH:mm",
+          currency: data.currency || "USD",
+          fiscal_year_start: data.fiscal_year_start || "",
+          fiscal_year_end: data.fiscal_year_end || "",
+          week_start_day: data.week_start_day || "Monday",
+        });
+      } catch (error) {
+        console.error("Failed to fetch settings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
+      setErrors({ ...errors, [name]: "" });
     }
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        setErrors({ ...errors, logo: 'Please upload an image file' });
+      if (!file.type.startsWith("image/")) {
+        setErrors({ ...errors, logo: "Please upload an image file" });
         return;
       }
       if (file.size > 2 * 1024 * 1024) {
-        setErrors({ ...errors, logo: 'Image size should be less than 2MB' });
+        setErrors({ ...errors, logo: "Image size should be less than 2MB" });
         return;
       }
       const reader = new FileReader();
@@ -176,31 +199,31 @@ export const Settings: React.FC = () => {
         setLogoPreview(event.target?.result as string);
       };
       reader.readAsDataURL(file);
-      setErrors({ ...errors, logo: '' });
+      setErrors({ ...errors, logo: "" });
     }
   };
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.company_name.trim()) {
-      newErrors.company_name = 'Company name is required';
+      newErrors.company_name = "Company name is required";
     }
     if (!formData.company_code.trim()) {
-      newErrors.company_code = 'Company code is required';
+      newErrors.company_code = "Company code is required";
     }
     if (!formData.company_email.trim()) {
-      newErrors.company_email = 'Email is required';
+      newErrors.company_email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.company_email)) {
-      newErrors.company_email = 'Invalid email address';
+      newErrors.company_email = "Invalid email address";
     }
     if (!formData.company_phone.trim()) {
-      newErrors.company_phone = 'Phone number is required';
+      newErrors.company_phone = "Phone number is required";
     }
     if (!formData.timezone) {
-      newErrors.timezone = 'Timezone is required';
+      newErrors.timezone = "Timezone is required";
     }
     if (!formData.currency) {
-      newErrors.currency = 'Currency is required';
+      newErrors.currency = "Currency is required";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -212,37 +235,68 @@ export const Settings: React.FC = () => {
 
     setSaving(true);
     try {
-      // TODO: API call to update settings
-      console.log('Updating settings:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSuccess('Settings updated successfully!');
+      // If logo was uploaded, use FormData
+      if (logoPreview && logoPreview !== settings.company_logo) {
+        const formDataObj = new FormData();
+        // Get the file from file input
+        const fileInput = fileInputRef.current;
+        if (fileInput?.files?.[0]) {
+          formDataObj.append("logo", fileInput.files[0]);
+        }
+
+        // Append all other fields
+        Object.entries(formData).forEach(([key, value]) => {
+          formDataObj.append(key, value as string);
+        });
+
+        await settingsApi.updateSettings(formDataObj);
+      } else {
+        await settingsApi.updateSettingsJson(formData);
+      }
+
+      setSuccess("Settings updated successfully!");
       setIsEditing(false);
-      
-      // Update settings state
-      setSettings({
-        ...settings,
-        ...formData,
-        company_logo: logoPreview || settings.company_logo,
-      });
-      
+
+      // Refresh settings
+      const updated = await settingsApi.getSettings();
+      setSettings(updated);
+
       setTimeout(() => setSuccess(null), 3000);
     } catch (error: any) {
-      setErrors({ general: error.response?.data?.message || 'Failed to update settings' });
+      setErrors({
+        general: error.response?.data?.message || "Failed to update settings",
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const getCurrencySymbol = (code: string) => {
-    return currencies.find(c => c.code === code)?.symbol || '$';
+    return currencies.find((c) => c.code === code)?.symbol || "$";
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 dark:text-gray-400">
+            Loading settings...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Company Settings</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Company Settings
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
             Manage your company information and preferences
           </p>
@@ -251,7 +305,7 @@ export const Settings: React.FC = () => {
           {!isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-900 text-white rounded-lg hover:bg-secondary-900 hover:text-black transition-colors"
             >
               <PencilSquareIcon className="h-5 w-5" />
               Edit Settings
@@ -298,7 +352,7 @@ export const Settings: React.FC = () => {
                 ) : (
                   <CheckBadgeIcon className="h-5 w-5" />
                 )}
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </>
           )}
@@ -328,9 +382,17 @@ export const Settings: React.FC = () => {
             <div className="relative">
               <div className="h-24 w-24 rounded-xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden">
                 {logoPreview ? (
-                  <img src={logoPreview} alt="Company Logo" className="h-full w-full object-cover" />
+                  <img
+                    src={logoPreview}
+                    alt="Company Logo"
+                    className="h-full w-full object-cover"
+                  />
                 ) : settings.company_logo ? (
-                  <img src={settings.company_logo} alt="Company Logo" className="h-full w-full object-cover" />
+                  <img
+                    src={settings.company_logo}
+                    alt="Company Logo"
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
                   <BuildingOfficeIcon className="h-12 w-12 text-gray-400 dark:text-gray-500" />
                 )}
@@ -383,7 +445,10 @@ export const Settings: React.FC = () => {
                 )}
               </p>
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                Last updated: {new Date(settings.updated_at).toLocaleString()}
+                Last updated:{" "}
+                {settings.updated_at
+                  ? new Date(settings.updated_at).toLocaleString()
+                  : "N/A"}
               </p>
             </div>
           </div>
@@ -410,14 +475,20 @@ export const Settings: React.FC = () => {
                       value={formData.company_name}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.company_name ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                        errors.company_name
+                          ? "border-red-300"
+                          : "border-gray-300 dark:border-gray-600"
                       }`}
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_name}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_name}
+                    </p>
                   )}
                   {errors.company_name && (
-                    <p className="mt-1 text-sm text-red-600">{errors.company_name}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.company_name}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -431,14 +502,20 @@ export const Settings: React.FC = () => {
                       value={formData.company_code}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.company_code ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                        errors.company_code
+                          ? "border-red-300"
+                          : "border-gray-300 dark:border-gray-600"
                       }`}
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_code}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_code}
+                    </p>
                   )}
                   {errors.company_code && (
-                    <p className="mt-1 text-sm text-red-600">{errors.company_code}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.company_code}
+                    </p>
                   )}
                 </div>
               </div>
@@ -466,15 +543,21 @@ export const Settings: React.FC = () => {
                         value={formData.company_email}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                          errors.company_email ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                          errors.company_email
+                            ? "border-red-300"
+                            : "border-gray-300 dark:border-gray-600"
                         }`}
                       />
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_email}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_email}
+                    </p>
                   )}
                   {errors.company_email && (
-                    <p className="mt-1 text-sm text-red-600">{errors.company_email}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.company_email}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -492,15 +575,21 @@ export const Settings: React.FC = () => {
                         value={formData.company_phone}
                         onChange={handleChange}
                         className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                          errors.company_phone ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                          errors.company_phone
+                            ? "border-red-300"
+                            : "border-gray-300 dark:border-gray-600"
                         }`}
                       />
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_phone}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_phone}
+                    </p>
                   )}
                   {errors.company_phone && (
-                    <p className="mt-1 text-sm text-red-600">{errors.company_phone}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.company_phone}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -522,7 +611,9 @@ export const Settings: React.FC = () => {
                       />
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_website || 'N/A'}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_website || "N/A"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -548,7 +639,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_address}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_address}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -564,7 +657,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_city}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_city}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -580,7 +675,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_state}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_state}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -596,7 +693,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_country}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_country}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -612,7 +711,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.company_zip}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.company_zip}
+                    </p>
                   )}
                 </div>
               </div>
@@ -638,7 +739,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.tax_id || 'N/A'}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.tax_id || "N/A"}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -654,7 +757,9 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.registration_number || 'N/A'}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.registration_number || "N/A"}
+                    </p>
                   )}
                 </div>
               </div>
@@ -677,18 +782,26 @@ export const Settings: React.FC = () => {
                       value={formData.timezone}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.timezone ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                        errors.timezone
+                          ? "border-red-300"
+                          : "border-gray-300 dark:border-gray-600"
                       }`}
                     >
                       {timezones.map((tz) => (
-                        <option key={tz} value={tz}>{tz}</option>
+                        <option key={tz} value={tz}>
+                          {tz}
+                        </option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.timezone}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.timezone}
+                    </p>
                   )}
                   {errors.timezone && (
-                    <p className="mt-1 text-sm text-red-600">{errors.timezone}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.timezone}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -701,7 +814,9 @@ export const Settings: React.FC = () => {
                       value={formData.currency}
                       onChange={handleChange}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500 ${
-                        errors.currency ? 'border-red-300' : 'border-gray-300 dark:border-gray-600'
+                        errors.currency
+                          ? "border-red-300"
+                          : "border-gray-300 dark:border-gray-600"
                       }`}
                     >
                       {currencies.map((c) => (
@@ -716,7 +831,9 @@ export const Settings: React.FC = () => {
                     </p>
                   )}
                   {errors.currency && (
-                    <p className="mt-1 text-sm text-red-600">{errors.currency}</p>
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.currency}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -731,11 +848,15 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       {dateFormats.map((df) => (
-                        <option key={df.value} value={df.value}>{df.label}</option>
+                        <option key={df.value} value={df.value}>
+                          {df.label}
+                        </option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.date_format}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.date_format}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -750,11 +871,15 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       {timeFormats.map((tf) => (
-                        <option key={tf.value} value={tf.value}>{tf.label}</option>
+                        <option key={tf.value} value={tf.value}>
+                          {tf.label}
+                        </option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.time_format}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.time_format}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -769,11 +894,15 @@ export const Settings: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                     >
                       {weekStartDays.map((day) => (
-                        <option key={day} value={day}>{day}</option>
+                        <option key={day} value={day}>
+                          {day}
+                        </option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-sm text-gray-900 dark:text-gray-100">{settings.week_start_day}</p>
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                      {settings.week_start_day}
+                    </p>
                   )}
                 </div>
               </div>
@@ -800,7 +929,11 @@ export const Settings: React.FC = () => {
                     />
                   ) : (
                     <p className="text-sm text-gray-900 dark:text-gray-100">
-                      {new Date(settings.fiscal_year_start).toLocaleDateString()}
+                      {settings.fiscal_year_start
+                        ? new Date(
+                            settings.fiscal_year_start,
+                          ).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   )}
                 </div>
@@ -818,7 +951,11 @@ export const Settings: React.FC = () => {
                     />
                   ) : (
                     <p className="text-sm text-gray-900 dark:text-gray-100">
-                      {new Date(settings.fiscal_year_end).toLocaleDateString()}
+                      {settings.fiscal_year_end
+                        ? new Date(
+                            settings.fiscal_year_end,
+                          ).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   )}
                 </div>
@@ -832,18 +969,30 @@ export const Settings: React.FC = () => {
       <div className="mt-6 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">System Version</p>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">HRMS Pro v2.0.0</p>
-          </div>
-          <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Last Updated</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              System Version
+            </p>
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-              {new Date(settings.updated_at).toLocaleString()}
+              HRMS Pro v2.0.0
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Settings ID</p>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">#{settings.id}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              Last Updated
+            </p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {settings.updated_at
+                ? new Date(settings.updated_at).toLocaleString()
+                : "N/A"}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              Settings ID
+            </p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              #{settings.id}
+            </p>
           </div>
         </div>
       </div>

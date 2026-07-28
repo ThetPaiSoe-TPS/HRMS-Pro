@@ -201,4 +201,21 @@ Route::prefix('v1')->group(function () {
         Route::put('/', [UserProfileController::class, 'update']);
         Route::put('change-password', [UserProfileController::class, 'changePassword']);
     });
+
+    // Announcements
+    Route::prefix('announcements')->middleware(['auth:sanctum'])->group(function () {
+        Route::get('dashboard', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'dashboard']);
+        Route::get('stats', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'stats']);
+        Route::get('/', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'store'])->middleware('permission:announcement.create');
+        Route::get('{id}', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'show']);
+        Route::put('{id}', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'update'])->middleware('permission:announcement.update');
+        Route::delete('{id}', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'destroy'])->middleware('permission:announcement.delete');
+        Route::post('{id}/publish', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'publish'])->middleware('permission:announcement.update');
+        Route::post('{id}/archive', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'archive'])->middleware('permission:announcement.update');
+        Route::post('{id}/pin', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'pin'])->middleware('permission:announcement.update');
+        Route::post('{id}/important', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'markImportant'])->middleware('permission:announcement.update');
+        Route::post('{id}/attachments', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'uploadAttachment'])->middleware('permission:announcement.update');
+        Route::delete('attachments/{id}', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'deleteAttachment'])->middleware('permission:announcement.update');
+    });
 });
