@@ -18,9 +18,17 @@ import api from "../../api/axios";
 import type { Activity } from "../../types/activity.types";
 import { activityApi } from "../../api/activityApi";
 
+interface DepartmentOption {
+  id: number;
+  name: string;
+  code?: string;
+}
+
 interface PositionOption {
   id: number;
   title: string;
+  code?: string;
+  department_id?: number;
 }
 
 // ============================================
@@ -33,8 +41,21 @@ export const Profile: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // State for positions dropdown
+  // Check if user is employee
+  const userRole =
+    typeof user?.role === "string" ? user.role.toLowerCase() : "";
+  const userRoleId = user?.role_id;
+  const isEmployee = userRole === "employee" || userRoleId === 4;
+  const isAdmin =
+    userRole === "admin" ||
+    userRole === "super_admin" ||
+    userRoleId === 1 ||
+    userRoleId === 2;
+
+  // State for dropdowns (only used for admin/manager)
+  const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [positions, setPositions] = useState<PositionOption[]>([]);
+  const [loadingDropdowns, setLoadingDropdowns] = useState(true);
 
   // State for profile editing
   const [isEditing, setIsEditing] = useState(false);
@@ -42,21 +63,16 @@ export const Profile: React.FC = () => {
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
-    department:
-      (typeof user?.department === "object"
-        ? (user?.department as any)?.name
-        : user?.department) || "",
-    position:
-      (typeof user?.position === "object"
-        ? (user?.position as any)?.name || (user?.position as any)?.title
-        : user?.position) || "",
-    joinDate: user?.joinDate || "",
+    department: "",
+    department_id: null as number | null,
+    position: "",
+    position_id: null as number | null,
+    joinDate: user?.join_date || "",
     address: user?.address || "",
     bio: user?.bio || "",
     years_experience: user?.years_experience || 0,
     total_projects: user?.total_projects || 0,
   });
-  console.log("profileData:", profileData);
 
   // State for password change
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -72,29 +88,88 @@ export const Profile: React.FC = () => {
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Initialize profile data from user
   useEffect(() => {
     if (user) {
+      // Get department name from user object
+      let departmentName = "";
+      let departmentId = null;
+      if (user.department) {
+        if (typeof user.department === "object") {
+          departmentName = (user.department as any)?.name || "";
+          departmentId = (user.department as any)?.id || null;
+        } else {
+          departmentName = user.department || "";
+        }
+      }
+
+      // Get position name from user object
+      let positionName = "";
+      let positionId = null;
+      if (user.position) {
+        if (typeof user.position === "object") {
+          positionName =
+            (user.position as any)?.title || (user.position as any)?.name || "";
+          positionId = (user.position as any)?.id || null;
+        } else {
+          positionName = user.position || "";
+        }
+      }
+
       setProfileData({
-        name: user?.name || profileData.name,
-        email: user?.email || profileData.email,
-        phone: user?.phone || profileData.phone,
-        department:
-          (typeof user?.department === "object"
-            ? (user?.department as any)?.name
-            : user?.department) || profileData.department,
-        position:
-          (typeof user?.position === "object"
-            ? (user?.position as any)?.name || (user?.position as any)?.title
-            : user?.position) || profileData.position,
-        joinDate: user?.joinDate || profileData.joinDate,
-        address: user?.address || profileData.address,
-        bio: user?.bio || profileData.bio,
-        years_experience:
-          user?.years_experience || profileData.years_experience || 0,
-        total_projects: user?.total_projects || profileData.total_projects || 0,
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: user?.phone || "",
+        department: departmentName,
+        department_id: departmentId,
+        position: positionName,
+        position_id: positionId,
+        joinDate: user?.join_date || "",
+        address: user?.address || "",
+        bio: user?.bio || "",
+        years_experience: user?.years_experience || 0,
+        total_projects: user?.total_projects || 0,
       });
+
+      // If admin, fetch all departments and positions
+      if (!isEmployee) {
+        fetchAllDropdownData();
+      }
     }
   }, [user]);
+
+  // Fetch all departments and positions (admin/manager only)
+  const fetchAllDropdownData = async () => {
+    setLoadingDropdowns(true);
+
+    try {
+      // Try to fetch all departments
+      try {
+        const response = await api.get("/departments");
+        const allDepts = response?.data || response || [];
+        if (Array.isArray(allDepts) && allDepts.length > 0) {
+          setDepartments(allDepts);
+        }
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+      }
+
+      // Try to fetch all positions
+      try {
+        const response = await api.get("/positions");
+        const allPositions = response?.data || response || [];
+        if (Array.isArray(allPositions) && allPositions.length > 0) {
+          setPositions(allPositions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch positions:", error);
+      }
+    } catch (error) {
+      console.error("Failed to fetch dropdown data:", error);
+    } finally {
+      setLoadingDropdowns(false);
+    }
+  };
 
   useEffect(() => {
     fetchActivities();
@@ -104,8 +179,6 @@ export const Profile: React.FC = () => {
     try {
       setLoadingActivities(true);
       const data = await activityApi.getMyActivities(10);
-      console.log("activityapi:", activityApi);
-
       setActivities(data);
     } catch (error) {
       console.error("Failed to fetch activities:", error);
@@ -138,41 +211,41 @@ export const Profile: React.FC = () => {
     return colors[color] || "bg-gray-100 text-gray-600";
   };
 
-  // Fetch positions for dropdown
-  useEffect(() => {
-    const fetchPositions = async () => {
-      try {
-        const data: any = await api.get("/positions");
-        setPositions(data?.data || data || []);
-      } catch (err) {
-        console.error("Failed to fetch positions:", err);
+  const handleProfileUpdate = async () => {
+    try {
+      const updateData: any = {
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        join_date: profileData.joinDate,
+        address: profileData.address,
+        bio: profileData.bio,
+        years_experience: profileData.years_experience,
+        total_projects: profileData.total_projects,
+      };
+
+      // Only send department/position if user is NOT an employee
+      if (!isEmployee) {
+        if (profileData.department_id) {
+          updateData.department_id = profileData.department_id;
+        }
+        if (profileData.position_id) {
+          updateData.position_id = profileData.position_id;
+        }
       }
-    };
-    fetchPositions();
-  }, []);
 
+      console.log("Updating profile with:", updateData);
+      await updateProfile(updateData);
+      setIsEditing(false);
 
-const handleProfileUpdate = async () => {
-  try {
-    await updateProfile({
-      name: profileData.name,
-      email: profileData.email,
-      phone: profileData.phone,
-      department: profileData.department,
-      position: profileData.position,
-      join_date: profileData.joinDate,
-      address: profileData.address,
-      bio: profileData.bio,
-      years_experience: profileData.years_experience,
-      total_projects: profileData.total_projects,
-    });
-    setIsEditing(false);
-  } catch (error) {
-    console.error("Profile update failed:", error);
-  }
-};
+      // Refresh user data after update
+      window.location.reload();
+    } catch (error) {
+      console.error("Profile update failed:", error);
+      alert("Failed to update profile. Please try again.");
+    }
+  };
 
-  // Handle password change
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -188,23 +261,22 @@ const handleProfileUpdate = async () => {
         new_password: "",
         new_password_confirmation: "",
       });
-    } catch (error) {
+      alert("Password changed successfully!");
+    } catch (error: any) {
       console.error("Password change failed:", error);
+      alert(error?.response?.data?.message || "Failed to change password");
     }
   };
 
-  // Handle avatar upload
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       alert("Please upload an image file");
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       alert("Image size should be less than 2MB");
       return;
@@ -219,7 +291,6 @@ const handleProfileUpdate = async () => {
       reader.readAsDataURL(file);
 
       await uploadAvatar(file);
-
       setIsUploading(false);
     } catch (error) {
       setIsUploading(false);
@@ -227,24 +298,51 @@ const handleProfileUpdate = async () => {
     }
   };
 
-  // Activity data
-  const recentActivities = [
-    {
-      action: "Changed password",
-      time: "2 days ago",
-      ip: "192.168.1.1",
-    },
-    {
-      action: "Updated profile information",
-      time: "1 week ago",
-      ip: "192.168.1.1",
-    },
-    {
-      action: "Logged in",
-      time: "2 weeks ago",
-      ip: "192.168.1.1",
-    },
-  ];
+  // Handle department change (only for non-employees)
+  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (isEmployee) return;
+    const selectedId = e.target.value ? parseInt(e.target.value) : null;
+    const selectedDept = departments.find((d) => d.id === selectedId);
+    setProfileData({
+      ...profileData,
+      department_id: selectedId,
+      department: selectedDept?.name || "",
+    });
+  };
+
+  // Handle position change (only for non-employees)
+  const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (isEmployee) return;
+    const selectedId = e.target.value ? parseInt(e.target.value) : null;
+    const selectedPos = positions.find((p) => p.id === selectedId);
+    setProfileData({
+      ...profileData,
+      position_id: selectedId,
+      position: selectedPos?.title || "",
+    });
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "Not set";
+    try {
+      return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  if (!user) {
+    return (
+      <div className="flex justify-center py-16">
+        <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-700">
@@ -252,7 +350,9 @@ const handleProfileUpdate = async () => {
         {/* Page Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Profile</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              My Profile
+            </h1>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               Manage your personal information and account settings
             </p>
@@ -270,7 +370,7 @@ const handleProfileUpdate = async () => {
               <>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors bg-gray-200 rounded-lg hover:bg-gray-300"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors bg-gray-200 rounded-lg dark:text-gray-300 hover:bg-gray-300"
                 >
                   <XMarkIcon className="w-4 h-4" />
                   Cancel
@@ -293,7 +393,7 @@ const handleProfileUpdate = async () => {
               ========================================== */}
           <div className="lg:col-span-1">
             {/* Profile Card */}
-            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+            <div className="p-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
               <div className="text-center">
                 {/* Avatar */}
                 <div className="relative inline-block">
@@ -314,9 +414,7 @@ const handleProfileUpdate = async () => {
                         alt="Profile"
                         className="object-cover w-full h-full"
                         onError={(e) => {
-                          // If image fails to load, show initials
                           (e.target as HTMLImageElement).style.display = "none";
-                          // You might want to show the initials fallback here
                         }}
                       />
                     ) : (
@@ -344,13 +442,12 @@ const handleProfileUpdate = async () => {
                 <h2 className="mt-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
                   {user?.name || "User Name"}
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 capitalize">
+                <p className="text-sm text-gray-500 capitalize dark:text-gray-400">
                   {(typeof user?.role === "object"
                     ? (user?.role as any)?.name
                     : user?.role) || "Employee"}
                 </p>
-                {/* Add email here */}
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   {user?.email || "No email"}
                 </p>
                 {/* Status Badge */}
@@ -364,7 +461,7 @@ const handleProfileUpdate = async () => {
                     {user?.last_login_ip && ` (IP: ${user.last_login_ip})`}
                   </p>
                 )}
-                
+
                 <div className="grid grid-cols-2 gap-4 mt-6">
                   <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
                     {isEditing ? (
@@ -380,10 +477,10 @@ const handleProfileUpdate = async () => {
                               years_experience: value ? parseInt(value, 10) : 0,
                             });
                           }}
-                          className="w-full text-2xl font-bold text-center text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-primary-500 focus:outline-none"
+                          className="w-full text-2xl font-bold text-center text-gray-900 bg-transparent border-b-2 dark:text-gray-100 border-primary-500 focus:outline-none"
                           placeholder="0"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           Years Experience
                         </p>
                       </div>
@@ -392,7 +489,7 @@ const handleProfileUpdate = async () => {
                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                           {user?.years_experience || 0}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           Years Experience
                         </p>
                       </>
@@ -412,17 +509,21 @@ const handleProfileUpdate = async () => {
                               total_projects: value ? parseInt(value, 10) : 0,
                             });
                           }}
-                          className="w-full text-2xl font-bold text-center text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-primary-500 focus:outline-none"
+                          className="w-full text-2xl font-bold text-center text-gray-900 bg-transparent border-b-2 dark:text-gray-100 border-primary-500 focus:outline-none"
                           placeholder="0"
                         />
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Projects</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Projects
+                        </p>
                       </div>
                     ) : (
                       <>
                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                           {user?.total_projects || 0}
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">Projects</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Projects
+                        </p>
                       </>
                     )}
                   </div>
@@ -433,18 +534,14 @@ const handleProfileUpdate = async () => {
               <div className="pt-4 mt-6 space-y-2 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => setShowPasswordModal(true)}
-                  className="flex items-center w-full gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  className="flex items-center w-full gap-3 px-3 py-2 text-sm text-gray-700 transition-colors rounded-lg dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <KeyIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   Change Password
                 </button>
-                <button className="flex items-center w-full gap-3 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 transition-colors rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700">
+                <button className="flex items-center w-full gap-3 px-3 py-2 text-sm text-gray-700 transition-colors rounded-lg dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                   <BellIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   Notification Settings
-                </button>
-                <button className="flex items-center w-full gap-3 px-3 py-2 text-sm text-red-600 transition-colors rounded-lg hover:bg-red-50">
-                  <XMarkIcon className="w-4 h-4" />
-                  Deactivate Account
                 </button>
               </div>
             </div>
@@ -455,7 +552,7 @@ const handleProfileUpdate = async () => {
               ========================================== */}
           <div className="space-y-6 lg:col-span-2">
             {/* Personal Information */}
-            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+            <div className="p-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
               <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Personal Information
               </h3>
@@ -471,10 +568,12 @@ const handleProfileUpdate = async () => {
                       onChange={(e) =>
                         setProfileData({ ...profileData, name: e.target.value })
                       }
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.name}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {profileData.name}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -491,10 +590,12 @@ const handleProfileUpdate = async () => {
                           email: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.email}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {profileData.email}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -511,65 +612,149 @@ const handleProfileUpdate = async () => {
                           phone: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.phone}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {profileData.phone}
+                    </p>
                   )}
                 </div>
+
+                {/* Department - Show as disabled input for employees, dropdown for admins */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Department
                   </label>
                   {isEditing ? (
-                    <select
-                      value={profileData.department}
-                      onChange={(e) =>
-                        setProfileData({
-                          ...profileData,
-                          department: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    >
-                      <option value="Engineering">Engineering</option>
-                      <option value="HR">Human Resources</option>
-                      <option value="Finance">Finance</option>
-                      <option value="Marketing">Marketing</option>
-                      <option value="Operations">Operations</option>
-                    </select>
+                    isEmployee ? (
+                      // For employees: show as disabled input
+                      <input
+                        type="text"
+                        value={profileData.department || "Not assigned"}
+                        disabled
+                        className="w-full px-3 py-2 mt-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                      />
+                    ) : (
+                      // For admins: show as dropdown
+                      <select
+                        value={profileData.department_id || ""}
+                        onChange={handleDepartmentChange}
+                        className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
+                        disabled={loadingDropdowns}
+                      >
+                        <option value="">Select Department</option>
+                        {loadingDropdowns ? (
+                          <option value="" disabled>
+                            Loading...
+                          </option>
+                        ) : departments.length > 0 ? (
+                          departments.map((dept) => (
+                            <option key={dept.id} value={dept.id}>
+                              {dept.name}
+                            </option>
+                          ))
+                        ) : (
+                          <option value="" disabled>
+                            No departments available
+                          </option>
+                        )}
+                      </select>
+                    )
                   ) : (
                     <p className="mt-1 text-gray-900 dark:text-gray-100">
-                      {profileData.department}
+                      {profileData.department || "Not assigned"}
+                    </p>
+                  )}
+                  {isEmployee && isEditing && (
+                    <p className="mt-1 text-xs text-blue-600">
+                      <span className="inline-flex items-center gap-1">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                          />
+                        </svg>
+                        Department cannot be changed. Contact HR for updates.
+                      </span>
                     </p>
                   )}
                 </div>
+
+                {/* Position - Show as disabled input for employees, dropdown for admins */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Position
                   </label>
                   {isEditing ? (
-                    <select
-                      value={profileData.position}
-                      onChange={(e) =>
-                        setProfileData({
-                          ...profileData,
-                          position: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-                    >
-                      <option value="">Select Position</option>
-                      {positions.map((pos) => (
-                        <option key={pos.id} value={pos.title}>
-                          {pos.title}
-                        </option>
-                      ))}
-                    </select>
+                    isEmployee ? (
+                      // For employees: show as disabled input
+                      <input
+                        type="text"
+                        value={profileData.position || "Not assigned"}
+                        disabled
+                        className="w-full px-3 py-2 mt-1 text-gray-500 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                      />
+                    ) : (
+                      // For admins: show as dropdown
+                      <select
+                        value={profileData.position_id || ""}
+                        onChange={handlePositionChange}
+                        className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
+                        disabled={loadingDropdowns}
+                      >
+                        <option value="">Select Position</option>
+                        {loadingDropdowns ? (
+                          <option value="" disabled>
+                            Loading...
+                          </option>
+                        ) : positions.length > 0 ? (
+                          positions.map((pos) => (
+                            <option key={pos.id} value={pos.id}>
+                              {pos.title}
+                            </option>
+                          ))
+                        ) : (
+                          <option value="" disabled>
+                            No positions available
+                          </option>
+                        )}
+                      </select>
+                    )
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.position}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {profileData.position || "Not assigned"}
+                    </p>
+                  )}
+                  {isEmployee && isEditing && (
+                    <p className="mt-1 text-xs text-blue-600">
+                      <span className="inline-flex items-center gap-1">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                          />
+                        </svg>
+                        Position cannot be changed. Contact HR for updates.
+                      </span>
+                    </p>
                   )}
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Join Date
@@ -584,10 +769,12 @@ const handleProfileUpdate = async () => {
                           joinDate: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.joinDate}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {formatDate(profileData.joinDate)}
+                    </p>
                   )}
                 </div>
                 <div className="md:col-span-2">
@@ -604,10 +791,12 @@ const handleProfileUpdate = async () => {
                         })
                       }
                       rows={2}
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.address}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {profileData.address || "Not set"}
+                    </p>
                   )}
                 </div>
                 <div className="md:col-span-2">
@@ -621,16 +810,19 @@ const handleProfileUpdate = async () => {
                         setProfileData({ ...profileData, bio: e.target.value })
                       }
                       rows={3}
-                      className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     />
                   ) : (
-                    <p className="mt-1 text-gray-900 dark:text-gray-100">{profileData.bio}</p>
+                    <p className="mt-1 text-gray-900 dark:text-gray-100">
+                      {profileData.bio || "No bio provided"}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="p-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+            {/* Recent Activity */}
+            <div className="p-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Recent Activity
@@ -649,7 +841,7 @@ const handleProfileUpdate = async () => {
                 </div>
               ) : activities.length === 0 ? (
                 <div className="py-8 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     No recent activities found
                   </p>
                 </div>
@@ -672,7 +864,7 @@ const handleProfileUpdate = async () => {
                             <p className="text-sm text-gray-900 dark:text-gray-100">
                               {activity.description}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
                               {activity.time}
                             </p>
                           </div>
@@ -695,7 +887,7 @@ const handleProfileUpdate = async () => {
           ========================================== */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
+          <div className="w-full max-w-md p-6 bg-white shadow-lg dark:bg-gray-800 rounded-xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Change Password
@@ -704,7 +896,7 @@ const handleProfileUpdate = async () => {
                 onClick={() => setShowPasswordModal(false)}
                 className="p-1 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400 dark:text-gray-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
@@ -724,7 +916,7 @@ const handleProfileUpdate = async () => {
                         current_password: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Enter current password"
                   />
                 </div>
@@ -742,7 +934,7 @@ const handleProfileUpdate = async () => {
                         new_password: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Enter new password"
                   />
                 </div>
@@ -760,13 +952,13 @@ const handleProfileUpdate = async () => {
                         new_password_confirmation: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 mt-1 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
                     placeholder="Confirm new password"
                   />
                 </div>
 
                 {/* Password Requirements */}
-                <div className="p-3 space-y-1 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 rounded-lg bg-gray-50 dark:bg-gray-700">
+                <div className="p-3 space-y-1 text-xs text-gray-500 rounded-lg dark:text-gray-400 bg-gray-50 dark:bg-gray-700">
                   <p>Password must contain:</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     <li
@@ -822,7 +1014,7 @@ const handleProfileUpdate = async () => {
                 <button
                   type="button"
                   onClick={() => setShowPasswordModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </button>

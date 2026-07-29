@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { announcementApi } from "../../api/announcement/announcementApi";
 import type { Announcement } from "../../types/announcement.types";
+import { useAuth } from "../../context/AuthContext";
 
 const priorityColors: Record<string, string> = {
   low: "bg-blue-100 text-blue-800",
@@ -43,6 +44,12 @@ const typeColors: Record<string, string> = {
 export const AnnouncementDetail: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const {
+    user,
+    canEditAnnouncement,
+    canDeleteAnnouncement,
+    canPublishAnnouncement,
+  } = useAuth();
   const [loading, setLoading] = useState(true);
   const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -191,21 +198,31 @@ export const AnnouncementDetail: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {announcement.status !== "archived" && (
+          {/* Edit - only if user created it or is super admin */}
+          {announcement.status !== "archived" &&
+            canEditAnnouncement(announcement.created_by) && (
+              <button
+                onClick={() =>
+                  navigate(`/announcements/${announcement.id}/edit`)
+                }
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                <PencilSquareIcon className="w-5 h-5" />
+              </button>
+            )}
+
+          {/* Delete - only super admin */}
+          {canDeleteAnnouncement() && (
             <button
-              onClick={() => navigate(`/announcements/${announcement.id}/edit`)}
-              className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+              onClick={() => setShowDeleteModal(true)}
+              className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
             >
-              <PencilSquareIcon className="w-5 h-5" />
+              <TrashIcon className="w-5 h-5" />
             </button>
           )}
-          <button
-            onClick={() => setShowDeleteModal(true)}
-            className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-          >
-            <TrashIcon className="w-5 h-5" />
-          </button>
-          {announcement.status === "draft" && (
+
+          {/* Publish - only super admin */}
+          {announcement.status === "draft" && canPublishAnnouncement() && (
             <button
               onClick={handlePublish}
               className="flex items-center gap-2 px-3 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
@@ -214,7 +231,9 @@ export const AnnouncementDetail: React.FC = () => {
               Publish
             </button>
           )}
-          {announcement.status === "published" && (
+
+          {/* Archive - only super admin */}
+          {announcement.status === "published" && canPublishAnnouncement() && (
             <button
               onClick={handleArchive}
               className="flex items-center gap-2 px-3 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
@@ -223,26 +242,32 @@ export const AnnouncementDetail: React.FC = () => {
               Archive
             </button>
           )}
-          <button
-            onClick={handlePin}
-            className={`p-2 rounded-lg transition-colors ${
-              announcement.is_pinned
-                ? "text-primary-600 hover:text-primary-700 bg-primary-50"
-                : "text-gray-400 dark:text-gray-500 hover:text-primary-600 hover:bg-primary-50"
-            }`}
-          >
-            <MapPinIcon className="w-5 h-5" />
-          </button>
-          <button
-            onClick={handleImportant}
-            className={`p-2 rounded-lg transition-colors ${
-              announcement.is_important
-                ? "text-red-600 hover:text-red-700 bg-red-50"
-                : "text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50"
-            }`}
-          >
-            <ExclamationTriangleIcon className="w-5 h-5" />
-          </button>
+
+          {/* Pin & Important - only super admin */}
+          {user?.role === "super_admin" && (
+            <>
+              <button
+                onClick={handlePin}
+                className={`p-2 rounded-lg transition-colors ${
+                  announcement.is_pinned
+                    ? "text-primary-600 hover:text-primary-700 bg-primary-50"
+                    : "text-gray-400 dark:text-gray-500 hover:text-primary-600 hover:bg-primary-50"
+                }`}
+              >
+                <MapPinIcon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleImportant}
+                className={`p-2 rounded-lg transition-colors ${
+                  announcement.is_important
+                    ? "text-red-600 hover:text-red-700 bg-red-50"
+                    : "text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50"
+                }`}
+              >
+                <ExclamationTriangleIcon className="w-5 h-5" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 

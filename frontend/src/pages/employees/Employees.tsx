@@ -24,6 +24,7 @@ import type { Employee, EmployeeFilters } from "../../types/employee.types";
 import { employeeApi, departmentApi, positionApi } from "../../api/employeeApi";
 import type { Department, Position } from "../../types/employee.types";
 import { getStorageUrl } from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 
 const statusColors: Record<string, string> = {
   active: "bg-green-100 text-green-800",
@@ -63,6 +64,10 @@ const getRandomColor = (id: number): string => {
 
 export const Employees: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
+  const isManager = user?.role === "manager";
+  const isReadOnly = !isSuperAdmin;
 
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -89,7 +94,15 @@ export const Employees: React.FC = () => {
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await employeeApi.getEmployees(filters);
+      // If manager, filter by their department
+      const params = {
+        ...filters,
+        department_id:
+          isManager && user?.employee?.department_id
+            ? String(user.employee.department_id)
+            : filters.department_id,
+      };
+      const result = await employeeApi.getEmployees(params);
       setEmployees(result.data);
       setPagination({ total: result.total, last_page: result.last_page });
     } catch (error) {
@@ -97,7 +110,7 @@ export const Employees: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters, isManager, user]);
 
   useEffect(() => {
     fetchEmployees();
@@ -168,18 +181,32 @@ export const Employees: React.FC = () => {
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Employees</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {isManager ? "Team Members" : "Employees"}
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Manage all employees and their information
+            {isManager
+              ? "View your team members"
+              : "Manage all employees and their information"}
           </p>
         </div>
-        <button
-          onClick={() => navigate("/admin/employees/create")}
-          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-900 hover:bg-secondary-900 hover:text-black"
-        >
-          <PlusIcon className="w-5 h-5" />
-          Add Employee
-        </button>
+        <div className="flex items-center gap-3">
+          {isManager && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+              <EyeIcon className="w-4 h-4" />
+              Read Only
+            </span>
+          )}
+          {!isReadOnly && (
+            <button
+              onClick={() => navigate("/admin/employees/create")}
+              className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-900 hover:bg-secondary-900 hover:text-black"
+            >
+              <PlusIcon className="w-5 h-5" />
+              Add Employee
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -189,7 +216,9 @@ export const Employees: React.FC = () => {
               <UserGroupIcon className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Employees</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Total Employees
+              </p>
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {pagination.total}
               </p>
@@ -215,7 +244,9 @@ export const Employees: React.FC = () => {
               <UsersIcon className="w-5 h-5 text-gray-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Inactive</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Inactive
+              </p>
               <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 {employees.filter((e) => e.status === "inactive").length}
               </p>
@@ -241,7 +272,9 @@ export const Employees: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
           >
             <FunnelIcon className="w-5 h-5 text-gray-500" />
-            <span className="text-sm text-gray-700 dark:text-gray-300">Filters</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Filters
+            </span>
           </button>
           <button
             onClick={() => {
@@ -476,20 +509,26 @@ export const Employees: React.FC = () => {
                       >
                         <EyeIcon className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => handleEdit(employee)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors dark:hover:bg-blue-900/30"
-                        title="Edit"
-                      >
-                        <PencilSquareIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(employee)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors dark:hover:bg-red-900/30"
-                        title="Delete"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
+                      {/* Edit - only for super admin */}
+                      {!isReadOnly && (
+                        <button
+                          onClick={() => handleEdit(employee)}
+                          className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors dark:hover:bg-blue-900/30"
+                          title="Edit"
+                        >
+                          <PencilSquareIcon className="w-4 h-4" />
+                        </button>
+                      )}
+                      {/* Delete - only for super admin */}
+                      {isSuperAdmin && (
+                        <button
+                          onClick={() => handleDelete(employee)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors dark:hover:bg-red-900/30"
+                          title="Delete"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

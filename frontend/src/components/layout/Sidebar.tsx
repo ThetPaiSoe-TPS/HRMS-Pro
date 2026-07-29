@@ -17,6 +17,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
+
   const [expandedItems, setExpandedItems] = useState<string[]>([
     "Employee Management",
     "Attendance",
@@ -51,7 +52,165 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  const filteredNavigation = navigationData;
+  // Filter navigation items based on user role
+  const getFilteredNavigation = () => {
+    const userRole =
+      typeof user?.role === "string"
+        ? user.role.toLowerCase()
+        : String(user?.role ?? "").toLowerCase();
+    const managerRoles = ["manager", "hr_manager", "department manager"];
+    const isSuperAdmin = userRole === "super_admin";
+    const isManager = managerRoles.includes(userRole);
+    const isEmployee = userRole === "employee";
+
+    return navigationData
+      .map((item) => {
+        // If no children, check if item itself should be visible
+        if (!item.children || item.children.length === 0) {
+          // Hide admin-only items from managers and employees
+          if ((isManager || isEmployee) && isAdminOnlyItem(item)) {
+            return null;
+          }
+          return item;
+        }
+
+        // Filter children based on role
+        const filteredChildren = item.children.filter((child) => {
+          // Super admin can see everything
+          if (isSuperAdmin) return true;
+
+          // Manager restrictions
+          if (isManager) {
+            // Allow reports for managers (read-only)
+            if (isReportPath(child.href)) {
+              return true;
+            }
+            // Hide admin-only child items (except reports)
+            if (isAdminOnlyChild(child)) {
+              return false;
+            }
+            // Hide specific manager-restricted items
+            if (isManagerRestrictedChild(child)) {
+              return false;
+            }
+            return true;
+          }
+
+          // Employee - only show basic items
+          if (isEmployee) {
+            // Employees can see reports (read-only)
+            if (isReportPath(child.href)) {
+              return true;
+            }
+            // Employees can see attendance (read-only)
+            if (
+              child.href === "/admin/attendance" ||
+              child.href === "/admin/attendance/report"
+            ) {
+              return true;
+            }
+            // Employees can see their own leave
+            if (
+              child.href === "/admin/leaves" ||
+              child.href === "/admin/leaves/create"
+            ) {
+              return true;
+            }
+            // Hide everything else admin-related
+            return !isAdminOnlyChild(child) && !isManagerRestrictedChild(child);
+          }
+
+          // For other roles, only show basic items
+          return !isAdminOnlyChild(child) && !isManagerRestrictedChild(child);
+        });
+
+        // If no children left, don't show the parent
+        if (filteredChildren.length === 0) {
+          return null;
+        }
+
+        return {
+          ...item,
+          children: filteredChildren,
+        };
+      })
+      .filter((item): item is NavItem => item !== null);
+  };
+
+  // Helper: Check if a path is a report path (managers can access these)
+  const isReportPath = (href: string): boolean => {
+    const reportPaths = [
+      "/admin/reports",
+      "/admin/reports/employees",
+      "/admin/reports/leaves",
+      "/admin/reports/payroll",
+      "/admin/attendance/report",
+      "/reports/attendance",
+    ];
+    return reportPaths.some((path) => href.startsWith(path));
+  };
+
+  // Helper: Check if an item is admin-only
+  const isAdminOnlyItem = (item: NavItem): boolean => {
+    const adminOnlyPaths = [
+      "/admin/users",
+      "/admin/roles",
+      "/admin/permissions",
+      "/admin/settings",
+      "/admin/payroll",
+      "/admin/attendance",
+      "/admin/leaves",
+      "/admin/employees",
+      "/admin/departments",
+      "/admin/positions",
+      "/admin/leave-types",
+      "/admin/attendance/check",
+    ];
+    // Don't hide report paths
+    if (isReportPath(item.href)) return false;
+    return (
+      adminOnlyPaths.includes(item.href) ||
+      adminOnlyPaths.some((path) => item.href.startsWith(path))
+    );
+  };
+
+  // Helper: Check if a child item is admin-only
+  const isAdminOnlyChild = (child: NavItem): boolean => {
+    const adminOnlyPaths = [
+      "/admin/users",
+      "/admin/roles",
+      "/admin/permissions",
+      "/admin/settings",
+      "/admin/payroll",
+      "/admin/attendance",
+      "/admin/leaves",
+      "/admin/employees",
+      "/admin/departments",
+      "/admin/positions",
+      "/admin/leave-types",
+      "/admin/attendance/check",
+    ];
+    // Don't hide report paths
+    if (isReportPath(child.href)) return false;
+    return (
+      adminOnlyPaths.includes(child.href) ||
+      adminOnlyPaths.some((path) => child.href.startsWith(path))
+    );
+  };
+
+  // Helper: Check if an item is restricted for managers (but not admin-only)
+  const isManagerRestrictedChild = (child: NavItem): boolean => {
+    // Items that managers can't access
+    const managerRestrictedPaths = [
+      "/admin/attendance/check", // Check In/Out - only for employees
+      "/admin/payroll/generate", // Generate Payroll - only admin
+      "/admin/leave-types/create", // Create Leave Type - only admin
+      "/admin/leave-types/:id/edit", // Edit Leave Type - only admin
+    ];
+    return managerRestrictedPaths.some((path) => child.href.startsWith(path));
+  };
+
+  const filteredNavigation = getFilteredNavigation();
 
   const renderNavItem = (item: NavItem) => {
     const hasChildren = item.children && item.children.length > 0;
@@ -75,14 +234,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               transition-all duration-200
               ${
                 isItemActive
-                  ? "bg-secondary-900 text-gray-900" // Active: #FCC71E
-                  : "bg-primary-900 text-white hover:bg-primary-600/50" // Normal: #D7E2FF
+                  ? "bg-secondary-900 text-gray-900"
+                  : "bg-primary-900 text-white hover:bg-primary-600/50"
               }
             `}
           >
             <item.icon
               className={`h-5 w-5 flex-shrink-0 ${
-                // isItemActive ? "text-gray-900" : "text-gray-600"
                 isItemActive ? "text-gray-900" : "text-white"
               }`}
             />
@@ -111,8 +269,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     transition-all duration-200
                     ${
                       isActive(child.href)
-                        ? "bg-secondary-900 text-gray-900 font-medium" // Active child: #FCC71E
-                        : "bg-primary-900 text-white hover:bg-primary-600/30" // Normal child: #D7E2FF/50
+                        ? "bg-secondary-900 text-gray-900 font-medium"
+                        : "bg-primary-900 text-white hover:bg-primary-600/30"
                     }
                   `}
                 >
@@ -145,8 +303,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           transition-all duration-200
           ${
             isActive(item.href)
-              ? "bg-secondary-900 text-gray-900" // Active: #FCC71E
-              : "bg-primary-900 text-white hover:bg-primary-600/50" // Normal: #D7E2FF
+              ? "bg-secondary-900 text-gray-900"
+              : "bg-primary-900 text-white hover:bg-primary-600/50"
           }
         `}
       >
@@ -191,7 +349,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             className="flex items-center gap-3"
             onClick={onClose}
           >
-            <div className="flex items-center justify-center w-12 h-12 overflow-hidden border-2 border-white/20 rounded-full">
+            <div className="flex items-center justify-center w-12 h-12 overflow-hidden border-2 rounded-full border-white/20">
               <img
                 src="/HRSM-pro.png"
                 alt="Logo"
@@ -204,7 +362,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto">
-          {filteredNavigation.map((item) => renderNavItem(item))}
+          {filteredNavigation.length > 0 ? (
+            filteredNavigation.map((item) => renderNavItem(item))
+          ) : (
+            <div className="mt-8 text-sm text-center text-white/50">
+              No menu items available
+            </div>
+          )}
         </nav>
 
         {/* Bottom Section - User Profile & Logout */}
@@ -223,7 +387,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <p className="text-sm font-medium text-white truncate">
                 {user?.name || "User"}
               </p>
-              <p className="text-xs text-white/70 capitalize truncate">
+              <p className="text-xs capitalize truncate text-white/70">
                 {String(user?.role ?? "").replace("_", " ") || "Employee"}
               </p>
             </div>

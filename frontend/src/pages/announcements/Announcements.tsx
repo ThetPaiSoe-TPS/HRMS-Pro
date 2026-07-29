@@ -18,6 +18,8 @@ import {
   MapPinIcon,
 } from "@heroicons/react/24/outline";
 import { announcementApi } from "../../api/announcement/announcementApi";
+import { useAuth } from "../../context/AuthContext";
+
 import type {
   Announcement,
   AnnouncementFilters,
@@ -48,6 +50,12 @@ const typeColors: Record<string, string> = {
 
 export const Announcements: React.FC = () => {
   const navigate = useNavigate();
+  const {
+    user,
+    canEditAnnouncement,
+    canDeleteAnnouncement,
+    canPublishAnnouncement,
+  } = useAuth();
   const [loading, setLoading] = useState(false);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [stats, setStats] = useState<AnnouncementStats>({
@@ -484,6 +492,7 @@ export const Announcements: React.FC = () => {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1">
+                          {/* View - everyone can view */}
                           <button
                             onClick={() =>
                               navigate(`/announcements/${announcement.id}`)
@@ -493,64 +502,83 @@ export const Announcements: React.FC = () => {
                           >
                             <EyeIcon className="w-4 h-4" />
                           </button>
-                          {announcement.status !== "archived" && (
+
+                          {/* Edit - only if user created it or is super admin */}
+                          {announcement.status !== "archived" &&
+                            canEditAnnouncement(announcement.created_by) && (
+                              <button
+                                onClick={() =>
+                                  navigate(
+                                    `/announcements/${announcement.id}/edit`,
+                                  )
+                                }
+                                className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                                title="Edit"
+                              >
+                                <PencilSquareIcon className="w-4 h-4" />
+                              </button>
+                            )}
+
+                          {/* Publish - only super admin */}
+                          {announcement.status === "draft" &&
+                            canPublishAnnouncement() && (
+                              <button
+                                onClick={() => handlePublish(announcement.id)}
+                                className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors"
+                                title="Publish"
+                              >
+                                <CheckBadgeIcon className="w-4 h-4" />
+                              </button>
+                            )}
+
+                          {/* Archive - only super admin */}
+                          {announcement.status === "published" &&
+                            canPublishAnnouncement() && (
+                              <button
+                                onClick={() => handleArchive(announcement.id)}
+                                className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                                title="Archive"
+                              >
+                                <DocumentTextIcon className="w-4 h-4" />
+                              </button>
+                            )}
+
+                          {/* Pin - only super admin */}
+                          {user?.role === "super_admin" && (
                             <button
-                              onClick={() =>
-                                navigate(
-                                  `/announcements/${announcement.id}/edit`,
-                                )
+                              onClick={() => handlePin(announcement.id)}
+                              className={`p-1.5 rounded-lg transition-colors ${
+                                announcement.is_pinned
+                                  ? "text-primary-600 hover:text-primary-700"
+                                  : "text-gray-400 dark:text-gray-500 hover:text-primary-600"
+                              }`}
+                              title={announcement.is_pinned ? "Unpin" : "Pin"}
+                            >
+                              <MapPinIcon className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          {/* Important - only super admin */}
+                          {user?.role === "super_admin" && (
+                            <button
+                              onClick={() => handleImportant(announcement.id)}
+                              className={`p-1.5 rounded-lg transition-colors ${
+                                announcement.is_important
+                                  ? "text-red-600 hover:text-red-700"
+                                  : "text-gray-400 dark:text-gray-500 hover:text-red-600"
+                              }`}
+                              title={
+                                announcement.is_important
+                                  ? "Remove Important"
+                                  : "Mark Important"
                               }
-                              className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                              title="Edit"
                             >
-                              <PencilSquareIcon className="w-4 h-4" />
+                              <ExclamationTriangleIcon className="w-4 h-4" />
                             </button>
                           )}
-                          {announcement.status === "draft" && (
-                            <button
-                              onClick={() => handlePublish(announcement.id)}
-                              className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors"
-                              title="Publish"
-                            >
-                              <CheckBadgeIcon className="w-4 h-4" />
-                            </button>
-                          )}
-                          {announcement.status === "published" && (
-                            <button
-                              onClick={() => handleArchive(announcement.id)}
-                              className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
-                              title="Archive"
-                            >
-                              <DocumentTextIcon className="w-4 h-4" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handlePin(announcement.id)}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              announcement.is_pinned
-                                ? "text-primary-600 hover:text-primary-700"
-                                : "text-gray-400 dark:text-gray-500 hover:text-primary-600"
-                            }`}
-                            title={announcement.is_pinned ? "Unpin" : "Pin"}
-                          >
-                            <MapPinIcon className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleImportant(announcement.id)}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              announcement.is_important
-                                ? "text-red-600 hover:text-red-700"
-                                : "text-gray-400 dark:text-gray-500 hover:text-red-600"
-                            }`}
-                            title={
-                              announcement.is_important
-                                ? "Remove Important"
-                                : "Mark Important"
-                            }
-                          >
-                            <ExclamationTriangleIcon className="w-4 h-4" />
-                          </button>
-                          {announcement.status !== "archived" && (
+
+                          {/* Delete - only super admin */}
+                          {canDeleteAnnouncement() && (
                             <button
                               onClick={() => handleDelete(announcement)}
                               className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"

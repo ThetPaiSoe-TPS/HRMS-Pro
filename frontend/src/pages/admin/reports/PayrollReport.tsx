@@ -10,6 +10,7 @@ import {
   XMarkIcon,
   CurrencyDollarIcon,
   ClockIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import type {
   PayrollReportData,
@@ -18,6 +19,7 @@ import type {
 } from "../../../types/report.types";
 import { reportApi } from "../../../api/report/reportApi";
 import { departmentApi } from "../../../api/department/departmentApi";
+import { useAuth } from "../../../hooks/useAuth";
 
 interface Department {
   id: number;
@@ -50,13 +52,22 @@ const statusLabels: Record<string, string> = {
 };
 
 export const PayrollReport: React.FC = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "super_admin";
+  const isManager =
+    user?.role === "manager" || user?.role === "Department Manager";
+  const isReadOnly = !isSuperAdmin;
+
   const [loading, setLoading] = useState(false);
   const [view, setView] = useState<"details" | "summary">("details");
   const [departments, setDepartments] = useState<Department[]>([]);
   const [reportData, setReportData] = useState<PayrollReportData[]>([]);
   const [summaryData, setSummaryData] = useState<PayrollSummaryData[]>([]);
   const [filters, setFilters] = useState<ReportFilters>({
-    date_from: "",
+    date_from:
+      new Date().getFullYear() +
+      "-" +
+      String(new Date().getMonth() + 1).padStart(2, "0"), // Current month
     date_to: "",
     department_id: "",
     employee_id: "",
@@ -80,25 +91,49 @@ export const PayrollReport: React.FC = () => {
     const fetchData = async () => {
       try {
         const depts = await departmentApi.getAll();
-        setDepartments(depts);
+        console.log("All departments:", depts);
+
+        // If manager, filter departments to only show their department
+        if (isManager && user?.employee?.department_id) {
+          const managerDept = depts.find(
+            (d) => d.id === user.employee?.department_id,
+          );
+          console.log("Manager's department:", managerDept);
+          setDepartments(managerDept ? [managerDept] : []);
+        } else {
+          setDepartments(depts);
+        }
       } catch (error) {
         console.error("Failed to fetch departments:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [isManager, user]);
 
   // Fetch report data
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const result = await reportApi.getPayrollReport(filters);
+      // Build params
+      const params: any = {
+        ...filters,
+      };
+
+      // If manager and has department, filter by their department
+      if (isManager && user?.employee?.department_id) {
+        params.department_id = String(user.employee.department_id);
+        console.log("Manager filtering by department:", params.department_id);
+      }
+
+      console.log("Fetching payroll report with params:", params);
+      const result = await reportApi.getPayrollReport(params);
       console.log("Payroll report result:", result);
-      setReportData(result.data);
-      setSummaryData(result.summary);
+
+      setReportData(result.data || []);
+      setSummaryData(result.summary || []);
 
       // Update stats
-      const data = result.data;
+      const data = result.data || [];
       setStats({
         total_employees: data.length,
         total_gross: data.reduce((sum, p) => sum + (p.gross_salary || 0), 0),
@@ -118,11 +153,14 @@ export const PayrollReport: React.FC = () => {
       });
     } catch (error) {
       console.error("Failed to fetch report:", error);
+      setReportData([]);
+      setSummaryData([]);
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch report on mount and when filters change
   useEffect(() => {
     fetchReport();
   }, [filters]);
@@ -137,7 +175,14 @@ export const PayrollReport: React.FC = () => {
 
   const handleExport = async (format: "pdf" | "excel" | "csv") => {
     try {
-      const blob = await reportApi.exportReport("payroll", filters, format);
+      const params = {
+        ...filters,
+        department_id:
+          isManager && user?.employee?.department_id
+            ? String(user.employee.department_id)
+            : filters.department_id,
+      };
+      const blob = await reportApi.exportReport("payroll", params, format);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -173,13 +218,21 @@ export const PayrollReport: React.FC = () => {
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Payroll Report
+            {isManager ? "Team Payroll Report" : "Payroll Report"}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-            Generate payroll reports and analytics
+            {isManager
+              ? "View team payroll reports (read-only)"
+              : "Generate payroll reports and analytics"}
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {isManager && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+              <EyeIcon className="w-4 h-4" />
+              Read Only
+            </span>
+          )}
           <div className="flex items-center overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700">
             <button
               onClick={() => setView("details")}
@@ -229,37 +282,39 @@ export const PayrollReport: React.FC = () => {
             )}
             Generate Report
           </button>
-          <div className="relative">
-            <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-            >
-              <DocumentArrowDownIcon className="w-5 h-5" />
-              Export
-            </button>
-            {showExportMenu && (
-              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                <button
-                  onClick={() => handleExport("pdf")}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-                >
-                  📄 PDF
-                </button>
-                <button
-                  onClick={() => handleExport("excel")}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-                >
-                  📊 Excel
-                </button>
-                <button
-                  onClick={() => handleExport("csv")}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-                >
-                  📋 CSV
-                </button>
-              </div>
-            )}
-          </div>
+          {!isReadOnly && (
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+              >
+                <DocumentArrowDownIcon className="w-5 h-5" />
+                Export
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                  <button
+                    onClick={() => handleExport("pdf")}
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    📄 PDF
+                  </button>
+                  <button
+                    onClick={() => handleExport("excel")}
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    📊 Excel
+                  </button>
+                  <button
+                    onClick={() => handleExport("csv")}
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    📋 CSV
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -338,6 +393,7 @@ export const PayrollReport: React.FC = () => {
                 handleFilterChange("department_id", e.target.value)
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
+              disabled={isManager}
             >
               <option value="">All Departments</option>
               {departments.map((dept) => (
@@ -384,6 +440,18 @@ export const PayrollReport: React.FC = () => {
         {loading && reportData.length === 0 ? (
           <div className="flex justify-center py-12">
             <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>
+          </div>
+        ) : reportData.length === 0 ? (
+          <div className="py-12 text-center">
+            <CurrencyDollarIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              No payroll records found
+            </h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              {isManager
+                ? "No payroll records found for your team. Try adjusting the month filter."
+                : "Try adjusting your filters or generate payroll first."}
+            </p>
           </div>
         ) : view === "details" ? (
           <div className="overflow-x-auto">
@@ -517,19 +585,6 @@ export const PayrollReport: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && reportData.length === 0 && (
-          <div className="py-12 text-center">
-            <CurrencyDollarIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              No payroll records found
-            </h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-              Try adjusting your filters
-            </p>
           </div>
         )}
       </div>

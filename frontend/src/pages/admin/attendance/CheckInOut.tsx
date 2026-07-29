@@ -54,7 +54,9 @@ const getRandomColor = (id: number): string => {
 
 export const CheckInOut: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuth(); // Add this
+  const isSuperAdmin = user?.role === "super_admin";
+  const isManager = user?.role === "manager";
   const [loading, setLoading] = useState(false);
   const [employee, setEmployee] = useState<Employee | null>(null);
   const [isCheckedIn, setIsCheckedIn] = useState(false);
@@ -64,6 +66,13 @@ export const CheckInOut: React.FC = () => {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isManager) {
+      navigate("/admin/attendance");
+      return;
+    }
+  }, [isManager, navigate]);
 
   useEffect(() => {
     const fetchEmployee = async () => {
@@ -242,13 +251,17 @@ export const CheckInOut: React.FC = () => {
       <div className="p-6 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Today</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              Today
+            </p>
             <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {getCurrentDate()}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Current Time</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              Current Time
+            </p>
             <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {getCurrentTime()}
             </p>
@@ -260,7 +273,9 @@ export const CheckInOut: React.FC = () => {
       <div className="p-6 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Status</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+              Status
+            </p>
             <div className="flex items-center gap-2 mt-1">
               {isCheckedIn ? (
                 <>
@@ -281,13 +296,19 @@ export const CheckInOut: React.FC = () => {
           </div>
           {checkInTime && (
             <div className="text-right">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Check In Time</p>
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{checkInTime}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Check In Time
+              </p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                {checkInTime}
+              </p>
             </div>
           )}
           {checkOutTime && (
             <div className="text-right">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Check Out Time</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
+                Check Out Time
+              </p>
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {checkOutTime}
               </p>

@@ -20,6 +20,7 @@ import type {
 import { attendanceApi } from "../../../api/attendance/attendanceApi";
 import { employeeApi } from "../../../api/employeeApi";
 import { getStorageUrl } from "../../../api/axios";
+import { useAuth } from "../../../context/AuthContext";
 
 const getPhotoUrl = (photo: string | null): string | null => {
   return getStorageUrl(photo);
@@ -85,6 +86,10 @@ interface Employee {
 
 export const AttendancePage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // Add this
+  const isSuperAdmin = user?.role === "super_admin";
+  const isManager = user?.role === "manager";
+  const isReadOnly = !isSuperAdmin;
 
   // State
   const [attendance, setAttendance] = useState<Attendance[]>([]);
@@ -135,12 +140,29 @@ export const AttendancePage: React.FC = () => {
     notes: "",
   });
 
-  // Fetch attendance from API
   const fetchAttendance = async () => {
     setLoading(true);
     try {
-      const result = await attendanceApi.getAttendance(filters);
-      setAttendance(result.data);
+      const params = {
+        ...filters,
+        // If manager, filter by their department's employees
+        department_id:
+          isManager && user?.employee?.department_id
+            ? String(user.employee.department_id)
+            : filters.department_id,
+      };
+      const result = await attendanceApi.getAttendance(params);
+      let records = result.data;
+
+      // Additional filtering for manager
+      if (isManager && user?.employee?.department_id) {
+        records = records.filter(
+          (record) =>
+            record.employee?.department?.id === user.employee?.department_id,
+        );
+      }
+
+      setAttendance(records);
       setPagination({
         total: result.total,
         last_page: result.last_page,
@@ -270,21 +292,34 @@ export const AttendancePage: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      {/* Page Header */}
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Attendance</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {isManager ? "Team Attendance" : "Attendance"}
+          </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Track and manage employee attendance
+            {isManager
+              ? "View your team attendance"
+              : "Track and manage employee attendance"}
           </p>
         </div>
-        <button
-          onClick={navigateToCheckIn}
-          className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700"
-        >
-          <ClockIcon className="w-5 h-5" />
-          Check In / Check Out
-        </button>
+        <div className="flex items-center gap-3">
+          {isManager && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+              <EyeIcon className="w-4 h-4" />
+              Read Only
+            </span>
+          )}
+          {!isReadOnly && (
+            <button
+              onClick={() => navigate("/admin/attendance/check")}
+              className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700"
+            >
+              <ClockIcon className="w-5 h-5" />
+              Check In / Check Out
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -350,7 +385,9 @@ export const AttendancePage: React.FC = () => {
             className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
           >
             <FunnelIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-            <span className="text-sm text-gray-700 dark:text-gray-300">Filters</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Filters
+            </span>
           </button>
           <button
             onClick={() => {
@@ -560,13 +597,16 @@ export const AttendancePage: React.FC = () => {
                           >
                             <EyeIcon className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => handleEdit(record)}
-                            className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                            title="Edit"
-                          >
-                            <PencilSquareIcon className="w-4 h-4" />
-                          </button>
+                          {/* Edit - only for super admin */}
+                          {!isReadOnly && (
+                            <button
+                              onClick={() => handleEdit(record)}
+                              className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                              title="Edit"
+                            >
+                              <PencilSquareIcon className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

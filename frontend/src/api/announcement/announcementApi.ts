@@ -5,8 +5,8 @@ import type {
   AnnouncementStats,
   AnnouncementFormData,
   AnnouncementAttachment,
+  PaginatedResponse,
 } from "../../types/announcement.types";
-import type { PaginatedResponse } from "../../types/api.types";
 
 const mapAnnouncement = (data: any): Announcement => ({
   id: data.id,
@@ -39,7 +39,7 @@ const mapAnnouncement = (data: any): Announcement => ({
     file_path: att.file_path,
     file_size: att.file_size,
     mime_type: att.mime_type,
-    file_url: att.file_url,
+    file_url: att.file_url || null,
     created_at: att.created_at,
     updated_at: att.updated_at,
   })),
@@ -49,6 +49,7 @@ const mapAnnouncement = (data: any): Announcement => ({
 });
 
 export const announcementApi = {
+  // Get all announcements with pagination and filters
   getAnnouncements: async (
     filters: AnnouncementFilters,
   ): Promise<PaginatedResponse<Announcement>> => {
@@ -64,25 +65,31 @@ export const announcementApi = {
     if (filters.important) params.important = filters.important;
 
     const response: any = await api.get("/announcements", { params });
-    const data = response.data || response || [];
+
+    // response is already the data from axios interceptor
+    // response.data contains the paginated data
+    const data = response?.data || response || [];
     const dataArray = Array.isArray(data) ? data : [];
 
     return {
       data: dataArray.map(mapAnnouncement),
-      current_page: response.current_page || 1,
-      last_page: response.last_page || 1,
-      per_page: response.per_page || 10,
-      total: response.total || dataArray.length,
-      from: response.from || 0,
-      to: response.to || dataArray.length,
+      current_page: response?.current_page || 1,
+      last_page: response?.last_page || 1,
+      per_page: response?.per_page || 10,
+      total: response?.total || dataArray.length,
+      from: response?.from || 0,
+      to: response?.to || dataArray.length,
     };
   },
 
+  // Get single announcement
   getAnnouncement: async (id: number): Promise<Announcement> => {
     const response: any = await api.get(`/announcements/${id}`);
+    // response is already the data from axios interceptor
     return mapAnnouncement(response);
   },
 
+  // Create announcement
   createAnnouncement: async (data: FormData): Promise<Announcement> => {
     const response: any = await api.post("/announcements", data, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -90,6 +97,7 @@ export const announcementApi = {
     return mapAnnouncement(response);
   },
 
+  // Update announcement
   updateAnnouncement: async (
     id: number,
     data: FormData,
@@ -100,30 +108,36 @@ export const announcementApi = {
     return mapAnnouncement(response);
   },
 
+  // Delete announcement
   deleteAnnouncement: async (id: number): Promise<void> => {
     await api.delete(`/announcements/${id}`);
   },
 
+  // Publish announcement
   publishAnnouncement: async (id: number): Promise<Announcement> => {
     const response: any = await api.post(`/announcements/${id}/publish`);
     return mapAnnouncement(response);
   },
 
+  // Archive announcement
   archiveAnnouncement: async (id: number): Promise<Announcement> => {
     const response: any = await api.post(`/announcements/${id}/archive`);
     return mapAnnouncement(response);
   },
 
+  // Pin/Unpin announcement
   pinAnnouncement: async (id: number): Promise<Announcement> => {
     const response: any = await api.post(`/announcements/${id}/pin`);
     return mapAnnouncement(response);
   },
 
+  // Mark/Unmark important
   markImportant: async (id: number): Promise<Announcement> => {
     const response: any = await api.post(`/announcements/${id}/important`);
     return mapAnnouncement(response);
   },
 
+  // Upload attachment
   uploadAttachment: async (
     id: number,
     file: File,
@@ -140,16 +154,19 @@ export const announcementApi = {
     return response;
   },
 
+  // Delete attachment
   deleteAttachment: async (id: number): Promise<void> => {
     await api.delete(`/announcements/attachments/${id}`);
   },
 
+  // Get dashboard announcements
   getDashboard: async (): Promise<Announcement[]> => {
     const response: any = await api.get("/announcements/dashboard");
     const data = response || [];
     return (Array.isArray(data) ? data : []).map(mapAnnouncement);
   },
 
+  // Get announcement stats
   getStats: async (): Promise<AnnouncementStats> => {
     const response: any = await api.get("/announcements/stats");
     return response;

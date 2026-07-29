@@ -17,10 +17,12 @@ import type {
   AnnouncementFormData,
   Announcement,
 } from "../../types/announcement.types";
+import { useAuth } from "../../context/AuthContext";
 
 export const EditAnnouncement: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { user, canEditAnnouncement } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -48,6 +50,13 @@ export const EditAnnouncement: React.FC = () => {
       if (!id) return;
       try {
         const data = await announcementApi.getAnnouncement(parseInt(id));
+
+        // Check if user has permission to edit this announcement
+        if (!canEditAnnouncement(data.created_by)) {
+          navigate("/announcements");
+          return;
+        }
+
         setFormData({
           title: data.title,
           content: data.content,
@@ -72,7 +81,7 @@ export const EditAnnouncement: React.FC = () => {
       }
     };
     fetchAnnouncement();
-  }, [id]);
+  }, [id, canEditAnnouncement]);
 
   const handleChange = (
     e: React.ChangeEvent<

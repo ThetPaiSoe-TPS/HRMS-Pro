@@ -11,6 +11,7 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   BriefcaseIcon,
+  EyeIcon,
 } from "@heroicons/react/24/outline";
 import type {
   EmployeeReportData,
@@ -20,6 +21,7 @@ import { reportApi } from "../../../api/report/reportApi";
 import { departmentApi } from "../../../api/department/departmentApi";
 import { employeeApi } from "../../../api/employeeApi";
 import { getStorageUrl } from "../../../api/axios";
+import { useAuth } from "../../../context/AuthContext";
 
 interface Department {
   id: number;
@@ -84,6 +86,10 @@ const genderLabels: Record<string, string> = {
 };
 
 export const EmployeeReport: React.FC = () => {
+  const { user } = useAuth(); // Add this
+  const isSuperAdmin = user?.role === "super_admin";
+  const isManager = user?.role === "manager";
+  const isReadOnly = !isSuperAdmin;
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -124,8 +130,16 @@ export const EmployeeReport: React.FC = () => {
   const fetchReport = async () => {
     setLoading(true);
     try {
-      const data = await reportApi.getEmployeeReport(filters);
-      console.log("Report data:", data); // Debug log
+      const params = {
+        ...filters,
+        // If manager, filter by their department
+        department_id:
+          isManager && user?.employee?.department_id
+            ? String(user.employee.department_id)
+            : filters.department_id,
+      };
+      const data = await reportApi.getEmployeeReport(params);
+      console.log("Report data:", data);
       setReportData(data);
     } catch (error) {
       console.error("Failed to fetch report:", error);
@@ -187,13 +201,21 @@ export const EmployeeReport: React.FC = () => {
       <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Employee Report
+            {isManager ? "Team Report" : "Employee Report"}
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">
-            Generate employee reports and analytics
+            {isManager
+              ? "View your team reports (read-only)"
+              : "Generate employee reports and analytics"}
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {isManager && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+              <EyeIcon className="w-4 h-4" />
+              Read Only
+            </span>
+          )}
           <button
             onClick={handleGenerateReport}
             disabled={loading}
@@ -221,37 +243,39 @@ export const EmployeeReport: React.FC = () => {
             )}
             Generate Report
           </button>
-          <div className="relative">
-            <button
-              onClick={() => setShowExportMenu(!showExportMenu)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-            >
-              <DocumentArrowDownIcon className="w-5 h-5" />
-              Export
-            </button>
-            {showExportMenu && (
-              <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                <button
-                  onClick={() => handleExport("pdf")}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-                >
-                  📄 PDF
-                </button>
-                <button
-                  onClick={() => handleExport("excel")}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-                >
-                  📊 Excel
-                </button>
-                <button
-                  onClick={() => handleExport("csv")}
-                  className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
-                >
-                  📋 CSV
-                </button>
-              </div>
-            )}
-          </div>
+          {!isReadOnly && (
+            <div className="relative">
+              <button
+                onClick={() => setShowExportMenu(!showExportMenu)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg dark:text-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+              >
+                <DocumentArrowDownIcon className="w-5 h-5" />
+                Export
+              </button>
+              {showExportMenu && (
+                <div className="absolute right-0 z-10 w-40 py-1 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+                  <button
+                    onClick={() => handleExport("pdf")}
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    📄 PDF
+                  </button>
+                  <button
+                    onClick={() => handleExport("excel")}
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    📊 Excel
+                  </button>
+                  <button
+                    onClick={() => handleExport("csv")}
+                    className="flex items-center w-full gap-2 px-4 py-2 text-sm text-left text-gray-700 transition-colors dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    📋 CSV
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -316,6 +340,7 @@ export const EmployeeReport: React.FC = () => {
                 handleFilterChange("department_id", e.target.value)
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:border-gray-600 focus:ring-primary-500 focus:border-primary-500"
+              disabled={isManager} // Disable for managers
             >
               <option value="">All Departments</option>
               {departments.map((dept) => (

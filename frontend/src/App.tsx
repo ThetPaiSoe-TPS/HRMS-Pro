@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./hooks/useAuth";
+import { useAuth } from "./context/AuthContext"; // Change this import
 
 // Auth Pages
 import { Login } from "./pages/auth/Login";
@@ -56,6 +56,9 @@ import EditLeaveType from "./pages/admin/leaves/EditLeaveType";
 import Settings from "./pages/settings/Settings";
 import EditLeave from "./pages/admin/leaves/EditLeave";
 import PayslipView from "./pages/admin/payroll/PayslipView";
+import AnnouncementDetail from "./pages/announcements/AnnoundementDetail";
+import CreateAnnouncement from "./pages/announcements/CreateAnnouncement";
+import EditAnnouncement from "./pages/announcements/EditAnnouncement";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -157,10 +160,12 @@ function App() {
         <Route path="/admin/reports/leaves" element={<LeaveReport />} />
         <Route path="/admin/reports/payroll" element={<PayrollReport />} />
         <Route path="/reports/attendance" element={<AttendanceReportPage />} />
-        
 
         {/* Announcements */}
         <Route path="/announcements" element={<Announcements />} />
+        <Route path="/announcements/create" element={<CreateAnnouncement />} />
+        <Route path="/announcements/:id" element={<AnnouncementDetail />} />
+        <Route path="/announcements/:id/edit" element={<EditAnnouncement />} />
 
         {/* Administration */}
         <Route path="/admin/users" element={<Users />} />

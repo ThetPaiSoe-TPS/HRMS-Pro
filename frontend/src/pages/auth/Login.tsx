@@ -37,15 +37,15 @@ const DEMO_CREDENTIALS = {
     color: "bg-[#002A80] hover:bg-[#002060]",
   },
   manager: {
-    email: "manager@hrms.com",
-    password: "password123",
+    email: "thandar.aung@hrms.com",
+    password: "123123123",
     label: "Manager",
     icon: UserIcon,
     color: "bg-blue-600 hover:bg-blue-700",
   },
   employee: {
-    email: "employee@hrms.com",
-    password: "password123",
+    email: "minmin@hrms.com",
+    password: "123123123",
     label: "Employee",
     icon: UsersIcon,
     color: "bg-green-600 hover:bg-green-700",
@@ -94,6 +94,7 @@ export const Login: React.FC = () => {
       setValue("remember", true);
       setSelectedRole(role);
 
+      // Auto-login after setting values
       await login(creds.email, creds.password, true);
       navigate("/dashboard");
     } catch (err: any) {
@@ -109,6 +110,11 @@ export const Login: React.FC = () => {
     setValue("password", creds.password);
     setValue("remember", true);
     setSelectedRole(role);
+
+    // Auto-login for manager role
+    if (role === "manager") {
+      handleDemoLogin(role);
+    }
   };
 
   return (
@@ -118,14 +124,14 @@ export const Login: React.FC = () => {
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {error && (
-          <div className="rounded-input bg-danger-50 p-3 border border-danger-200">
+          <div className="p-3 border rounded-input bg-danger-50 border-danger-200">
             <p className="text-small text-danger-700">{error}</p>
           </div>
         )}
 
         {/* Demo Login Buttons */}
         <div className="space-y-3">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider text-center">
+          <p className="text-xs font-medium tracking-wider text-center text-gray-500 uppercase">
             Quick Demo Login
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -140,7 +146,15 @@ export const Login: React.FC = () => {
                 <button
                   key={role}
                   type="button"
-                  onClick={() => handleDemoLogin(role)}
+                  onClick={() => {
+                    if (role === "manager") {
+                      // Auto-login for manager
+                      handleDemoLogin(role);
+                    } else {
+                      // Just fill credentials for other roles
+                      fillDemoCredentials(role);
+                    }
+                  }}
                   disabled={isLoading}
                   className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-btn font-medium text-white transition-all duration-200 ${creds.color} hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
@@ -164,8 +178,8 @@ export const Login: React.FC = () => {
         </div>
 
         {/* Demo Credentials Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-input p-3">
-          <p className="text-xs font-medium text-blue-700 text-center mb-2">
+        <div className="p-3 border border-blue-200 bg-blue-50 rounded-input">
+          <p className="mb-2 text-xs font-medium text-center text-blue-700">
             Demo Credentials
           </p>
           <div className="grid grid-cols-2 gap-1 text-xs">
@@ -187,23 +201,27 @@ export const Login: React.FC = () => {
               <span className="font-medium text-blue-700">Manager:</span>
               <br />
               <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
-                manager@hrms.com
+                thandar.aung@hrms.com
               </code>
             </div>
             <div>
               <span className="font-medium text-blue-700">Employee:</span>
               <br />
               <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
-                employee@hrms.com
+                minmin@hrms.com
               </code>
             </div>
           </div>
-          <p className="text-xs text-blue-600 text-center mt-1">
+          <p className="mt-1 text-xs text-center text-blue-600">
             Password:{" "}
+            <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
+              123123123
+            </code>{" "}
+            for Manager,{" "}
             <code className="bg-blue-100 px-1.5 py-0.5 rounded text-xs font-mono">
               asd123!@#
             </code>{" "}
-            for all
+            for others
           </p>
         </div>
 
@@ -211,7 +229,7 @@ export const Login: React.FC = () => {
           label="Email address"
           type="email"
           placeholder="you@example.com"
-          leftIcon={<EnvelopeIcon className="h-5 w-5" />}
+          leftIcon={<EnvelopeIcon className="w-5 h-5" />}
           error={errors.email?.message}
           touched={!!touchedFields.email}
           {...register("email")}
@@ -221,7 +239,7 @@ export const Login: React.FC = () => {
           label="Password"
           type={showPassword ? "text" : "password"}
           placeholder="Enter your password"
-          leftIcon={<LockClosedIcon className="h-5 w-5" />}
+          leftIcon={<LockClosedIcon className="w-5 h-5" />}
           rightIcon={
             <button
               type="button"
@@ -229,9 +247,9 @@ export const Login: React.FC = () => {
               className="text-text-tertiary hover:text-text-secondary focus:outline-none"
             >
               {showPassword ? (
-                <EyeSlashIcon className="h-5 w-5" />
+                <EyeSlashIcon className="w-5 h-5" />
               ) : (
-                <EyeIcon className="h-5 w-5" />
+                <EyeIcon className="w-5 h-5" />
               )}
             </button>
           }
@@ -245,12 +263,12 @@ export const Login: React.FC = () => {
             <input
               id="remember"
               type="checkbox"
-              className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded-input"
+              className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-secondary-300 rounded-input"
               {...register("remember")}
             />
             <label
               htmlFor="remember"
-              className="ml-2 block text-small text-text-primary"
+              className="block ml-2 text-small text-text-primary"
             >
               Remember me
             </label>
@@ -258,7 +276,7 @@ export const Login: React.FC = () => {
 
           <Link
             to="/forgot-password"
-            className="text-small font-medium text-primary-900 hover:text-secondary-900 transition-colors"
+            className="font-medium transition-colors text-small text-primary-900 hover:text-secondary-900"
           >
             Forgot password?
           </Link>
@@ -269,16 +287,16 @@ export const Login: React.FC = () => {
           variant="primary"
           fullWidth
           loading={isLoading}
-          size="lg"          
+          size="lg"
         >
           Sign in
         </Button>
 
-        <div className="text-small text-center">
+        <div className="text-center text-small">
           <span className="text-text-secondary">Don't have an account?</span>{" "}
           <Link
             to="/register"
-            className="font-medium text-primary-900 hover:text-secondary-900 transition-colors"
+            className="font-medium transition-colors text-primary-900 hover:text-secondary-900"
           >
             Create one now
           </Link>
