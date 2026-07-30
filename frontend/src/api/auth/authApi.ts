@@ -37,10 +37,11 @@ const mapUser = (data: any): User => ({
 });
 
 export const authApi = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    if (response.data?.user) {
-      response.data.user = mapUser(response.data.user);
+  login: async (credentials: LoginCredentials): Promise<any> => {
+    const response = await api.post<any>('/auth/login', credentials);
+    // api.post already unwraps response.data.data, so response is { user, token, ... }
+    if (response?.user) {
+      response.user = mapUser(response.user);
     }
     return response;
   },

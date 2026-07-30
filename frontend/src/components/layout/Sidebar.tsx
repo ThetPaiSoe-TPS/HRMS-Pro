@@ -5,7 +5,7 @@ import {
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import { navigationData } from "../../config/navigation";
 import type { NavItem } from "../../config/navigation";
 

@@ -7,12 +7,13 @@ import React, {
 } from "react";
 import { useLocation } from "react-router-dom";
 import type { User } from "../types/auth.types";
+import { authApi } from "../api/auth/authApi";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User, token: string) => void;
+  login: (email: string, password: string, remember?: boolean) => Promise<any>;
   logout: () => void;
   hasRole: (role: string | string[]) => boolean;
   canEditAnnouncement: (createdBy: number) => boolean;
@@ -50,16 +51,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setIsLoading(false);
   }, [location.pathname]);
 
-  const login = (userData: User, token: string) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("auth_token", token);
+  // After successful login, set isAuthenticated to true
+  const login = async (
+    email: string,
+    password: string,
+    remember: boolean = false,
+  ) => {
+    setIsLoading(true);
+    try {
+      const response: any = await authApi.login({ email, password });
+      // api.post already unwraps response.data.data, so response is { user, token, ... }
+      const userData = response?.user;
+      const token = response?.token ?? response?.access_token;
+
+      if (!userData || !token) {
+        throw new Error("Invalid response from server");
+      }
+
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("auth_token", token);
+      localStorage.setItem("token", token);
+      // isAuthenticated will be true because user is set
+
+      return response;
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("token");
     // Optionally redirect to login
     window.location.href = "/login";
   };

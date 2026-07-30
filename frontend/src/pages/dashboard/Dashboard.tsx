@@ -15,7 +15,7 @@ import {
   UserIcon,
   EyeIcon,
 } from "@heroicons/react/24/outline";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import { attendanceApi } from "../../api/attendance/attendanceApi";
 import { leaveApi } from "../../api/leave/leaveApi";
 import { payrollApi } from "../../api/payroll/payrollApi";
@@ -74,6 +74,45 @@ interface UpcomingHoliday {
 // ============================================
 // DASHBOARD COMPONENT
 // ============================================
+// ============================================
+// SKELETON LOADER COMPONENT
+// ============================================
+const Skeleton: React.FC<{ className?: string }> = ({ className = "" }) => (
+  <div
+    className={`animate-pulse bg-gray-200 dark:bg-gray-700 rounded ${className}`}
+  />
+);
+
+const SkeletonCard: React.FC = () => (
+  <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+    <div className="flex items-center gap-3">
+      <Skeleton className="w-10 h-10 rounded-lg" />
+      <div className="flex-1">
+        <Skeleton className="w-20 h-3 mb-2" />
+        <Skeleton className="w-16 h-4" />
+      </div>
+    </div>
+  </div>
+);
+
+const SkeletonWidget: React.FC<{ className?: string }> = ({ className = "" }) => (
+  <div className={`p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl ${className}`}>
+    <Skeleton className="w-32 h-4 mb-4" />
+    <div className="space-y-3">
+      <Skeleton className="w-full h-10" />
+      <Skeleton className="w-3/4 h-10" />
+      <Skeleton className="w-1/2 h-10" />
+    </div>
+  </div>
+);
+
+const SkeletonChart: React.FC = () => (
+  <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+    <Skeleton className="w-40 h-4 mb-4" />
+    <Skeleton className="w-full h-[250px] rounded-lg" />
+  </div>
+);
+
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
 
@@ -93,8 +132,18 @@ export const Dashboard: React.FC = () => {
     userRoleId === 1 ||
     userRoleId === 2;
 
-  const [loading, setLoading] = useState(true);
+  const [pageReady, setPageReady] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Individual section loading states
+  const [loadingAttendance, setLoadingAttendance] = useState(true);
+  const [loadingMonthlyStats, setLoadingMonthlyStats] = useState(true);
+  const [loadingLeaveBalances, setLoadingLeaveBalances] = useState(true);
+  const [loadingPendingLeaves, setLoadingPendingLeaves] = useState(true);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+  const [loadingAdminStats, setLoadingAdminStats] = useState(true);
+  const [loadingAdminActivities, setLoadingAdminActivities] = useState(true);
+  const [loadingCharts, setLoadingCharts] = useState(true);
 
   // ============================================
   // EMPLOYEE STATE
@@ -139,11 +188,11 @@ export const Dashboard: React.FC = () => {
   const [leaveChartData, setLeaveChartData] = useState<any>(null);
 
   // ============================================
-  // FETCH DATA
+  // FETCH DATA (parallel with per-section loading)
   // ============================================
   useEffect(() => {
     const fetchAllData = async () => {
-      setLoading(true);
+      setPageReady(false);
       try {
         const employeeId = user?.employee_id || user?.id;
         console.log("Employee ID:", employeeId);
@@ -677,7 +726,7 @@ export const Dashboard: React.FC = () => {
       } catch (error) {
         console.error("Failed to fetch dashboard data:", error);
       } finally {
-        setLoading(false);
+        setPageReady(true);
       }
     };
 
@@ -747,7 +796,7 @@ export const Dashboard: React.FC = () => {
     });
   };
 
-  if (loading) {
+  if (!pageReady) {
     return (
       <div className="flex justify-center py-16">
         <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>

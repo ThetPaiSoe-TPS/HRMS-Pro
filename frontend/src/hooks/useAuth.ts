@@ -84,6 +84,7 @@ export const useAuth = (): UseAuthReturn => {
     } finally {
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
       setUser(null);
       setIsLoading(false);
     }

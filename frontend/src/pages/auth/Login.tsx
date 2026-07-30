@@ -11,7 +11,7 @@ import {
   ShieldCheckIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import {
   loginSchema,
   type LoginFormData,
@@ -54,10 +54,11 @@ const DEMO_CREDENTIALS = {
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, isAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loadingRole, setLoadingRole] = useState<string | null>(null);
 
   const {
     register,
@@ -73,47 +74,50 @@ export const Login: React.FC = () => {
     },
   });
 
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   const onSubmit = async (data: LoginFormData) => {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
     try {
       setError(null);
       await login(data.email, data.password, data.remember);
-      navigate("/dashboard");
+      // Navigation will happen via the useEffect above
     } catch (err: any) {
       setError(
         err.response?.data?.message || "Invalid credentials. Please try again.",
       );
+      setIsLoggingIn(false);
     }
   };
 
   const handleDemoLogin = async (role: keyof typeof DEMO_CREDENTIALS) => {
+    if (isLoggingIn || isLoading || loadingRole) return;
+    setLoadingRole(role);
+    setIsLoggingIn(true);
     try {
       setError(null);
       const creds = DEMO_CREDENTIALS[role];
+
+      // Set form values
       setValue("email", creds.email);
       setValue("password", creds.password);
       setValue("remember", true);
-      setSelectedRole(role);
 
-      // Auto-login after setting values
+      // Login
       await login(creds.email, creds.password, true);
-      navigate("/dashboard");
+      // Navigation will happen via the useEffect above
     } catch (err: any) {
       setError(
         err.response?.data?.message || "Demo login failed. Please try again.",
       );
-    }
-  };
-
-  const fillDemoCredentials = (role: keyof typeof DEMO_CREDENTIALS) => {
-    const creds = DEMO_CREDENTIALS[role];
-    setValue("email", creds.email);
-    setValue("password", creds.password);
-    setValue("remember", true);
-    setSelectedRole(role);
-
-    // Auto-login for manager role
-    if (role === "manager") {
-      handleDemoLogin(role);
+      setIsLoggingIn(false);
+      setLoadingRole(null);
     }
   };
 
@@ -142,23 +146,36 @@ export const Login: React.FC = () => {
             ).map((role) => {
               const creds = DEMO_CREDENTIALS[role];
               const Icon = creds.icon;
+              const isButtonLoading = loadingRole === role;
+              const isDisabled = (isLoggingIn || isLoading) && !isButtonLoading;
               return (
                 <button
                   key={role}
                   type="button"
-                  onClick={() => {
-                    if (role === "manager") {
-                      // Auto-login for manager
-                      handleDemoLogin(role);
-                    } else {
-                      // Just fill credentials for other roles
-                      fillDemoCredentials(role);
-                    }
-                  }}
-                  disabled={isLoading}
+                  onClick={() => handleDemoLogin(role)}
+                  disabled={isLoggingIn || isLoading || !!loadingRole}
                   className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-btn font-medium text-white transition-all duration-200 ${creds.color} hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  <Icon className="w-4 h-4" />
+                  {isButtonLoading ? (
+                    <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  ) : (
+                    <Icon className="w-4 h-4" />
+                  )}
                   <span className="text-sm">{creds.label}</span>
                 </button>
               );
@@ -286,8 +303,9 @@ export const Login: React.FC = () => {
           type="submit"
           variant="primary"
           fullWidth
-          loading={isLoading}
+          loading={isLoggingIn || isLoading}
           size="lg"
+          disabled={isLoggingIn || isLoading}
         >
           Sign in
         </Button>
