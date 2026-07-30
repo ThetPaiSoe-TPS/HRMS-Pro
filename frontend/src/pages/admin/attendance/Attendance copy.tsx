@@ -1,0 +1,943 @@
+﻿import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  ClockIcon,
+  CheckBadgeIcon,
+  XMarkIcon,
+  CalendarIcon,
+  ArrowPathIcon,
+  EyeIcon,
+  PencilSquareIcon,
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import type {
+  Attendance,
+  AttendanceFilters,
+  AttendanceStats,
+} from "../../../types/attendance.types";
+import { attendanceApi } from "../../../api/attendance/attendanceApi";
+import { employeeApi } from "../../../api/employeeApi";
+import { getStorageUrl } from "../../../api/axios";
+import { useAuth } from "../../../context/AuthContext";
+
+const getPhotoUrl = (photo: string | null): string | null => {
+  return getStorageUrl(photo);
+};
+
+const getInitials = (name: string) => {
+  if (!name) return "U";
+  return name
+    .split(" ")
+    .map((n) => n.charAt(0))
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+const getRandomColor = (id: number): string => {
+  const colors = [
+    "bg-blue-100 text-blue-700",
+    "bg-green-100 text-green-700",
+    "bg-purple-100 text-purple-700",
+    "bg-pink-100 text-pink-700",
+    "bg-yellow-100 text-yellow-700",
+    "bg-indigo-100 text-indigo-700",
+    "bg-red-100 text-red-700",
+    "bg-teal-100 text-teal-700",
+    "bg-orange-100 text-orange-700",
+    "bg-cyan-100 text-cyan-700",
+  ];
+  return colors[id % colors.length];
+};
+
+// Status badge colors
+const statusColors: Record<string, string> = {
+  present: "bg-green-100 text-green-800",
+  absent: "bg-red-100 text-red-800",
+  late: "bg-yellow-100 text-yellow-800",
+  half_day: "bg-blue-100 text-blue-800",
+  leave: "bg-purple-100 text-purple-800",
+};
+
+const statusIcons: Record<string, any> = {
+  present: CheckBadgeIcon,
+  absent: XMarkIcon,
+  late: ClockIcon,
+  half_day: ClockIcon,
+  leave: CalendarIcon,
+};
+
+const statusLabels: Record<string, string> = {
+  present: "Present",
+  absent: "Absent",
+  late: "Late",
+  half_day: "Half Day",
+  leave: "On Leave",
+};
+
+interface Employee {
+  id: number;
+  name: string;
+  employee_code: string;
+  photo?: string | null;
+}
+
+export const AttendancePage: React.FC = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth(); // Add this
+  const isSuperAdmin = user?.role === "super_admin";
+  const isManager = user?.role === "manager";
+  const isReadOnly = !isSuperAdmin;
+
+  // State
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [stats, setStats] = useState<AttendanceStats>({
+    total_employees: 0,
+    present: 0,
+    absent: 0,
+    late: 0,
+    half_day: 0,
+    on_leave: 0,
+    present_percentage: 0,
+  });
+  const [filters, setFilters] = useState<AttendanceFilters>({
+    employee_id: "",
+    date_from: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString()
+      .split("T")[0],
+    date_to: new Date().toISOString().split("T")[0],
+    status: "",
+    page: 1,
+    per_page: 10,
+  });
+  const [pagination, setPagination] = useState({
+    total: 0,
+    last_page: 1,
+    current_page: 1,
+    per_page: 10,
+    from: 0,
+    to: 0,
+  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedAttendance, setSelectedAttendance] =
+    useState<Attendance | null>(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+
+  // Edit modal states
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingAttendance, setEditingAttendance] = useState<Attendance | null>(
+    null,
+  );
+  const [editFormData, setEditFormData] = useState({
+    check_in: "",
+    check_out: "",
+    status: "",
+    notes: "",
+  });
+
+  const fetchAttendance = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        ...filters,
+        // If manager, filter by their department's employees
+        department_id:
+          isManager && user?.employee?.department_id
+            ? String(user.employee.department_id)
+            : filters.department_id,
+      };
+      const result = await attendanceApi.getAttendance(params);
+      let records = result.data;
+
+      // Additional filtering for manager
+      if (isManager && user?.employee?.department_id) {
+        records = records.filter(
+          (record) =>
+            record.employee?.department?.id === user.employee?.department_id,
+        );
+      }
+
+      setAttendance(records);
+      setPagination({
+        total: result.total,
+        last_page: result.last_page,
+        current_page: result.current_page,
+        per_page: result.per_page,
+        from: result.from || 0,
+        to: result.to || 0,
+      });
+    } catch (error) {
+      console.error("Failed to fetch attendance:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch employees for filter dropdown
+  const fetchEmployees = async () => {
+    try {
+      const result = await employeeApi.getEmployees({
+        search: "",
+        department_id: "",
+        position_id: "",
+        status: "",
+        page: 1,
+        per_page: 100,
+      });
+      setEmployees(result.data);
+    } catch (error) {
+      console.error("Failed to fetch employees:", error);
+    }
+  };
+
+  // Fetch stats
+  const fetchStats = async () => {
+    try {
+      const result = await attendanceApi.getSummary();
+      setStats(result);
+    } catch (error) {
+      console.error("Failed to fetch stats:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttendance();
+    fetchEmployees();
+    fetchStats();
+  }, [filters]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilters((prev) => ({ ...prev, search: searchTerm, page: 1 }));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Handlers
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleFilterChange = (key: keyof AttendanceFilters, value: string) => {
+    setFilters({ ...filters, [key]: value, page: 1 });
+  };
+
+  const handlePageChange = (page: number) => {
+    setFilters({ ...filters, page });
+  };
+
+  const handleView = (record: Attendance) => {
+    setSelectedAttendance(record);
+    setShowViewModal(true);
+  };
+
+  const handleEdit = (record: Attendance) => {
+    setEditingAttendance(record);
+    setEditFormData({
+      check_in: record.check_in || "",
+      check_out: record.check_out || "",
+      status: record.status,
+      notes: record.notes || "",
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingAttendance) return;
+
+    setLoading(true);
+    try {
+      await attendanceApi.updateAttendance(editingAttendance.id, {
+        check_in: editFormData.check_in,
+        check_out: editFormData.check_out || null,
+        status: editFormData.status,
+        note: editFormData.notes,
+      });
+
+      setShowEditModal(false);
+      setEditingAttendance(null);
+      fetchAttendance();
+      fetchStats();
+    } catch (error: any) {
+      console.error("Failed to update attendance:", error);
+      alert(error.response?.data?.message || "Failed to update attendance");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    return statusColors[status] || "bg-gray-100 text-gray-800";
+  };
+
+  const getStatusIcon = (status: string) => {
+    const Icon = statusIcons[status] || ClockIcon;
+    return <Icon className="w-3 h-3" />;
+  };
+
+  const formatTime = (time: string | null) => {
+    if (!time) return "--:--";
+    return time.substring(0, 5);
+  };
+
+  const navigateToCheckIn = () => {
+    navigate("/admin/attendance/check");
+  };
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {isManager ? "Team Attendance" : "Attendance"}
+          </h1>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {isManager
+              ? "View your team attendance"
+              : "Track and manage employee attendance"}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {isManager && (
+            <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+              <EyeIcon className="w-4 h-4" />
+              Read Only
+            </span>
+          )}
+          {!isReadOnly && (
+            <button
+              onClick={() => navigate("/admin/attendance/check")}
+              className="inline-flex items-center gap-2 px-4 py-2 text-white transition-colors rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700"
+            >
+              <ClockIcon className="w-5 h-5" />
+              Check In / Check Out
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+            {stats.total_employees}
+          </p>
+        </div>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <div className="flex items-center justify-center gap-1">
+            <CheckBadgeIcon className="w-4 h-4 text-green-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400">Present</p>
+          </div>
+          <p className="text-xl font-bold text-green-600">{stats.present}</p>
+        </div>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <div className="flex items-center justify-center gap-1">
+            <XMarkIcon className="w-4 h-4 text-red-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400">Absent</p>
+          </div>
+          <p className="text-xl font-bold text-red-600">{stats.absent}</p>
+        </div>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <div className="flex items-center justify-center gap-1">
+            <ClockIcon className="w-4 h-4 text-yellow-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400">Late</p>
+          </div>
+          <p className="text-xl font-bold text-yellow-600">{stats.late}</p>
+        </div>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <div className="flex items-center justify-center gap-1">
+            <ClockIcon className="w-4 h-4 text-blue-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400">Half Day</p>
+          </div>
+          <p className="text-xl font-bold text-blue-600">{stats.half_day}</p>
+        </div>
+        <div className="p-3 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+          <div className="flex items-center justify-center gap-1">
+            <CalendarIcon className="w-4 h-4 text-purple-500" />
+            <p className="text-xs text-gray-500 dark:text-gray-400">On Leave</p>
+          </div>
+          <p className="text-xl font-bold text-purple-600">{stats.on_leave}</p>
+        </div>
+      </div>
+
+      {/* Search & Filters */}
+      <div className="p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              placeholder="Search by employee name or code..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full py-2 pl-10 pr-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            />
+          </div>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+          >
+            <FunnelIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Filters
+            </span>
+          </button>
+          <button
+            onClick={() => {
+              setSearchTerm("");
+              setFilters({
+                employee_id: "",
+                date_from: new Date(
+                  new Date().getFullYear(),
+                  new Date().getMonth(),
+                  1,
+                )
+                  .toISOString()
+                  .split("T")[0],
+                date_to: new Date().toISOString().split("T")[0],
+                status: "",
+                page: 1,
+                per_page: 10,
+              });
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 dark:text-gray-400 transition-colors hover:text-gray-700 dark:text-gray-300"
+          >
+            <ArrowPathIcon className="w-5 h-5" />
+            <span className="text-sm">Reset</span>
+          </button>
+        </div>
+
+        {/* Filter Options */}
+        {showFilters && (
+          <div className="grid grid-cols-1 gap-4 pt-4 mt-4 border-t border-gray-200 dark:border-gray-700 sm:grid-cols-4">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Employee
+              </label>
+              <select
+                value={filters.employee_id}
+                onChange={(e) =>
+                  handleFilterChange("employee_id", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">All Employees</option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.employee_code} - {emp.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">All Status</option>
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="late">Late</option>
+                <option value="half_day">Half Day</option>
+                <option value="leave">On Leave</option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Date From
+              </label>
+              <input
+                type="date"
+                value={filters.date_from}
+                onChange={(e) =>
+                  handleFilterChange("date_from", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                Date To
+              </label>
+              <input
+                type="date"
+                value={filters.date_to}
+                onChange={(e) => handleFilterChange("date_to", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Attendance Table */}
+      <div className="overflow-hidden bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-b-2 rounded-full animate-spin border-primary-600"></div>
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 uppercase">
+                      Employee
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 uppercase">
+                      Date
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 uppercase">
+                      Check In
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 uppercase">
+                      Check Out
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 uppercase">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 dark:text-gray-400 uppercase">
+                      Hours
+                    </th>
+                    <th className="px-4 py-3 text-xs font-medium tracking-wider text-right text-gray-500 dark:text-gray-400 uppercase">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {attendance.map((record) => (
+                    <tr
+                      key={record.id}
+                      className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          {record.employee?.photo ? (
+                            <img
+                              src={getPhotoUrl(record.employee.photo)}
+                              alt={record.employee.name}
+                              className="flex-shrink-0 object-cover w-8 h-8 rounded-full"
+                            />
+                          ) : (
+                            <div
+                              className={`flex items-center justify-center flex-shrink-0 h-8 w-8 rounded-full ${getRandomColor(record.employee?.id || 1)}`}
+                            >
+                              <span className="text-xs font-medium">
+                                {getInitials(record.employee?.name || "U")}
+                              </span>
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {record.employee?.name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {record.employee?.employee_code}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5 text-sm text-gray-900 dark:text-gray-100">
+                          <CalendarIcon className="w-4 h-4 text-gray-400" />
+                          {new Date(record.date).toLocaleDateString()}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-sm text-gray-900 dark:text-gray-100">
+                          {formatTime(record.check_in)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-sm text-gray-900 dark:text-gray-100">
+                          {formatTime(record.check_out)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(record.status)}`}
+                        >
+                          {getStatusIcon(record.status)}
+                          {statusLabels[record.status]}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="space-y-0.5">
+                          <div className="text-sm text-gray-900 dark:text-gray-100">
+                            {record.work_hours !== null
+                              ? `${record.work_hours}h`
+                              : "--"}
+                          </div>
+                          {record.overtime_hours &&
+                            record.overtime_hours > 0 && (
+                              <div className="text-xs text-blue-600">
+                                +{record.overtime_hours}h overtime
+                              </div>
+                            )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleView(record)}
+                            className="p-1.5 text-gray-400 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-colors"
+                            title="View"
+                          >
+                            <EyeIcon className="w-4 h-4" />
+                          </button>
+                          {/* Edit - only for super admin */}
+                          {!isReadOnly && (
+                            <button
+                              onClick={() => handleEdit(record)}
+                              className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                              title="Edit"
+                            >
+                              <PencilSquareIcon className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Empty State */}
+            {attendance.length === 0 && (
+              <div className="py-12 text-center">
+                <ClockIcon className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                  No attendance records found
+                </h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  Try adjusting your search or filters
+                </p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {pagination.last_page > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Showing {pagination.from} to {pagination.to} of{" "}
+                  {pagination.total} records
+                </p>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handlePageChange(filters.page - 1)}
+                    disabled={filters.page === 1}
+                    className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    Previous
+                  </button>
+                  {Array.from(
+                    { length: pagination.last_page },
+                    (_, i) => i + 1,
+                  ).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                        page === filters.page
+                          ? "bg-primary-600 text-white"
+                          : "border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => handlePageChange(filters.page + 1)}
+                    disabled={filters.page === pagination.last_page}
+                    className="px-3 py-1 text-sm transition-colors border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* ==========================================
+          VIEW ATTENDANCE MODAL
+          ========================================== */}
+      {showViewModal && selectedAttendance && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-100">
+                  <ClockIcon className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Attendance Details
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(selectedAttendance.date).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700">
+                {selectedAttendance.employee?.photo ? (
+                  <img
+                    src={getPhotoUrl(selectedAttendance.employee.photo)}
+                    alt={selectedAttendance.employee.name}
+                    className="flex-shrink-0 object-cover w-10 h-10 rounded-full"
+                  />
+                ) : (
+                  <div
+                    className={`flex items-center justify-center h-10 w-10 rounded-full ${getRandomColor(selectedAttendance.employee?.id || 1)}`}
+                  >
+                    <span className="text-sm font-medium">
+                      {getInitials(selectedAttendance.employee?.name || "U")}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {selectedAttendance.employee?.name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {selectedAttendance.employee?.employee_code}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+                    Check In
+                  </label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formatTime(selectedAttendance.check_in)}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+                    Check Out
+                  </label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formatTime(selectedAttendance.check_out)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+                    Status
+                  </label>
+                  <p className="mt-1">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(selectedAttendance.status)}`}
+                    >
+                      {getStatusIcon(selectedAttendance.status)}
+                      {statusLabels[selectedAttendance.status]}
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+                    Work Hours
+                  </label>
+                  <p className="mt-1 text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {selectedAttendance.work_hours !== null
+                      ? `${selectedAttendance.work_hours}h`
+                      : "--"}
+                    {selectedAttendance.overtime_hours &&
+                      selectedAttendance.overtime_hours > 0 && (
+                        <span className="ml-1 text-blue-600">
+                          (+{selectedAttendance.overtime_hours}h OT)
+                        </span>
+                      )}
+                  </p>
+                </div>
+              </div>
+
+              {selectedAttendance.notes && (
+                <div>
+                  <label className="block text-xs font-medium tracking-wider text-gray-500 dark:text-gray-400 uppercase">
+                    Notes
+                  </label>
+                  <p className="p-2 mt-1 text-sm text-gray-900 dark:text-gray-100 rounded-lg bg-gray-50 dark:bg-gray-700">
+                    {selectedAttendance.notes}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  handleEdit(selectedAttendance);
+                }}
+                className="px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700"
+              >
+                Edit Record
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==========================================
+          EDIT ATTENDANCE MODAL
+          ========================================== */}
+      {showEditModal && editingAttendance && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-100">
+                  <PencilSquareIcon className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Edit Attendance
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {editingAttendance.employee?.name} -{" "}
+                    {new Date(editingAttendance.date).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <XMarkIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4">
+              {/* Check In */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Check In Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={editFormData.check_in}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      check_in: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+
+              {/* Check Out */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Check Out Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={editFormData.check_out || ""}
+                  onChange={(e) =>
+                    setEditFormData({
+                      ...editFormData,
+                      check_out: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Status
+                </label>
+                <select
+                  value={editFormData.status}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, status: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                >
+                  <option value="present">Present</option>
+                  <option value="absent">Absent</option>
+                  <option value="late">Late</option>
+                  <option value="half_day">Half Day</option>
+                  <option value="leave">On Leave</option>
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Notes
+                </label>
+                <textarea
+                  value={editFormData.notes}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, notes: e.target.value })
+                  }
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                  placeholder="Add notes..."
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 transition-colors border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={loading}
+                className="px-4 py-2 text-white transition-colors rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50"
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AttendancePage;

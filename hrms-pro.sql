@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 28, 2026 at 12:22 PM
+-- Generation Time: Jul 30, 2026 at 02:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -148,6 +148,20 @@ CREATE TABLE `announcement_views` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `announcement_views`
+--
+
+INSERT INTO `announcement_views` (`id`, `announcement_id`, `user_id`, `viewed_at`, `created_at`, `updated_at`) VALUES
+(1, 7, 1, '2026-07-28 07:44:52', '2026-07-28 07:44:52', '2026-07-28 07:44:52'),
+(2, 4, 1, '2026-07-28 07:45:09', '2026-07-28 07:45:09', '2026-07-28 07:45:09'),
+(3, 8, 1, '2026-07-28 07:45:33', '2026-07-28 07:45:33', '2026-07-28 07:45:33'),
+(4, 7, 5, '2026-07-28 07:50:06', '2026-07-28 07:50:06', '2026-07-28 07:50:06'),
+(5, 4, 5, '2026-07-28 07:50:26', '2026-07-28 07:50:26', '2026-07-28 07:50:26'),
+(6, 8, 5, '2026-07-28 07:50:30', '2026-07-28 07:50:30', '2026-07-28 07:50:30'),
+(7, 1, 6, '2026-07-28 08:27:57', '2026-07-28 08:27:57', '2026-07-28 08:27:57'),
+(8, 1, 23, '2026-07-29 02:15:24', '2026-07-29 02:15:24', '2026-07-29 02:15:24');
 
 -- --------------------------------------------------------
 
@@ -363,7 +377,8 @@ INSERT INTO `departments` (`id`, `name`, `code`, `description`, `created_at`, `u
 (16, 'Research & Development', 'RND', NULL, '2026-07-24 09:29:34', '2026-07-25 09:42:06', 3, 'active'),
 (17, 'Supply Chain', 'SC', NULL, '2026-07-24 09:29:34', '2026-07-25 09:42:06', 3, 'active'),
 (18, 'Legal', 'LEGAL', NULL, '2026-07-24 09:29:34', '2026-07-25 09:42:06', 3, 'active'),
-(24, 'Test Department', 'TEST', 'Test description', '2026-07-25 10:24:26', '2026-07-25 10:24:26', 17, 'active');
+(24, 'Test Department', 'TEST', 'Test description', '2026-07-25 10:24:26', '2026-07-25 10:24:26', 17, 'active'),
+(25, 'Sales', 'SAL', 'Sales Department - Responsible for all sales activities', '2026-07-28 09:13:10', '2026-07-28 09:13:10', NULL, 'active');
 
 -- --------------------------------------------------------
 
@@ -414,7 +429,8 @@ INSERT INTO `employees` (`id`, `user_id`, `employee_code`, `name`, `department_i
 (26, 20, 'EMP018', 'Nyi Nyi', 9, 1, '09561234012', 'nyinyi.design@hrms.com', '1988-09-12', 'male', '2025-02-14', 'active', 'https://randomuser.me/api/portraits/men/10.jpg', '2026-07-24 09:47:17', '2026-07-24 13:20:40'),
 (27, 21, 'EMP019', 'Khin Khin', 10, 1, '09781234012', 'khinkhin.admin@hrms.com', '1995-06-18', 'female', '2025-03-25', 'active', 'https://randomuser.me/api/portraits/women/10.jpg', '2026-07-24 09:47:17', '2026-07-24 13:20:40'),
 (28, 22, 'EMP020', 'Maung Maung', 3, 15, '09451234123', 'maungmaung.dev@hrms.com', '1987-04-05', 'male', '2025-04-10', 'active', 'https://randomuser.me/api/portraits/men/11.jpg', '2026-07-24 09:47:17', '2026-07-24 13:20:40'),
-(29, NULL, 'EMP021', 'Ei Mon', 2, 9, '09598765432', 'eimon.marketing@hrms.com', '1997-07-23', 'female', '2026-07-24', 'active', 'employees/Pote0xofjjpTSPba0iFhjo3mO2cXyW0HsbKbWMrf.jpg', '2026-07-24 12:15:12', '2026-07-25 09:27:30');
+(29, NULL, 'EMP021', 'Ei Mon', 2, 9, '09598765432', 'eimon.marketing@hrms.com', '1997-07-23', 'female', '2026-07-24', 'active', 'employees/Pote0xofjjpTSPba0iFhjo3mO2cXyW0HsbKbWMrf.jpg', '2026-07-24 12:15:12', '2026-07-25 09:27:30'),
+(32, NULL, 'EMP022', 'Thandar Aung', 25, 20, '+95912345678', 'thandar.aung@hrms.com', '1988-03-15', 'female', '2021-06-01', 'active', 'https://randomuser.me/api/portraits/women/11.jpg', '2026-07-28 09:18:15', '2026-07-28 09:18:15');
 
 -- --------------------------------------------------------
 
@@ -973,8 +989,46 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (28, 'App\\Models\\User', 1, 'hrms-pro', 'fed8ed1f48af1863f17e434a8bb0d7628d2d8916e36eeeb6f3272e65139e4f73', '[\"*\"]', NULL, NULL, '2026-07-23 01:38:58', '2026-07-23 01:38:58'),
 (37, 'App\\Models\\User', 1, 'hrms-pro', '98d9470a229b99b5b32f6b9b75b5ebafe159d5d6f08562340dfd1a0e9427d9a4', '[\"*\"]', '2026-07-24 22:31:32', NULL, '2026-07-24 09:59:00', '2026-07-24 22:31:32'),
 (38, 'App\\Models\\User', 1, 'hrms-pro', 'b014baa557f1262ea38e9e720e9e9ed780a1305d94065086b02b1122dcd77792', '[\"*\"]', NULL, NULL, '2026-07-25 08:34:02', '2026-07-25 08:34:02'),
-(40, 'App\\Models\\User', 1, 'hrms-pro', 'bbbc6351510cb053dc05569d222ec6bb199a3eaf99b64a37d2fd5dec37931e43', '[\"*\"]', '2026-07-27 10:35:52', NULL, '2026-07-26 08:17:46', '2026-07-27 10:35:52'),
-(42, 'App\\Models\\User', 1, 'hrms-pro', 'cc99874d90616384f218192e29f13b8be6d83bbeac4a8190b77e0769f819e62d', '[\"*\"]', '2026-07-28 03:47:05', NULL, '2026-07-28 02:47:32', '2026-07-28 03:47:05');
+(42, 'App\\Models\\User', 1, 'hrms-pro', 'cc99874d90616384f218192e29f13b8be6d83bbeac4a8190b77e0769f819e62d', '[\"*\"]', '2026-07-28 03:47:05', NULL, '2026-07-28 02:47:32', '2026-07-28 03:47:05'),
+(44, 'App\\Models\\User', 5, 'hrms-pro', 'f91214db7dd4ebde37dd074a781aa8b927b5f22899c780f574294ff6fb5de0ea', '[\"*\"]', '2026-07-28 07:50:34', NULL, '2026-07-28 07:47:41', '2026-07-28 07:50:34'),
+(45, 'App\\Models\\User', 6, 'hrms-pro', '58d53c1d4844d0ce70235bc06270fa8f612fc1dcc1fd8cd5884636dc4f37c793', '[\"*\"]', NULL, NULL, '2026-07-28 08:15:09', '2026-07-28 08:15:09'),
+(46, 'App\\Models\\User', 6, 'hrms-pro', '0c72ad4d86cff9f2093608cb37eac14b1fcb5876eee32a34230dbc7c4e56c2e9', '[\"*\"]', NULL, NULL, '2026-07-28 08:15:11', '2026-07-28 08:15:11'),
+(47, 'App\\Models\\User', 6, 'hrms-pro', 'd94cabf6bce0acd40c5739c50f11b4ed092b43861d669497d9f6aec2f954fd2b', '[\"*\"]', NULL, NULL, '2026-07-28 08:15:17', '2026-07-28 08:15:17'),
+(48, 'App\\Models\\User', 6, 'hrms-pro', 'b352657783bff4a7375948985360293f411f2df1d7681385264c51391899646b', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:00', '2026-07-28 08:18:00'),
+(49, 'App\\Models\\User', 6, 'hrms-pro', 'e2e9eb5299e6d53684f67d482b22b49a9f3feafa767540dcda3bdfd954362260', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:05', '2026-07-28 08:18:05'),
+(50, 'App\\Models\\User', 6, 'hrms-pro', 'e176eb8cb870cabfef385d30e0dbbbc853edc8933fe76519f321f246029d4abc', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:06', '2026-07-28 08:18:06'),
+(51, 'App\\Models\\User', 6, 'hrms-pro', '0093e9202b23c6d1f0e192ea1cacf2bc4b2a171a780c42a5a578aa0995a67573', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:20', '2026-07-28 08:18:20'),
+(52, 'App\\Models\\User', 1, 'hrms-pro', '1a5d8d3d2ff2e819ebecaf7d69e03d9307606542cf936180b09b0de5ef1a870c', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:46', '2026-07-28 08:18:46'),
+(53, 'App\\Models\\User', 1, 'hrms-pro', '1a0fee9745bab2bbd8eed255d99250ab603e095e7d412c1061b0df6cd76dc0fe', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:48', '2026-07-28 08:18:48'),
+(54, 'App\\Models\\User', 1, 'hrms-pro', 'b54e307bb86eb2bc2bbdc9d6df3c18379f48995b530ce07337f8f25b47e8f5f5', '[\"*\"]', NULL, NULL, '2026-07-28 08:18:54', '2026-07-28 08:18:54'),
+(56, 'App\\Models\\User', 1, 'hrms-pro', 'a7b0bfdd15c7336cf1715f1177ec64e6090adb3aa34d514df7596c6d3c41ad63', '[\"*\"]', NULL, NULL, '2026-07-28 08:25:34', '2026-07-28 08:25:34'),
+(58, 'App\\Models\\User', 6, 'hrms-pro', 'd2dca0776805b83d6fec241d722b3163e3d33746ac77f2cc4280cd5b9ea959fb', '[\"*\"]', NULL, NULL, '2026-07-28 08:26:18', '2026-07-28 08:26:18'),
+(60, 'App\\Models\\User', 3, 'hrms-pro', 'e53d6f0dfc80b2056124535add52d33f246f1e0783c3950ddabf4fddf96de575', '[\"*\"]', NULL, NULL, '2026-07-28 09:05:05', '2026-07-28 09:05:05'),
+(62, 'App\\Models\\User', 6, 'hrms-pro', 'e0304db49744f3f6eeadef8ea69effefa6228311024b33abe52d4a118f75abc2', '[\"*\"]', NULL, NULL, '2026-07-28 09:05:57', '2026-07-28 09:05:57'),
+(64, 'App\\Models\\User', 3, 'hrms-pro', '9a31871adee155318cf99ea28393918635878c9534a2be75ce992eb896f2e1d2', '[\"*\"]', NULL, NULL, '2026-07-28 09:06:20', '2026-07-28 09:06:20'),
+(66, 'App\\Models\\User', 6, 'hrms-pro', '0d1ab105f1a006c7b28b6675523e2c7ff1d4e04c2e9efc5d178c438a3f7f16d7', '[\"*\"]', NULL, NULL, '2026-07-29 02:03:55', '2026-07-29 02:03:55'),
+(68, 'App\\Models\\User', 6, 'hrms-pro', '5909ae5a24ef794e6c10b43994f79bbaf62f845eb96c974568ce0856715ab8a3', '[\"*\"]', NULL, NULL, '2026-07-29 02:04:16', '2026-07-29 02:04:16'),
+(70, 'App\\Models\\User', 23, 'hrms-pro', 'a64c268c710d6cdaccc605acc8ea5fc8bd8158a7c1ae8e6e50f866c4f133acda', '[\"*\"]', NULL, NULL, '2026-07-29 02:05:33', '2026-07-29 02:05:33'),
+(72, 'App\\Models\\User', 23, 'hrms-pro', '400539de7cea48c94ed1067452f390fd3a9bd1f1490e0b4388e4836b686ad2bd', '[\"*\"]', NULL, NULL, '2026-07-29 02:17:25', '2026-07-29 02:17:25'),
+(74, 'App\\Models\\User', 7, 'hrms-pro', '6862a00471e388cdaf9426f580f4d0d655b1f8d7f8af69c3750428716a773d38', '[\"*\"]', NULL, NULL, '2026-07-29 02:23:27', '2026-07-29 02:23:27'),
+(76, 'App\\Models\\User', 7, 'hrms-pro', 'efeefa0341fcf62e5db918e73ec2a7bf0da755972a344f27adbc1b54279879f7', '[\"*\"]', NULL, NULL, '2026-07-29 04:11:20', '2026-07-29 04:11:20'),
+(78, 'App\\Models\\User', 23, 'hrms-pro', 'f0772652559436dd8e33c09a239eda8de2d19f00290e54675e74e197c3331ae2', '[\"*\"]', NULL, NULL, '2026-07-29 04:11:39', '2026-07-29 04:11:39'),
+(80, 'App\\Models\\User', 1, 'hrms-pro', '1c460857961ac7635866aa00c5d0e6d5b7de37976ef05b0358547fbbb69ca4ad', '[\"*\"]', NULL, NULL, '2026-07-29 04:11:53', '2026-07-29 04:11:53'),
+(82, 'App\\Models\\User', 7, 'hrms-pro', '384e5e6eff1c7f1a08a29ff34f76d22d47dbc844025e4d853920de2bc90bf74d', '[\"*\"]', NULL, NULL, '2026-07-29 04:19:28', '2026-07-29 04:19:28'),
+(84, 'App\\Models\\User', 23, 'hrms-pro', 'c092ded0115514924538f3eb9755c7afff24f710b5edccdb20c9a5b17e771a2c', '[\"*\"]', NULL, NULL, '2026-07-29 04:19:45', '2026-07-29 04:19:45'),
+(86, 'App\\Models\\User', 1, 'hrms-pro', 'f6250899cbb37f9132c5b013e7b6d2eb5d84a48a2128e20ffeeb860d49b07dba', '[\"*\"]', NULL, NULL, '2026-07-29 04:19:56', '2026-07-29 04:19:56'),
+(88, 'App\\Models\\User', 7, 'hrms-pro', '52baa53cdbb7ae8824bb1308faaf2683e23bda31577a1ae84586f193536fb7ce', '[\"*\"]', NULL, NULL, '2026-07-29 04:20:09', '2026-07-29 04:20:09'),
+(90, 'App\\Models\\User', 1, 'hrms-pro', '337471d8451df6021270279ffb00dd2bdbda98bd66f75ada7a0a37e4b724c172', '[\"*\"]', NULL, NULL, '2026-07-29 04:36:08', '2026-07-29 04:36:08'),
+(92, 'App\\Models\\User', 7, 'hrms-pro', '5c9c9ade4f789a45a84eeb4c268e731b8680682971e18d002e54d94743627fc1', '[\"*\"]', NULL, NULL, '2026-07-29 04:36:47', '2026-07-29 04:36:47'),
+(94, 'App\\Models\\User', 7, 'hrms-pro', 'a1b195d00992ff1fe9508954b185d4412204f0209447cd67598fecf2e7c49726', '[\"*\"]', NULL, NULL, '2026-07-29 04:59:01', '2026-07-29 04:59:01'),
+(96, 'App\\Models\\User', 7, 'test-token', '12cb24cc34d924accce67ff4b12eabe0869e5e9fdc0aa071976846236fd44923', '[\"*\"]', NULL, NULL, '2026-07-29 05:01:24', '2026-07-29 05:01:24'),
+(97, 'App\\Models\\User', 7, 'test-token', '00dd825abeb792793216783caa8d8de27fbc3a7415fcd878599ad052fb2a8e26', '[\"*\"]', '2026-07-29 05:02:08', NULL, '2026-07-29 05:02:07', '2026-07-29 05:02:08'),
+(98, 'App\\Models\\User', 7, 'test-token', 'eff2847939916b5042bbfb3d01efbaf96821a621583eb478e6571f6e8d2cd941', '[\"*\"]', '2026-07-29 05:05:56', NULL, '2026-07-29 05:05:55', '2026-07-29 05:05:56'),
+(99, 'App\\Models\\User', 7, 'test-token', '73c4102a6431f4e6d7630f9b441f7341c8a2301010533d63760ff65c02e8ec19', '[\"*\"]', '2026-07-29 05:07:50', NULL, '2026-07-29 05:07:49', '2026-07-29 05:07:50'),
+(100, 'App\\Models\\User', 7, 'test-token', 'c37d67c26061ab507329296fb8dbd6fdb721bfc22a9c7cdcb823bab17fab50d7', '[\"*\"]', '2026-07-29 05:09:54', NULL, '2026-07-29 05:09:54', '2026-07-29 05:09:54'),
+(101, 'App\\Models\\User', 23, 'hrms-pro', '704feb3aa78fe9211e9ee360937ead026e16176dff23852939b03cf287cb2eeb', '[\"*\"]', NULL, NULL, '2026-07-29 07:54:15', '2026-07-29 07:54:15'),
+(103, 'App\\Models\\User', 1, 'hrms-pro', '056048bce832516632363958ac788a9943db0ce8b5988e23ba02cec1c5bd7b45', '[\"*\"]', NULL, NULL, '2026-07-29 07:54:55', '2026-07-29 07:54:55'),
+(104, 'App\\Models\\User', 1, 'hrms-pro', '642a68d97f79760d8ddd0de75cf19f5ed94b9eacd08a2ffde12b7f415ad9ea1e', '[\"*\"]', '2026-07-29 07:55:23', NULL, '2026-07-29 07:54:59', '2026-07-29 07:55:23');
 
 -- --------------------------------------------------------
 
@@ -1016,7 +1070,8 @@ INSERT INTO `positions` (`id`, `title`, `code`, `description`, `min_salary`, `ma
 (14, 'Backend Developer', NULL, 'Develops server-side logic, builds APIs, manages databases, and ensures high-performance and responsiveness of web applications.', 900000.00, 1600000.00, 3, '900,000 - 1,600,000 MMK', 'active', '2026-07-24 09:32:59', '2026-07-25 10:19:56'),
 (15, 'DevOps Engineer', NULL, 'Manages infrastructure, CI/CD pipelines, cloud services, and deployment processes. Ensures system reliability and scalability.', 1200000.00, 2000000.00, 3, '1,200,000 - 2,000,000 MMK', 'active', '2026-07-24 09:32:59', '2026-07-25 10:19:56'),
 (16, 'QA Engineer', NULL, 'Designs and executes test plans, identifies bugs, automates testing processes, and ensures software quality before deployment.', 700000.00, 1200000.00, 3, '700,000 - 1,200,000 MMK', 'active', '2026-07-24 09:32:59', '2026-07-25 10:19:56'),
-(17, 'Engineering Manager', NULL, 'Leads engineering teams, manages projects, oversees technical decisions, and ensures timely delivery of software solutions.', 2000000.00, 3000000.00, 3, '2,000,000 - 3,000,000 MMK', 'active', '2026-07-24 09:32:59', '2026-07-25 10:19:56');
+(17, 'Engineering Manager', NULL, 'Leads engineering teams, manages projects, oversees technical decisions, and ensures timely delivery of software solutions.', 2000000.00, 3000000.00, 3, '2,000,000 - 3,000,000 MMK', 'active', '2026-07-24 09:32:59', '2026-07-25 10:19:56'),
+(20, 'Sales Manager', 'SAL_MGR', 'Manage sales team and operations', 1500000.00, 3000000.00, 25, '1.5M - 3M MMK', 'active', '2026-07-28 09:13:20', '2026-07-28 09:13:20');
 
 -- --------------------------------------------------------
 
@@ -1394,7 +1449,17 @@ INSERT INTO `role_permissions` (`id`, `role_id`, `permission_id`, `created_at`, 
 (281, 27, 16, NULL, NULL),
 (282, 27, 55, NULL, NULL),
 (283, 27, 54, NULL, NULL),
-(284, 27, 22, NULL, NULL);
+(284, 27, 22, NULL, NULL),
+(285, 4, 41, NULL, NULL),
+(286, 4, 42, NULL, NULL),
+(287, 4, 15, NULL, NULL),
+(288, 4, 13, NULL, NULL),
+(289, 3, 41, NULL, NULL),
+(290, 3, 42, NULL, NULL),
+(291, 2, 41, NULL, NULL),
+(292, 2, 42, NULL, NULL),
+(293, 1, 41, NULL, NULL),
+(294, 1, 42, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1485,7 +1550,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `email_verified_at`, `passw
 (19, 'Pyae Pyae', 'pyaepyae@hrms.com', '09451234012', '2026-07-24 09:42:20', '$2y$12$b5GemJFvS/H1XZDvN1776OdYTLYzdOkR0rRPGXR6kULFvS1p71fE.', 'https://randomuser.me/api/portraits/men/9.jpg', 0, 0, NULL, NULL, 'Product', 'Product Assistant', '2025-01-20', 'No. 12, Thiri Mingala Street, Yangon, Myanmar', 'Product management professional with focus on market research and development.', 4, NULL, '2026-07-24 09:42:20', '2026-07-24 09:42:20', 25),
 (20, 'Nyi Nyi', 'nyinyi@hrms.com', '09561234012', '2026-07-24 09:42:20', '$2y$12$o82Z1spDWYOGkyAS2zOmje.FYOnzYQlx08WDgv8S0VtJvvM8DtLsm', 'https://randomuser.me/api/portraits/men/10.jpg', 0, 0, NULL, NULL, 'Design', 'Graphic Designer', '2025-02-14', 'No. 7, Shwe Dagon Pagoda Road, Yangon, Myanmar', 'Creative graphic designer with expertise in branding and visual communication.', 4, NULL, '2026-07-24 09:42:20', '2026-07-24 09:42:20', 26),
 (21, 'Khin Khin', 'khinkhin@hrms.com', '09781234012', '2026-07-24 09:42:20', '$2y$12$FczxiItqlgrZgMF16tFol.PboOqGUcFmmKFP703YKeFbYdWoDXRou', 'https://randomuser.me/api/portraits/women/10.jpg', 0, 0, NULL, NULL, 'Administration', 'Office Administrator', '2025-03-25', 'No. 30, Independence Monument Road, Yangon, Myanmar', 'Experienced office administrator with skills in office management and coordination.', 4, NULL, '2026-07-24 09:42:20', '2026-07-24 09:42:20', 27),
-(22, 'Maung Maung', 'maungmaung@hrms.com', '09451234123', '2026-07-24 09:42:20', '$2y$12$RVZ3eBoo97akMr4CeAZQPuBWOEp3nQCrQMdZl00f/8Op9OyeEnP7q', 'https://randomuser.me/api/portraits/men/11.jpg', 0, 0, NULL, NULL, 'Software Development', 'DevOps Engineer', '2025-04-10', 'No. 14, Bayint Naung Road, Yangon, Myanmar', 'DevOps engineer with expertise in cloud infrastructure and CI/CD pipelines.', 4, NULL, '2026-07-24 09:42:20', '2026-07-24 09:42:20', 28);
+(22, 'Maung Maung', 'maungmaung@hrms.com', '09451234123', '2026-07-24 09:42:20', '$2y$12$RVZ3eBoo97akMr4CeAZQPuBWOEp3nQCrQMdZl00f/8Op9OyeEnP7q', 'https://randomuser.me/api/portraits/men/11.jpg', 0, 0, NULL, NULL, 'Software Development', 'DevOps Engineer', '2025-04-10', 'No. 14, Bayint Naung Road, Yangon, Myanmar', 'DevOps engineer with expertise in cloud infrastructure and CI/CD pipelines.', 4, NULL, '2026-07-24 09:42:20', '2026-07-24 09:42:20', 28),
+(23, 'Thandar Aung', 'thandar.aung@hrms.com', '+95912345678', NULL, '$2y$12$LMhMuy58aPTodWYYpPjeoettZZy9JyISCl2nsreJxzsKwScSPpe7.', 'https://randomuser.me/api/portraits/women/11.jpg', 8, 25, NULL, NULL, 'Sales', 'Sales Manager', '2021-06-01', 'No. 45, Bogyoke Aung San Road, Yangon, Myanmar', 'Experienced Sales Manager with 8+ years in driving sales growth and team leadership. Proven track record in B2B sales, client relationship management, and strategic planning. Passionate about developing high-performing sales teams and achieving revenue targets.', 3, NULL, '2026-07-28 09:13:44', '2026-07-28 09:13:44', NULL);
 
 --
 -- Indexes for dumped tables
@@ -1755,7 +1821,7 @@ ALTER TABLE `announcement_notifications`
 -- AUTO_INCREMENT for table `announcement_views`
 --
 ALTER TABLE `announcement_views`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `attendances`
@@ -1773,13 +1839,13 @@ ALTER TABLE `company_settings`
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `employee_salaries`
@@ -1845,13 +1911,13 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `positions`
 --
 ALTER TABLE `positions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -1863,13 +1929,13 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `role_permissions`
 --
 ALTER TABLE `role_permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=285;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=295;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
