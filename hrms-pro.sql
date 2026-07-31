@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 30, 2026 at 02:37 AM
+-- Generation Time: Jul 31, 2026 at 12:10 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -161,7 +161,8 @@ INSERT INTO `announcement_views` (`id`, `announcement_id`, `user_id`, `viewed_at
 (5, 4, 5, '2026-07-28 07:50:26', '2026-07-28 07:50:26', '2026-07-28 07:50:26'),
 (6, 8, 5, '2026-07-28 07:50:30', '2026-07-28 07:50:30', '2026-07-28 07:50:30'),
 (7, 1, 6, '2026-07-28 08:27:57', '2026-07-28 08:27:57', '2026-07-28 08:27:57'),
-(8, 1, 23, '2026-07-29 02:15:24', '2026-07-29 02:15:24', '2026-07-29 02:15:24');
+(8, 1, 23, '2026-07-29 02:15:24', '2026-07-29 02:15:24', '2026-07-29 02:15:24'),
+(9, 2, 1, '2026-07-29 19:27:48', '2026-07-29 19:27:48', '2026-07-29 19:27:48');
 
 -- --------------------------------------------------------
 
@@ -700,7 +701,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (54, '2026_07_28_093006_create_announcements_table', 22),
 (55, '2026_07_28_093032_create_announcement_attachments_table', 22),
 (56, '2026_07_28_093048_create_announcement_views_table', 22),
-(57, '2026_07_28_093105_create_announcement_notifications_table', 22);
+(57, '2026_07_28_093105_create_announcement_notifications_table', 22),
+(58, '2026_07_31_090410_add_fulltext_to_employees_table', 23),
+(59, '2026_07_31_093124_create_search_demo_table', 24);
 
 -- --------------------------------------------------------
 
@@ -989,7 +992,6 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (28, 'App\\Models\\User', 1, 'hrms-pro', 'fed8ed1f48af1863f17e434a8bb0d7628d2d8916e36eeeb6f3272e65139e4f73', '[\"*\"]', NULL, NULL, '2026-07-23 01:38:58', '2026-07-23 01:38:58'),
 (37, 'App\\Models\\User', 1, 'hrms-pro', '98d9470a229b99b5b32f6b9b75b5ebafe159d5d6f08562340dfd1a0e9427d9a4', '[\"*\"]', '2026-07-24 22:31:32', NULL, '2026-07-24 09:59:00', '2026-07-24 22:31:32'),
 (38, 'App\\Models\\User', 1, 'hrms-pro', 'b014baa557f1262ea38e9e720e9e9ed780a1305d94065086b02b1122dcd77792', '[\"*\"]', NULL, NULL, '2026-07-25 08:34:02', '2026-07-25 08:34:02'),
-(42, 'App\\Models\\User', 1, 'hrms-pro', 'cc99874d90616384f218192e29f13b8be6d83bbeac4a8190b77e0769f819e62d', '[\"*\"]', '2026-07-28 03:47:05', NULL, '2026-07-28 02:47:32', '2026-07-28 03:47:05'),
 (44, 'App\\Models\\User', 5, 'hrms-pro', 'f91214db7dd4ebde37dd074a781aa8b927b5f22899c780f574294ff6fb5de0ea', '[\"*\"]', '2026-07-28 07:50:34', NULL, '2026-07-28 07:47:41', '2026-07-28 07:50:34'),
 (45, 'App\\Models\\User', 6, 'hrms-pro', '58d53c1d4844d0ce70235bc06270fa8f612fc1dcc1fd8cd5884636dc4f37c793', '[\"*\"]', NULL, NULL, '2026-07-28 08:15:09', '2026-07-28 08:15:09'),
 (46, 'App\\Models\\User', 6, 'hrms-pro', '0c72ad4d86cff9f2093608cb37eac14b1fcb5876eee32a34230dbc7c4e56c2e9', '[\"*\"]', NULL, NULL, '2026-07-28 08:15:11', '2026-07-28 08:15:11'),
@@ -1028,7 +1030,29 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (100, 'App\\Models\\User', 7, 'test-token', 'c37d67c26061ab507329296fb8dbd6fdb721bfc22a9c7cdcb823bab17fab50d7', '[\"*\"]', '2026-07-29 05:09:54', NULL, '2026-07-29 05:09:54', '2026-07-29 05:09:54'),
 (101, 'App\\Models\\User', 23, 'hrms-pro', '704feb3aa78fe9211e9ee360937ead026e16176dff23852939b03cf287cb2eeb', '[\"*\"]', NULL, NULL, '2026-07-29 07:54:15', '2026-07-29 07:54:15'),
 (103, 'App\\Models\\User', 1, 'hrms-pro', '056048bce832516632363958ac788a9943db0ce8b5988e23ba02cec1c5bd7b45', '[\"*\"]', NULL, NULL, '2026-07-29 07:54:55', '2026-07-29 07:54:55'),
-(104, 'App\\Models\\User', 1, 'hrms-pro', '642a68d97f79760d8ddd0de75cf19f5ed94b9eacd08a2ffde12b7f415ad9ea1e', '[\"*\"]', '2026-07-29 07:55:23', NULL, '2026-07-29 07:54:59', '2026-07-29 07:55:23');
+(104, 'App\\Models\\User', 1, 'hrms-pro', '642a68d97f79760d8ddd0de75cf19f5ed94b9eacd08a2ffde12b7f415ad9ea1e', '[\"*\"]', '2026-07-29 07:55:23', NULL, '2026-07-29 07:54:59', '2026-07-29 07:55:23'),
+(105, 'App\\Models\\User', 1, 'hrms-pro', 'b106951ed2930d2aa93daba893fa442966ffe41422f2f9297044fb2948b4c230', '[\"*\"]', NULL, NULL, '2026-07-29 19:24:14', '2026-07-29 19:24:14'),
+(107, 'App\\Models\\User', 7, 'hrms-pro', 'b7f95af44aa2b21d24e473b82d4c59e1d94207888d70d4bc9152bd7409a74463', '[\"*\"]', NULL, NULL, '2026-07-29 19:28:44', '2026-07-29 19:28:44'),
+(109, 'App\\Models\\User', 1, 'hrms-pro', '036f89fa60ae1d6d891f4e94debc42411bfeeb08fd8128b13609d5bc14e2bff5', '[\"*\"]', NULL, NULL, '2026-07-29 19:29:04', '2026-07-29 19:29:04'),
+(118, 'App\\Models\\User', 7, 'hrms-pro', '2ecd6f8b9b08641083580eb0c866e584872464d17ac4f63469de4e1cff91224c', '[\"*\"]', '2026-07-29 20:07:03', NULL, '2026-07-29 20:06:57', '2026-07-29 20:07:03'),
+(119, 'App\\Models\\User', 1, 'hrms-pro', '5ae5684cbb4862cbba6220e5980b8530dabe2bd6a8df2f3a5ca415dc73cd00a5', '[\"*\"]', '2026-07-29 20:07:26', NULL, '2026-07-29 20:07:07', '2026-07-29 20:07:26'),
+(120, 'App\\Models\\User', 1, 'hrms-pro', 'bfecf8ab951aa9aeeafbb0a959aeb22d3e51b696b6ffd9e1def6227e1daeb837', '[\"*\"]', '2026-07-29 20:18:25', NULL, '2026-07-29 20:07:29', '2026-07-29 20:18:25'),
+(121, 'App\\Models\\User', 7, 'hrms-pro', 'd3c623ed2b9b4dace080f6c7072553a4d4edd0c501ba46e64725511ec95310d7', '[\"*\"]', NULL, NULL, '2026-07-29 20:28:33', '2026-07-29 20:28:33'),
+(122, 'App\\Models\\User', 1, 'hrms-pro', '81a7c0de44f8974a51f4cde70651a713d501dbc088e1e070d9f1fa9333cfa44d', '[\"*\"]', NULL, NULL, '2026-07-29 20:28:41', '2026-07-29 20:28:41'),
+(123, 'App\\Models\\User', 7, 'hrms-pro', '765e7c78705559f4010f9ef4a222aa6552746d4649dbd546b816128ab5415f11', '[\"*\"]', NULL, NULL, '2026-07-29 20:28:55', '2026-07-29 20:28:55'),
+(124, 'App\\Models\\User', 23, 'hrms-pro', '24467500d34fcf05c64402fa6369e84e6de476564e4e070c3281bc4c895b4a9e', '[\"*\"]', NULL, NULL, '2026-07-29 20:28:57', '2026-07-29 20:28:57'),
+(125, 'App\\Models\\User', 23, 'hrms-pro', 'aaa11c0bd1e0d07d01cd09a2f175a0b636d1c05b2f4f17df85ca82425991970e', '[\"*\"]', '2026-07-29 20:37:35', NULL, '2026-07-29 20:37:11', '2026-07-29 20:37:35'),
+(126, 'App\\Models\\User', 7, 'hrms-pro', '6519b2ba12e6d5842b8debc3f2f21e8492564a305a9c6011c357d6f1ac06e476', '[\"*\"]', '2026-07-29 20:40:14', NULL, '2026-07-29 20:37:36', '2026-07-29 20:40:14'),
+(127, 'App\\Models\\User', 7, 'hrms-pro', '9795ff0d22e5be351c67871d9574ccf5c2b2f16181e386d5e972780bc21f95c4', '[\"*\"]', '2026-07-29 20:41:11', NULL, '2026-07-29 20:41:06', '2026-07-29 20:41:11'),
+(128, 'App\\Models\\User', 23, 'hrms-pro', '5252df27eb867e8fa0a3da35b02b4f3eb27d92dc862d59304bf3a10e34d8b374', '[\"*\"]', '2026-07-29 20:44:33', NULL, '2026-07-29 20:44:23', '2026-07-29 20:44:33'),
+(129, 'App\\Models\\User', 1, 'hrms-pro', '093a6e053faf9aeae0a63d6a5eab95834cc4208df6f07eb1cd1724375178cabc', '[\"*\"]', '2026-07-29 20:45:00', NULL, '2026-07-29 20:44:50', '2026-07-29 20:45:00'),
+(130, 'App\\Models\\User', 7, 'hrms-pro', '4c4e89e3437cbfe9a00cc6134f99ec97393de39900b0c7697f7ecdb25b2c9612', '[\"*\"]', '2026-07-29 20:45:31', NULL, '2026-07-29 20:45:12', '2026-07-29 20:45:31'),
+(131, 'App\\Models\\User', 1, 'hrms-pro', 'ba3483ade9e88de9016ded67e39b837439eba0eb62959523797e3d51002d2885', '[\"*\"]', '2026-07-29 21:30:34', NULL, '2026-07-29 20:45:34', '2026-07-29 21:30:34'),
+(132, 'App\\Models\\User', 23, 'hrms-pro', '445d6a3f5358d77b9d4651437877ec353a63ee45c1f48d0e6ec061dcad6fafbf', '[\"*\"]', '2026-07-29 21:33:59', NULL, '2026-07-29 21:33:51', '2026-07-29 21:33:59'),
+(133, 'App\\Models\\User', 7, 'hrms-pro', 'faf31e3e3abb44c8ab20ef6d952aeb06eb21870c0ddc631402e636c499a0b340', '[\"*\"]', '2026-07-29 21:40:06', NULL, '2026-07-29 21:34:00', '2026-07-29 21:40:06'),
+(134, 'App\\Models\\User', 1, 'hrms-pro', 'dc1f584bdd8735efbc138763d651e542fff125cc274b9760ebd57baf8b7fc012', '[\"*\"]', '2026-07-29 21:41:56', NULL, '2026-07-29 21:40:09', '2026-07-29 21:41:56'),
+(135, 'App\\Models\\User', 7, 'hrms-pro', '7b4d858649f6a1cf9c2b1fcaaf1e642fee9db5291bb43d47270faff45a2c8e23', '[\"*\"]', '2026-07-29 21:55:16', NULL, '2026-07-29 21:41:57', '2026-07-29 21:55:16'),
+(136, 'App\\Models\\User', 1, 'hrms-pro', '751f819ba2bfb75de354ee7f22ee07a757fc1bab5e7beacaed37e26de0240d05', '[\"*\"]', '2026-07-31 03:38:09', NULL, '2026-07-30 00:43:46', '2026-07-31 03:38:09');
 
 -- --------------------------------------------------------
 
@@ -1475,6 +1499,127 @@ CREATE TABLE `role_user` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `search_demo_records`
+--
+
+CREATE TABLE `search_demo_records` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `category` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `search_demo_records`
+--
+
+INSERT INTO `search_demo_records` (`id`, `title`, `content`, `category`, `created_at`, `updated_at`) VALUES
+(1, 'Laravel Framework Guide', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(2, 'MySQL Full-Text Index', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(3, 'Full-Text Search Benefits', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(4, 'LIKE vs Full-Text Performance', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(5, 'Employee Search in HRMS', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(6, 'Laravel Framework Guide - Example 1', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(7, 'MySQL Full-Text Index - Example 1', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(8, 'Full-Text Search Benefits - Example 1', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(9, 'LIKE vs Full-Text Performance - Example 1', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(10, 'Employee Search in HRMS - Example 1', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(11, 'Laravel Framework Guide - Example 2', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(12, 'MySQL Full-Text Index - Example 2', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(13, 'Full-Text Search Benefits - Example 2', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(14, 'LIKE vs Full-Text Performance - Example 2', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(15, 'Employee Search in HRMS - Example 2', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(16, 'Laravel Framework Guide - Example 3', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(17, 'MySQL Full-Text Index - Example 3', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(18, 'Full-Text Search Benefits - Example 3', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(19, 'LIKE vs Full-Text Performance - Example 3', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(20, 'Employee Search in HRMS - Example 3', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(21, 'Laravel Framework Guide - Example 4', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(22, 'MySQL Full-Text Index - Example 4', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(23, 'Full-Text Search Benefits - Example 4', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(24, 'LIKE vs Full-Text Performance - Example 4', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(25, 'Employee Search in HRMS - Example 4', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(26, 'Laravel Framework Guide - Example 5', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(27, 'MySQL Full-Text Index - Example 5', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(28, 'Full-Text Search Benefits - Example 5', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(29, 'LIKE vs Full-Text Performance - Example 5', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(30, 'Employee Search in HRMS - Example 5', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(31, 'Laravel Framework Guide - Example 6', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:38', '2026-07-31 03:09:38'),
+(32, 'MySQL Full-Text Index - Example 6', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(33, 'Full-Text Search Benefits - Example 6', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(34, 'LIKE vs Full-Text Performance - Example 6', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(35, 'Employee Search in HRMS - Example 6', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(36, 'Laravel Framework Guide - Example 7', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(37, 'MySQL Full-Text Index - Example 7', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(38, 'Full-Text Search Benefits - Example 7', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(39, 'LIKE vs Full-Text Performance - Example 7', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(40, 'Employee Search in HRMS - Example 7', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(41, 'Laravel Framework Guide - Example 8', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(42, 'MySQL Full-Text Index - Example 8', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(43, 'Full-Text Search Benefits - Example 8', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(44, 'LIKE vs Full-Text Performance - Example 8', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(45, 'Employee Search in HRMS - Example 8', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(46, 'Laravel Framework Guide - Example 9', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(47, 'MySQL Full-Text Index - Example 9', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(48, 'Full-Text Search Benefits - Example 9', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(49, 'LIKE vs Full-Text Performance - Example 9', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(50, 'Employee Search in HRMS - Example 9', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(51, 'Laravel Framework Guide - Example 10', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(52, 'MySQL Full-Text Index - Example 10', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(53, 'Full-Text Search Benefits - Example 10', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(54, 'LIKE vs Full-Text Performance - Example 10', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(55, 'Employee Search in HRMS - Example 10', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(56, 'Laravel Framework Guide - Example 11', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(57, 'MySQL Full-Text Index - Example 11', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(58, 'Full-Text Search Benefits - Example 11', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(59, 'LIKE vs Full-Text Performance - Example 11', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(60, 'Employee Search in HRMS - Example 11', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(61, 'Laravel Framework Guide - Example 12', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(62, 'MySQL Full-Text Index - Example 12', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(63, 'Full-Text Search Benefits - Example 12', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(64, 'LIKE vs Full-Text Performance - Example 12', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(65, 'Employee Search in HRMS - Example 12', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(66, 'Laravel Framework Guide - Example 13', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(67, 'MySQL Full-Text Index - Example 13', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(68, 'Full-Text Search Benefits - Example 13', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(69, 'LIKE vs Full-Text Performance - Example 13', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(70, 'Employee Search in HRMS - Example 13', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(71, 'Laravel Framework Guide - Example 14', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(72, 'MySQL Full-Text Index - Example 14', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(73, 'Full-Text Search Benefits - Example 14', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(74, 'LIKE vs Full-Text Performance - Example 14', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(75, 'Employee Search in HRMS - Example 14', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(76, 'Laravel Framework Guide - Example 15', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(77, 'MySQL Full-Text Index - Example 15', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(78, 'Full-Text Search Benefits - Example 15', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(79, 'LIKE vs Full-Text Performance - Example 15', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(80, 'Employee Search in HRMS - Example 15', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(81, 'Laravel Framework Guide - Example 16', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(82, 'MySQL Full-Text Index - Example 16', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(83, 'Full-Text Search Benefits - Example 16', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(84, 'LIKE vs Full-Text Performance - Example 16', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(85, 'Employee Search in HRMS - Example 16', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(86, 'Laravel Framework Guide - Example 17', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(87, 'MySQL Full-Text Index - Example 17', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(88, 'Full-Text Search Benefits - Example 17', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(89, 'LIKE vs Full-Text Performance - Example 17', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(90, 'Employee Search in HRMS - Example 17', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(91, 'Laravel Framework Guide - Example 18', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(92, 'MySQL Full-Text Index - Example 18', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(93, 'Full-Text Search Benefits - Example 18', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(94, 'LIKE vs Full-Text Performance - Example 18', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(95, 'Employee Search in HRMS - Example 18', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(96, 'Laravel Framework Guide - Example 19', 'Laravel is a PHP framework for web artisans. Additional content.', 'Laravel', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(97, 'MySQL Full-Text Index - Example 19', 'MySQL InnoDB supports full-text indexing. Additional content.', 'Database', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(98, 'Full-Text Search Benefits - Example 19', 'Full-text search provides better performance than LIKE. Additional content.', 'Search', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(99, 'LIKE vs Full-Text Performance - Example 19', 'Full-text is 10-100x faster on large datasets. Additional content.', 'Performance', '2026-07-31 03:09:39', '2026-07-31 03:09:39'),
+(100, 'Employee Search in HRMS - Example 19', 'HRMS Pro uses full-text indexes for employee search. Additional content.', 'HRMS', '2026-07-31 03:09:39', '2026-07-31 03:09:39');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sessions`
 --
 
@@ -1493,6 +1638,7 @@ CREATE TABLE `sessions` (
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
 ('6xffNLU0A9g3p3zDYM63LaZqNbozH1IzjUFSmz8U', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQklhMGpmMjduRU55VnNKU0l6WGVBbjVUZ2w1TzR4R1RnRldrNktTSiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1784904489),
+('oktVlgfhTh7mC20bAIDemBV44503vJkFtCHVrCa0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiamlzUXByNjhNanU4dFpOUkNOeHgyV3Z4bnFlZ2llZ3RnWHhuQzFOciI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1785382232),
 ('sFUKOuvnB1hw3IpENqqqbdnuuQXV2uMx320eCPhe', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiZFFYWVVUbDlrRnlZVWYzRnZjMU9HQU91NlNId3E4OWcxRkl2NjJQWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6ODM6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMC8vc3RvcmFnZS9hdmF0YXJzL3BNV1B2cHVqb09xSXJ3UjVZMmMxYjk2WTBhT1RMUURZaWJtcFRlRjMuanBnIjtzOjU6InJvdXRlIjtOO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1784885393);
 
 -- --------------------------------------------------------
@@ -1644,6 +1790,7 @@ ALTER TABLE `employees`
   ADD KEY `employees_department_id_foreign` (`department_id`),
   ADD KEY `employees_position_id_foreign` (`position_id`),
   ADD KEY `employees_user_id_foreign` (`user_id`);
+ALTER TABLE `employees` ADD FULLTEXT KEY `employees_fulltext` (`name`,`employee_code`,`email`);
 
 --
 -- Indexes for table `employee_salaries`
@@ -1774,6 +1921,13 @@ ALTER TABLE `role_user`
   ADD PRIMARY KEY (`user_id`,`role_id`);
 
 --
+-- Indexes for table `search_demo_records`
+--
+ALTER TABLE `search_demo_records`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `search_demo_records` ADD FULLTEXT KEY `search_demo_fulltext` (`title`,`content`);
+
+--
 -- Indexes for table `sessions`
 --
 ALTER TABLE `sessions`
@@ -1821,7 +1975,7 @@ ALTER TABLE `announcement_notifications`
 -- AUTO_INCREMENT for table `announcement_views`
 --
 ALTER TABLE `announcement_views`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `attendances`
@@ -1881,7 +2035,7 @@ ALTER TABLE `leave_types`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `payrolls`
@@ -1911,7 +2065,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
 --
 -- AUTO_INCREMENT for table `positions`
@@ -1930,6 +2084,12 @@ ALTER TABLE `roles`
 --
 ALTER TABLE `role_permissions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=295;
+
+--
+-- AUTO_INCREMENT for table `search_demo_records`
+--
+ALTER TABLE `search_demo_records`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT for table `users`

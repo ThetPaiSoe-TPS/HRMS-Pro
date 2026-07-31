@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./context/AuthContext"; // Change this import
+import { useAuth } from "./hooks/useAuth";
 
 // Auth Pages
 import { Login } from "./pages/auth/Login";
@@ -56,9 +56,10 @@ import EditLeaveType from "./pages/admin/leaves/EditLeaveType";
 import Settings from "./pages/settings/Settings";
 import EditLeave from "./pages/admin/leaves/EditLeave";
 import PayslipView from "./pages/admin/payroll/PayslipView";
-import AnnouncementDetail from "./pages/announcements/AnnoundementDetail";
 import CreateAnnouncement from "./pages/announcements/CreateAnnouncement";
 import EditAnnouncement from "./pages/announcements/EditAnnouncement";
+import AnnouncementDetail from "./pages/announcements/AnnoundementDetail";
+import SearchDemo from "./api/Search/SearchDemo";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -93,16 +94,13 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-
       {/* Protected Routes with Layout */}
       <Route element={<ProtectedLayout />}>
         {/* Dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />
-
         <Route path="/admin/roles" element={<Roles />} />
         <Route path="/admin/roles/create" element={<CreateRole />} />
         <Route path="/admin/roles/:id/edit" element={<EditRole />} />
-
         <Route path="/admin/permissions" element={<Permissions />} />
         <Route
           path="/admin/permissions/create"
@@ -112,7 +110,6 @@ function App() {
           path="/admin/permissions/:id/edit"
           element={<EditPermission />}
         />
-
         <Route path="/admin/departments" element={<Departments />} />
         <Route
           path="/admin/departments/create"
@@ -122,66 +119,57 @@ function App() {
           path="/admin/departments/:id/edit"
           element={<EditDepartment />}
         />
-
         <Route path="/admin/positions" element={<Positions />} />
         <Route path="/admin/positions/create" element={<CreatePosition />} />
         <Route path="/admin/positions/:id/edit" element={<EditPosition />} />
-
         {/* Employee Management */}
         <Route path="/employees" element={<EmployeeList />} />
         <Route path="/employees/create" element={<EmployeeCreate />} />
         <Route path="/employees/:id" element={<EmployeeDetail />} />
         <Route path="/departments" element={<Department />} />
         <Route path="/positions" element={<Position />} />
-
         <Route path="/admin/attendance" element={<AttendancePage />} />
         <Route path="/admin/attendance/check" element={<CheckInOut />} />
         <Route path="/admin/attendance/report" element={<AttendanceReport />} />
-
+        {/* Announcements */}
+        <Route path="/announcements" element={<Announcements />} />
+        <Route path="/announcements/create" element={<CreateAnnouncement />} />
+        <Route path="/announcements/:id/edit" element={<EditAnnouncement />} />
+        <Route path="/announcements/:id" element={<AnnouncementDetail />} />
         <Route path="/admin/leaves" element={<LeaveRequests />} />
         <Route path="/admin/leaves/create" element={<ApplyLeave />} />
         <Route path="/admin/leaves/:id/edit" element={<EditLeave />} />
         <Route path="/admin/leave-types" element={<LeaveTypes />} />
         <Route path="/admin/leave-types/create" element={<CreateLeaveType />} />
         <Route path="/admin/leave-types/:id/edit" element={<EditLeaveType />} />
-
         <Route path="/admin/employees" element={<Employees />} />
         <Route path="/admin/employees/create" element={<CreateEmployee />} />
         <Route path="/admin/employees/:id/edit" element={<EditEmployee />} />
-
         {/* Payroll */}
         <Route path="/admin/payroll" element={<PayrollList />} />
         <Route path="/admin/payroll/generate" element={<GeneratePayroll />} />
         <Route path="/admin/payroll/payslips" element={<Payslips />} />
         <Route path="/admin/payroll/:id" element={<PayslipView />} />
-
         {/* Reports */}
         <Route path="/admin/reports/employees" element={<EmployeeReport />} />
         <Route path="/admin/reports/leaves" element={<LeaveReport />} />
         <Route path="/admin/reports/payroll" element={<PayrollReport />} />
         <Route path="/reports/attendance" element={<AttendanceReportPage />} />
-
         {/* Announcements */}
         <Route path="/announcements" element={<Announcements />} />
-        <Route path="/announcements/create" element={<CreateAnnouncement />} />
-        <Route path="/announcements/:id" element={<AnnouncementDetail />} />
-        <Route path="/announcements/:id/edit" element={<EditAnnouncement />} />
-
         {/* Administration */}
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/roles" element={<Roles />} />
         <Route path="/admin/permissions" element={<Permissions />} />
-
         <Route path="/admin/settings" element={<Settings />} />
-
         {/* Profile */}
         <Route path="/profile" element={<Profile />} />
-
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/users/create" element={<CreateUser />} />
         <Route path="/admin/users/:id/edit" element={<EditUser />} />
+        {/* // Add to protected routes */}
+        <Route path="/admin/search-demo" element={<SearchDemo />} />
       </Route>
-
       {/* Default Routes */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

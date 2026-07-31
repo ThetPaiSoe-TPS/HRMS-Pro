@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Report\ReportController;
 use App\Http\Controllers\Api\Setting\CompanySettingController;
 use App\Http\Controllers\Api\Profile\ProfileController as UserProfileController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -217,5 +218,13 @@ Route::prefix('v1')->group(function () {
         Route::post('{id}/important', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'markImportant'])->middleware('permission:announcement.update');
         Route::post('{id}/attachments', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'uploadAttachment'])->middleware('permission:announcement.update');
         Route::delete('attachments/{id}', [App\Http\Controllers\Api\Announcement\AnnouncementController::class, 'deleteAttachment'])->middleware('permission:announcement.update');
+    });
+
+    // Search routes
+    Route::prefix('search')->group(function () {
+        Route::get('/global', [SearchController::class, 'globalSearch']);
+        Route::get('/performance', [SearchController::class, 'performanceComparison']);
+        Route::get('/advanced', [SearchController::class, 'advancedSearch']);
+        Route::get('/stats', [SearchController::class, 'searchStats']);
     });
 });

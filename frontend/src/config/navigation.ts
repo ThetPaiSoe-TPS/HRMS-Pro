@@ -23,6 +23,7 @@ import {
   KeyIcon,
   ShieldCheckIcon,
   PlusIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 
 export interface NavItem {
@@ -41,6 +42,15 @@ export const navigationData: NavItem[] = [
     name: "Dashboard",
     icon: HomeIcon,
     href: "/dashboard",
+  },
+
+  // ============================================
+  // SEARCH DEMO (Full-Text Search Showcase)
+  // ============================================
+  {
+    name: "Search Text (using Full Text Index)",
+    icon: MagnifyingGlassIcon,
+    href: "/admin/search-demo",
   },
 
   // ============================================
