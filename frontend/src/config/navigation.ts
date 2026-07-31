@@ -53,6 +53,12 @@ export const navigationData: NavItem[] = [
     href: "/admin/search-demo",
   },
 
+  {
+    name: "Indexing Demo",
+    icon: MagnifyingGlassIcon,
+    href: "/admin/indexing-demo",
+  },
+
   // ============================================
   // EMPLOYEE MANAGEMENT
   // ============================================

@@ -60,6 +60,7 @@ import CreateAnnouncement from "./pages/announcements/CreateAnnouncement";
 import EditAnnouncement from "./pages/announcements/EditAnnouncement";
 import AnnouncementDetail from "./pages/announcements/AnnoundementDetail";
 import SearchDemo from "./api/Search/SearchDemo";
+import IndexingDemo from "./pages/admin/indexing/IndexingDemo";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -169,6 +170,7 @@ function App() {
         <Route path="/admin/users/:id/edit" element={<EditUser />} />
         {/* // Add to protected routes */}
         <Route path="/admin/search-demo" element={<SearchDemo />} />
+        <Route path="/admin/indexing-demo" element={<IndexingDemo />} />
       </Route>
       {/* Default Routes */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

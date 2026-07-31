@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Report\ReportController;
 use App\Http\Controllers\Api\Setting\CompanySettingController;
 use App\Http\Controllers\Api\Profile\ProfileController as UserProfileController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\IndexingController;
 use App\Http\Controllers\Api\SearchController;
 use Illuminate\Support\Facades\Route;
 
@@ -226,5 +227,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/performance', [SearchController::class, 'performanceComparison']);
         Route::get('/advanced', [SearchController::class, 'advancedSearch']);
         Route::get('/stats', [SearchController::class, 'searchStats']);
+    });
+
+    Route::prefix('indexing')->group(function () {
+        Route::get('/compare', [IndexingController::class, 'compare']);
+        Route::get('/stats', [IndexingController::class, 'stats']);
     });
 });
