@@ -7,7 +7,6 @@ import {
   DocumentTextIcon,
   ExclamationTriangleIcon,
   Cog6ToothIcon,
-  ClockIcon,
   TableCellsIcon,
 } from "@heroicons/react/24/outline";
 import api from "../../../api/axios";
@@ -259,7 +258,7 @@ export const IndexingDemo: React.FC = () => {
           <button
             onClick={handleSearch}
             disabled={loading}
-            className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-6 py-2 bg-primary-900 text-white rounded-lg hover:bg-secondary-900 hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {loading ? (
               <ArrowPathIcon className="h-5 w-5 animate-spin" />

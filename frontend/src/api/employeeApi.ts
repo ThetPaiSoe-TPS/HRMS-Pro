@@ -34,6 +34,7 @@ const mapEmployee = (data: any): Employee => ({
     : undefined,
   status: data.status || "active",
   photo: data.photo || null,
+  deleted_at: data.deleted_at || null,
   created_at: data.created_at,
   updated_at: data.updated_at,
 });
@@ -50,6 +51,7 @@ export const employeeApi = {
     if (filters.department_id) params.department_id = filters.department_id;
     if (filters.position_id) params.position_id = filters.position_id;
     if (filters.status) params.status = filters.status;
+    if (filters.with_trashed) params.with_trashed = true;
 
     const response: any = await api.get("/employees", { params });
 
@@ -80,8 +82,43 @@ export const employeeApi = {
     return mapEmployee(response);
   },
 
-  deleteEmployee: async (id: number): Promise<void> => {
+  softDeleteEmployee: async (id: number): Promise<void> => {
     await api.delete(`/employees/${id}`);
+  },
+
+  restoreEmployee: async (id: number): Promise<void> => {
+    await api.post(`/employees/${id}/restore`);
+  },
+
+  forceDeleteEmployee: async (id: number): Promise<void> => {
+    await api.delete(`/employees/${id}/force`);
+  },
+
+  getDeletedEmployees: async (
+    filters: EmployeeFilters,
+  ): Promise<PaginatedResponse<Employee>> => {
+    const params: Record<string, any> = {
+      page: filters.page,
+      per_page: filters.per_page,
+    };
+    if (filters.search) params.search = filters.search;
+
+    const response: any = await api.get("/employees/trash", { params });
+
+    return {
+      data: (response.data || []).map(mapEmployee),
+      current_page: response.current_page || 1,
+      last_page: response.last_page || 1,
+      per_page: response.per_page || 10,
+      total: response.total || 0,
+      from: response.from || 0,
+      to: response.to || 0,
+    };
+  },
+
+  getTrashCount: async (): Promise<number> => {
+    const response: any = await api.get("/employees/trash-count");
+    return response.count || 0;
   },
 
   uploadPhoto: async (id: number, file: File): Promise<{ photo: string }> => {

@@ -12,6 +12,7 @@ import { Dashboard } from "./pages/dashboard/Dashboard";
 import { Layout } from "./components/layout/Layout";
 import Profile from "./pages/profile/Profile";
 import EmployeeList, { Employees } from "./pages/employees/Employees";
+import DeletedEmployees from "./pages/employees/DeletedEmployees";
 import EmployeeCreate, {
   CreateEmployee,
 } from "./pages/employees/CreateEmployee";
@@ -61,6 +62,8 @@ import EditAnnouncement from "./pages/announcements/EditAnnouncement";
 import AnnouncementDetail from "./pages/announcements/AnnoundementDetail";
 import SearchDemo from "./api/Search/SearchDemo";
 import IndexingDemo from "./pages/admin/indexing/IndexingDemo";
+import ExplainDemo from "./pages/admin/explain/ExplainDemo";
+import TransactionDemo from "./pages/admin/transactions/TransactionDemo";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -146,36 +149,51 @@ function App() {
         <Route path="/admin/employees" element={<Employees />} />
         <Route path="/admin/employees/create" element={<CreateEmployee />} />
         <Route path="/admin/employees/:id/edit" element={<EditEmployee />} />
+        <Route path="/employees/deleted" element={<DeletedEmployees />} />
         {/* Payroll */}
         <Route path="/admin/payroll" element={<PayrollList />} />
         <Route path="/admin/payroll/generate" element={<GeneratePayroll />} />
         <Route path="/admin/payroll/payslips" element={<Payslips />} />
         <Route path="/admin/payroll/:id" element={<PayslipView />} />
+
         {/* Reports */}
         <Route path="/admin/reports/employees" element={<EmployeeReport />} />
         <Route path="/admin/reports/leaves" element={<LeaveReport />} />
         <Route path="/admin/reports/payroll" element={<PayrollReport />} />
         <Route path="/reports/attendance" element={<AttendanceReportPage />} />
+
         {/* Announcements */}
         <Route path="/announcements" element={<Announcements />} />
+
         {/* Administration */}
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/roles" element={<Roles />} />
         <Route path="/admin/permissions" element={<Permissions />} />
         <Route path="/admin/settings" element={<Settings />} />
+
         {/* Profile */}
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin/users" element={<Users />} />
         <Route path="/admin/users/create" element={<CreateUser />} />
         <Route path="/admin/users/:id/edit" element={<EditUser />} />
+
         {/* // Add to protected routes */}
         <Route path="/admin/search-demo" element={<SearchDemo />} />
         <Route path="/admin/indexing-demo" element={<IndexingDemo />} />
+        <Route path="/admin/explain-demo" element={<ExplainDemo />} />
+
+
+        <Route path="/admin/transactions" element={<TransactionDemo />} />
+
+
+
       </Route>
       {/* Default Routes */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
       <Route path="/admin/reports/attendance" element={<AttendanceReport />} />
+
+
     </Routes>
   );
 }

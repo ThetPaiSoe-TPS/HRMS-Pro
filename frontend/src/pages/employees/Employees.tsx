@@ -17,8 +17,8 @@ import {
   XMarkIcon,
   EnvelopeIcon,
   PhoneIcon,
-  UserIcon,
   UsersIcon,
+  UserMinusIcon,
 } from "@heroicons/react/24/outline";
 import type { Employee, EmployeeFilters } from "../../types/employee.types";
 import { employeeApi, departmentApi, positionApi } from "../../api/employeeApi";
@@ -74,6 +74,7 @@ export const Employees: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ total: 0, last_page: 1 });
+  const [trashCount, setTrashCount] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState<EmployeeFilters>({
@@ -81,6 +82,7 @@ export const Employees: React.FC = () => {
     department_id: "",
     position_id: "",
     status: "",
+    with_trashed: false,
     page: 1,
     per_page: 10,
   });
@@ -90,6 +92,20 @@ export const Employees: React.FC = () => {
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showForceDeleteModal, setShowForceDeleteModal] = useState(false);
+  const [showRestoreModal, setShowRestoreModal] = useState(false);
+  const [selectedDeletedEmployee, setSelectedDeletedEmployee] =
+    useState<Employee | null>(null);
+
+  const fetchTrashCount = useCallback(async () => {
+    if (!isSuperAdmin) return;
+    try {
+      const count = await employeeApi.getTrashCount();
+      setTrashCount(count);
+    } catch (error) {
+      console.error("Failed to fetch trash count:", error);
+    }
+  }, [isSuperAdmin]);
 
   const fetchEmployees = useCallback(async () => {
     setLoading(true);
@@ -115,6 +131,10 @@ export const Employees: React.FC = () => {
   useEffect(() => {
     fetchEmployees();
   }, [fetchEmployees]);
+
+  useEffect(() => {
+    fetchTrashCount();
+  }, [fetchTrashCount]);
 
   useEffect(() => {
     const fetchLookups = async () => {
@@ -159,12 +179,49 @@ export const Employees: React.FC = () => {
   const confirmDelete = async () => {
     if (!selectedEmployee) return;
     try {
-      await employeeApi.deleteEmployee(selectedEmployee.id);
+      await employeeApi.softDeleteEmployee(selectedEmployee.id);
       setShowDeleteModal(false);
       setSelectedEmployee(null);
       fetchEmployees();
+      fetchTrashCount();
     } catch (error) {
       console.error("Failed to delete employee:", error);
+    }
+  };
+
+  const handleRestore = async (employee: Employee) => {
+    setSelectedDeletedEmployee(employee);
+    setShowRestoreModal(true);
+  };
+
+  const confirmRestore = async () => {
+    if (!selectedDeletedEmployee) return;
+    try {
+      await employeeApi.restoreEmployee(selectedDeletedEmployee.id);
+      setShowRestoreModal(false);
+      setSelectedDeletedEmployee(null);
+      fetchEmployees();
+      fetchTrashCount();
+    } catch (error) {
+      console.error("Failed to restore employee:", error);
+    }
+  };
+
+  const handleForceDelete = async (employee: Employee) => {
+    setSelectedDeletedEmployee(employee);
+    setShowForceDeleteModal(true);
+  };
+
+  const confirmForceDelete = async () => {
+    if (!selectedDeletedEmployee) return;
+    try {
+      await employeeApi.forceDeleteEmployee(selectedDeletedEmployee.id);
+      setShowForceDeleteModal(false);
+      setSelectedDeletedEmployee(null);
+      fetchEmployees();
+      fetchTrashCount();
+    } catch (error) {
+      console.error("Failed to force delete employee:", error);
     }
   };
 
@@ -209,51 +266,68 @@ export const Employees: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg dark:bg-blue-900/30">
-              <UserGroupIcon className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total Employees
-              </p>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {pagination.total}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg dark:bg-green-900/30">
-              <CheckBadgeIcon className="w-5 h-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {employees.filter((e) => e.status === "active").length}
-              </p>
+         <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg dark:bg-blue-900/30">
+                <UserGroupIcon className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Total Employees
+                </p>
+                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {pagination.total}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-100 rounded-lg dark:bg-gray-700">
-              <UsersIcon className="w-5 h-5 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Inactive
-              </p>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                {employees.filter((e) => e.status === "inactive").length}
-              </p>
+          <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg dark:bg-green-900/30">
+                <CheckBadgeIcon className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Active</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {employees.filter((e) => e.status === "active" && !e.deleted_at).length}
+                </p>
+              </div>
             </div>
           </div>
+          <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg dark:bg-gray-700">
+                <UsersIcon className="w-5 h-5 text-gray-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Inactive
+                </p>
+                <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {employees.filter((e) => e.status === "inactive" && !e.deleted_at).length}
+                </p>
+              </div>
+            </div>
+          </div>
+          {isSuperAdmin && (
+            <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-lg dark:bg-red-900/30">
+                  <UserMinusIcon className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Deleted
+                  </p>
+                  <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                    {trashCount}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
       <div className="p-4 mb-6 bg-white border border-gray-100 shadow-sm rounded-xl dark:bg-gray-800 dark:border-gray-700">
         <div className="flex flex-col gap-4 sm:flex-row">
@@ -267,32 +341,57 @@ export const Employees: React.FC = () => {
               className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
             />
           </div>
+         <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
+        >
+          <FunnelIcon className="w-5 h-5 text-gray-500" />
+          <span className="text-sm text-gray-700 dark:text-gray-300">
+            Filters
+          </span>
+        </button>
+        {isSuperAdmin && (
           <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="inline-flex items-center gap-2 px-4 py-2 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
-          >
-            <FunnelIcon className="w-5 h-5 text-gray-500" />
-            <span className="text-sm text-gray-700 dark:text-gray-300">
-              Filters
-            </span>
-          </button>
-          <button
-            onClick={() => {
-              setSearchTerm("");
-              setFilters({
-                search: "",
-                department_id: "",
-                position_id: "",
-                status: "",
+            onClick={() =>
+              setFilters((prev) => ({
+                ...prev,
+                with_trashed: !prev.with_trashed,
                 page: 1,
-                per_page: 10,
-              });
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              }))
+            }
+            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border rounded-lg ${
+              filters.with_trashed
+                ? "bg-red-100 text-red-800 border-red-300 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-700"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
+            }`}
           >
-            <ArrowPathIcon className="w-5 h-5" />
-            <span className="text-sm">Reset</span>
+            <UserMinusIcon className="w-4 h-4" />
+            <span>Show Deleted</span>
+            {trashCount > 0 && (
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                {trashCount}
+              </span>
+            )}
           </button>
+        )}
+        <button
+          onClick={() => {
+            setSearchTerm("");
+            setFilters({
+              search: "",
+              department_id: "",
+              position_id: "",
+              status: "",
+              with_trashed: false,
+              page: 1,
+              per_page: 10,
+            });
+          }}
+          className="inline-flex items-center gap-2 px-4 py-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+        >
+          <ArrowPathIcon className="w-5 h-5" />
+          <span className="text-sm">Reset</span>
+        </button>
         </div>
 
         {showFilters && (
@@ -397,142 +496,215 @@ export const Employees: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {employees.map((employee) => (
-                <tr
-                  key={employee.id}
-                  className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      {employee.photo ? (
-                        <img
-                          src={getPhotoUrl(employee.photo) ?? ""}
-                          alt={employee.name}
-                          className="flex-shrink-0 object-cover rounded-full h-9 w-9"
-                        />
-                      ) : (
-                        <div
-                          className={`h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 ${getRandomColor(employee.id)}`}
-                        >
-                          <span className="text-xs font-bold">
-                            {getInitials(employee.name)}
-                          </span>
+             {employees.map((employee) => {
+                const isDeleted = employee.deleted_at !== null;
+                return (
+                  <tr
+                    key={employee.id}
+                    className={`transition-colors ${
+                      isDeleted
+                        ? "bg-gray-50/50 hover:bg-gray-100/50 dark:bg-gray-800/30 dark:hover:bg-gray-700/30 opacity-60"
+                        : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        {employee.photo ? (
+                          <img
+                            src={getPhotoUrl(employee.photo) ?? ""}
+                            alt={employee.name}
+                            className="flex-shrink-0 object-cover rounded-full h-9 w-9 grayscale"
+                          />
+                        ) : (
+                          <div
+                            className={`h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 ${getRandomColor(employee.id)}`}
+                          >
+                            <span className="text-xs font-bold">
+                              {getInitials(employee.name)}
+                            </span>
+                          </div>
+                        )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className={`text-sm font-medium ${
+                              isDeleted
+                                ? "text-gray-500 dark:text-gray-400"
+                                : "text-gray-900 dark:text-gray-100"
+                            }`}>
+                              {employee.name}
+                            </p>
+                            {isDeleted && (
+                              <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium text-gray-600 bg-gray-200 rounded-full dark:bg-gray-600 dark:text-gray-300">
+                                Deleted
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {employee.employee_code}
+                          </p>
                         </div>
-                      )}
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {employee.name}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {employee.employee_code}
-                        </p>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <EnvelopeIcon className="h-3.5 w-3.5 text-gray-400" />
-                        <span className="text-sm text-gray-600 truncate max-w-[150px] dark:text-gray-300">
-                          {employee.email}
-                        </span>
-                      </div>
-                      {employee.phone && (
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="space-y-0.5">
                         <div className="flex items-center gap-1.5">
-                          <PhoneIcon className="h-3.5 w-3.5 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-300">
-                            {employee.phone}
+                          <EnvelopeIcon className="h-3.5 w-3.5 text-gray-400" />
+                          <span className={`text-sm truncate max-w-[150px] ${
+                            isDeleted
+                              ? "text-gray-400 dark:text-gray-500"
+                              : "text-gray-600 dark:text-gray-300"
+                          }`}>
+                            {employee.email}
                           </span>
                         </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="space-y-0.5">
-                      <div className="text-sm text-gray-900 dark:text-gray-100">
-                        {employee.gender
-                          ? employee.gender.charAt(0).toUpperCase() +
-                            employee.gender.slice(1)
-                          : "N/A"}
+                        {employee.phone && (
+                          <div className="flex items-center gap-1.5">
+                            <PhoneIcon className="h-3.5 w-3.5 text-gray-400" />
+                            <span className={`text-sm ${
+                              isDeleted
+                                ? "text-gray-400 dark:text-gray-500"
+                                : "text-gray-600 dark:text-gray-300"
+                            }`}>
+                              {employee.phone}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {employee.date_of_birth
-                          ? new Date(
-                              employee.date_of_birth,
-                            ).toLocaleDateString()
-                          : "N/A"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="space-y-0.5">
+                        <div className={`text-sm ${
+                          isDeleted
+                            ? "text-gray-400 dark:text-gray-500"
+                            : "text-gray-900 dark:text-gray-100"
+                        }`}>
+                          {employee.gender
+                            ? employee.gender.charAt(0).toUpperCase() +
+                              employee.gender.slice(1)
+                            : "N/A"}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {employee.date_of_birth
+                            ? new Date(
+                                employee.date_of_birth,
+                              ).toLocaleDateString()
+                            : "N/A"}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <BuildingOfficeIcon className="h-3.5 w-3.5 text-gray-400" />
-                        <span className="text-sm text-gray-900 dark:text-gray-100">
-                          {employee.department?.name || "N/A"}
-                        </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <BuildingOfficeIcon className="h-3.5 w-3.5 text-gray-400" />
+                          <span className={`text-sm truncate max-w-[120px] ${
+                            isDeleted
+                              ? "text-gray-400 dark:text-gray-500"
+                              : "text-gray-900 dark:text-gray-100"
+                          }`}>
+                            {employee.department?.name || "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <BriefcaseIcon className="h-3.5 w-3.5 text-gray-400" />
+                          <span className={`text-sm ${
+                            isDeleted
+                              ? "text-gray-400 dark:text-gray-500"
+                              : "text-gray-600 dark:text-gray-300"
+                          }`}>
+                            {employee.position?.title || "N/A"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <BriefcaseIcon className="h-3.5 w-3.5 text-gray-400" />
-                        <span className="text-sm text-gray-600 dark:text-gray-300">
-                          {employee.position?.title || "N/A"}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[employee.status] || "bg-gray-100 text-gray-800"}`}
-                    >
-                      {employee.status === "active" ? (
-                        <CheckBadgeIcon className="w-3 h-3" />
-                      ) : (
-                        <XMarkIcon className="w-3 h-3" />
-                      )}
-                      {statusLabels[employee.status] || employee.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                      <CalendarIcon className="w-4 h-4" />
-                      {employee.hire_date
-                        ? new Date(employee.hire_date).toLocaleDateString()
-                        : "N/A"}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleView(employee)}
-                        className="p-1.5 text-gray-400 hover:text-primary-900 rounded-lg hover:bg-primary-50 transition-colors dark:hover:bg-primary-900/30"
-                        title="View"
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[employee.status] || "bg-gray-100 text-gray-800"}`}
                       >
-                        <EyeIcon className="w-4 h-4" />
-                      </button>
-                      {/* Edit - only for super admin */}
-                      {!isReadOnly && (
-                        <button
-                          onClick={() => handleEdit(employee)}
-                          className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors dark:hover:bg-blue-900/30"
-                          title="Edit"
-                        >
-                          <PencilSquareIcon className="w-4 h-4" />
-                        </button>
-                      )}
-                      {/* Delete - only for super admin */}
-                      {isSuperAdmin && (
-                        <button
-                          onClick={() => handleDelete(employee)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors dark:hover:bg-red-900/30"
-                          title="Delete"
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {employee.status === "active" ? (
+                          <CheckBadgeIcon className="w-3 h-3" />
+                        ) : (
+                          <XMarkIcon className="w-3 h-3" />
+                        )}
+                        {statusLabels[employee.status] || employee.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                        <CalendarIcon className="w-4 h-4" />
+                        {employee.hire_date
+                          ? new Date(employee.hire_date).toLocaleDateString()
+                          : "N/A"}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-2">
+                        {!isDeleted && (
+                          <>
+                            <button
+                              onClick={() => handleView(employee)}
+                              className="p-1.5 text-gray-400 hover:text-primary-900 rounded-lg hover:bg-primary-50 transition-colors dark:hover:bg-primary-900/30"
+                              title="View"
+                            >
+                              <EyeIcon className="w-4 h-4" />
+                            </button>
+                            {!isReadOnly && (
+                              <button
+                                onClick={() => handleEdit(employee)}
+                                className="p-1.5 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors dark:hover:bg-blue-900/30"
+                                title="Edit"
+                              >
+                                <PencilSquareIcon className="w-4 h-4" />
+                              </button>
+                            )}
+                          </>
+                        )}
+                        {isSuperAdmin && (
+                          <>
+                            {!isDeleted ? (
+                              <button
+                                onClick={() => handleDelete(employee)}
+                                className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors dark:hover:bg-red-900/30"
+                                title="Delete (Soft Delete)"
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                              </button>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    employeeApi.restoreEmployee(employee.id)
+                                      .then(() => {
+                                        fetchEmployees();
+                                        fetchTrashCount();
+                                      })
+                                      .catch((err) =>
+                                        console.error(
+                                          "Failed to restore employee:",
+                                          err,
+                                        ),
+                                      )
+                                  }
+                                  className="p-1.5 text-gray-400 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors dark:hover:bg-green-900/30"
+                                  title="Restore"
+                                >
+                                  <ArrowPathIcon className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleForceDelete(employee)}
+                                  className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors dark:hover:bg-red-900/30"
+                                  title="Force Delete (Permanent)"
+                                >
+                                  <XMarkIcon className="w-5 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -556,7 +728,7 @@ export const Employees: React.FC = () => {
         )}
 
         {pagination.last_page > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 sm:flex-row dark:border-gray-700">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Showing{" "}
               {employees.length > 0
@@ -756,10 +928,10 @@ export const Employees: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col items-center justify-end gap-3 p-6 border-t border-gray-200 sm:flex-row dark:border-gray-700">
               <button
                 onClick={() => setShowViewModal(false)}
-                className="w-full sm:w-auto px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                className="w-full px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg sm:w-auto hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Close
               </button>
@@ -768,7 +940,7 @@ export const Employees: React.FC = () => {
                   setShowViewModal(false);
                   handleEdit(selectedEmployee);
                 }}
-                className="w-full sm:w-auto px-4 py-2 text-white transition-colors rounded-lg bg-primary-900 hover:bg-secondary-900 hover:text-black"
+                className="w-full px-4 py-2 text-white transition-colors rounded-lg sm:w-auto bg-primary-900 hover:bg-secondary-900 hover:text-black"
               >
                 Edit Employee
               </button>
@@ -777,43 +949,125 @@ export const Employees: React.FC = () => {
         </div>
       )}
 
-      {showDeleteModal && selectedEmployee && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-md bg-white shadow-lg rounded-xl dark:bg-gray-800">
-            <div className="p-6">
-              <div className="flex items-center justify-center mb-4">
-                <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
-                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
-                </div>
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
-                Delete Employee
-              </h3>
-              <p className="text-sm text-center text-gray-500 dark:text-gray-400">
-                Are you sure you want to delete{" "}
-                <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {selectedEmployee.name}
-                </span>
-                ? This action cannot be undone.
-              </p>
-              <div className="flex items-center gap-3 mt-6">
-                <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmDelete}
-                  className="flex-1 px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
-                >
-                  Delete Employee
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+       {showDeleteModal && selectedEmployee && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+           <div className="w-full max-w-md bg-white shadow-lg rounded-xl dark:bg-gray-800">
+             <div className="p-6">
+               <div className="flex items-center justify-center mb-4">
+                 <div className="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full">
+                   <ExclamationTriangleIcon className="w-6 h-6 text-yellow-600" />
+                 </div>
+               </div>
+               <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
+                 Soft Delete Employee
+               </h3>
+               <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                 Are you sure you want to soft-delete{" "}
+                 <span className="font-medium text-gray-900 dark:text-gray-100">
+                   {selectedEmployee.name}
+                 </span>
+                 ?<br />
+                 The employee will be moved to the <strong>Deleted Employees</strong> section and can be restored later.
+               </p>
+               <div className="flex items-center gap-3 mt-6">
+                 <button
+                   onClick={() => setShowDeleteModal(false)}
+                   className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                 >
+                   Cancel
+                 </button>
+                 <button
+                   onClick={confirmDelete}
+                   className="flex-1 px-4 py-2 text-white transition-colors bg-yellow-600 rounded-lg hover:bg-yellow-700"
+                 >
+                   Soft Delete Employee
+                 </button>
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
+
+       {showRestoreModal && selectedDeletedEmployee && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+           <div className="w-full max-w-md bg-white shadow-lg rounded-xl dark:bg-gray-800">
+             <div className="p-6">
+               <div className="flex items-center justify-center mb-4">
+                 <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
+                   <ArrowPathIcon className="w-6 h-6 text-green-600" />
+                 </div>
+               </div>
+               <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
+                 Restore Employee
+               </h3>
+               <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                 Are you sure you want to restore{" "}
+                 <span className="font-medium text-gray-900 dark:text-gray-100">
+                   {selectedDeletedEmployee.name}
+                 </span>
+                 ?<br />
+                 The employee will reappear in the main employee list.
+               </p>
+               <div className="flex items-center gap-3 mt-6">
+                 <button
+                   onClick={() => setShowRestoreModal(false)}
+                   className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                 >
+                   Cancel
+                 </button>
+                 <button
+                   onClick={confirmRestore}
+                   className="flex-1 px-4 py-2 text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+                 >
+                   Restore Employee
+                 </button>
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
+
+       {showForceDeleteModal && selectedDeletedEmployee && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+           <div className="w-full max-w-md bg-white shadow-lg rounded-xl dark:bg-gray-800">
+             <div className="p-6">
+               <div className="flex items-center justify-center mb-4">
+                 <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+                   <ExclamationTriangleIcon className="w-6 h-6 text-red-600" />
+                 </div>
+               </div>
+               <h3 className="mb-2 text-lg font-semibold text-center text-gray-900 dark:text-gray-100">
+                 Permanently Delete Employee
+               </h3>
+               <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                 Are you sure you want to permanently delete{" "}
+                 <span className="font-medium text-gray-900 dark:text-gray-100">
+                   {selectedDeletedEmployee.name}
+                 </span>
+                 ?<br />
+                 <strong className="text-red-600">
+                   ⚠️ This action cannot be undone! All data will be permanently
+                   removed from the database.
+                 </strong>
+               </p>
+               <div className="flex items-center gap-3 mt-6">
+                 <button
+                   onClick={() => setShowForceDeleteModal(false)}
+                   className="flex-1 px-4 py-2 text-gray-700 transition-colors border border-gray-300 rounded-lg hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                 >
+                   Cancel
+                 </button>
+                 <button
+                   onClick={confirmForceDelete}
+                   className="flex-1 px-4 py-2 text-white transition-colors bg-red-600 rounded-lg hover:bg-red-700"
+                 >
+                   Permanently Delete
+                 </button>
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
     </div>
   );
 };

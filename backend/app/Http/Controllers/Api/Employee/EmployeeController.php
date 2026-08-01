@@ -17,6 +17,14 @@ class EmployeeController extends Controller
     {
         $query = \App\Models\Employee::with(['department', 'position']);
 
+        if ($request->boolean('with_trashed')) {
+            $query->withTrashed();
+        }
+
+        if ($request->boolean('only_trashed')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -111,17 +119,63 @@ class EmployeeController extends Controller
         return $this->success($employee, 'Employee updated successfully.');
     }
 
-    public function destroy(string $id)
+    public function destroy(Request $request, string $id)
     {
-        $employee = \App\Models\Employee::find($id);
+        $employee = \App\Models\Employee::withTrashed()->find($id);
 
         if (! $employee) {
             return $this->notFound('Employee not found.');
         }
 
+        if ($request->boolean('force')) {
+            $employee->forceDelete();
+
+            return $this->noContent();
+        }
+
         $employee->delete();
 
         return $this->noContent();
+    }
+
+    public function trash(Request $request)
+    {
+        $perPage = $request->integer('per_page', 10);
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+
+        $employees = \App\Models\Employee::onlyTrashed()
+            ->with(['department', 'position'])
+            ->orderBy($sortBy, $sortOrder)
+            ->paginate($perPage);
+
+        return $this->success($employees, 'Deleted employees retrieved successfully.');
+    }
+
+    public function restore(string $id)
+    {
+        $employee = \App\Models\Employee::onlyTrashed()->find($id);
+
+        if (! $employee) {
+            return $this->notFound('Employee not found in trash.');
+        }
+
+        $employee->restore();
+
+        return $this->success(null, 'Employee restored successfully.');
+    }
+
+    public function forceDelete(string $id)
+    {
+        $employee = \App\Models\Employee::withTrashed()->find($id);
+
+        if (! $employee) {
+            return $this->notFound('Employee not found.');
+        }
+
+        $employee->forceDelete();
+
+        return $this->success(null, 'Employee permanently deleted successfully.');
     }
 
     public function uploadPhoto(Request $request, string $id)
@@ -172,5 +226,12 @@ class EmployeeController extends Controller
         $code = $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
 
         return $this->success(['employee_code' => $code], 'Employee code generated.');
+    }
+
+    public function trashCount()
+    {
+        $count = \App\Models\Employee::onlyTrashed()->count();
+
+        return $this->success(['count' => $count], 'Trash count retrieved successfully.');
     }
 }

@@ -25,6 +25,7 @@ export interface Employee {
   position?: Position;
   status: "active" | "inactive";
   photo: string | null;
+  deleted_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,6 +49,7 @@ export interface EmployeeFilters {
   department_id: string;
   position_id: string;
   status: string;
+  with_trashed: boolean;
   page: number;
   per_page: number;
 }

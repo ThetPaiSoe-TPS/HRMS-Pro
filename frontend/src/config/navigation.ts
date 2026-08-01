@@ -24,6 +24,7 @@ import {
   ShieldCheckIcon,
   PlusIcon,
   MagnifyingGlassIcon,
+  CpuChipIcon,
 } from "@heroicons/react/24/outline";
 
 export interface NavItem {
@@ -59,6 +60,18 @@ export const navigationData: NavItem[] = [
     href: "/admin/indexing-demo",
   },
 
+  {
+    name: "EXPLAIN Query (DB Optimization)",
+    icon: CpuChipIcon,
+    href: "/admin/explain-demo",
+  },
+
+  {
+    name: "Transaction Demo",
+    icon: ShieldCheckIcon,
+    href: "/admin/transactions",
+  },
+
   // ============================================
   // EMPLOYEE MANAGEMENT
   // ============================================
@@ -67,8 +80,9 @@ export const navigationData: NavItem[] = [
     icon: UsersIcon,
     href: "#",
     children: [
-      { name: "Employee List", icon: UsersIcon, href: "/employees" },
-      { name: "Add Employee", icon: UserPlusIcon, href: "/employees/create" },
+        { name: "Employee List", icon: UsersIcon, href: "/employees" },
+        { name: "Deleted Employees", icon: UserMinusIcon, href: "/employees/deleted" },
+        { name: "Add Employee", icon: UserPlusIcon, href: "/employees/create" },
       { name: "Departments", icon: BuildingOfficeIcon, href: "/departments" },
       { name: "Positions", icon: BriefcaseIcon, href: "/positions" },
     ],

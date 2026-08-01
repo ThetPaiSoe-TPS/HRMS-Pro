@@ -18,8 +18,10 @@ use App\Http\Controllers\Api\Report\ReportController;
 use App\Http\Controllers\Api\Setting\CompanySettingController;
 use App\Http\Controllers\Api\Profile\ProfileController as UserProfileController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\ExplainController;
 use App\Http\Controllers\Api\IndexingController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\TransactionDemoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -94,6 +96,10 @@ Route::prefix('v1')->group(function () {
         */
         Route::get('employees/export', [EmployeeExportController::class, 'export'])->middleware('permission:employee.view');
         Route::get('employees/generate-code', [EmployeeController::class, 'generateCode']); // <-- ADD THIS LINE
+        Route::get('employees/trash', [EmployeeController::class, 'trash'])->middleware('permission:employee.view');
+        Route::get('employees/trash-count', [EmployeeController::class, 'trashCount'])->middleware('permission:employee.view');
+        Route::post('employees/{employee}/restore', [EmployeeController::class, 'restore'])->middleware('permission:employee.update');
+        Route::delete('employees/{employee}/force', [EmployeeController::class, 'forceDelete'])->middleware('permission:employee.delete');
         Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:employee.view');
         Route::post('employees', [EmployeeController::class, 'store'])->middleware('permission:employee.create');
         Route::get('employees/{employee}', [EmployeeController::class, 'show'])->middleware('permission:employee.view');
@@ -232,5 +238,19 @@ Route::prefix('v1')->group(function () {
     Route::prefix('indexing')->group(function () {
         Route::get('/compare', [IndexingController::class, 'compare']);
         Route::get('/stats', [IndexingController::class, 'stats']);
+    });
+
+    Route::prefix('explain')->group(function () {
+        Route::post('/analyze', [ExplainController::class, 'analyze']);
+        Route::get('/logs', [ExplainController::class, 'logs']);
+        Route::get('/stats', [ExplainController::class, 'stats']);
+    });
+
+    Route::prefix('transactions')->group(function () {
+        Route::get('/successful', [TransactionDemoController::class, 'successful']);
+        Route::get('/failed', [TransactionDemoController::class, 'failed']);
+        Route::get('/without-transaction', [TransactionDemoController::class, 'withoutTransaction']);
+        Route::get('/with-transaction', [TransactionDemoController::class, 'withTransaction']);
+        Route::get('/history', [TransactionDemoController::class, 'history']);
     });
 });
