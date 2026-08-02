@@ -100,6 +100,21 @@ Route::prefix('v1')->group(function () {
         Route::get('employees/trash-count', [EmployeeController::class, 'trashCount'])->middleware('permission:employee.view');
         Route::post('employees/{employee}/restore', [EmployeeController::class, 'restore'])->middleware('permission:employee.update');
         Route::delete('employees/{employee}/force', [EmployeeController::class, 'forceDelete'])->middleware('permission:employee.delete');
+        Route::get('employees/loading-comparison', [EmployeeController::class, 'loadingComparison'])->middleware('permission:employee.view');
+        Route::get('employees/lazy-loading', [EmployeeController::class, 'showLazyLoading'])->middleware('permission:employee.view');
+        Route::get('employees/eager-loading', [EmployeeController::class, 'showEagerLoading'])->middleware('permission:employee.view');
+        Route::get('employees/count', [EmployeeController::class, 'employeeCount'])->middleware('permission:employee.view');
+        Route::prefix('employees')->group(function () {
+            Route::get('/where-has', [EmployeeController::class, 'whereHasDemo']);
+            Route::get('/has', [EmployeeController::class, 'hasDemo']);
+            Route::get('/with-count', [EmployeeController::class, 'withCountDemo']);
+            Route::get('/with-exists', [EmployeeController::class, 'withExistsDemo']);
+            Route::get('/with-sum', [EmployeeController::class, 'withSumDemo']);
+            Route::get('/with-avg', [EmployeeController::class, 'withAvgDemo']);
+            Route::get('/load', [EmployeeController::class, 'loadDemo']);
+            Route::get('/load-missing', [EmployeeController::class, 'loadMissingDemo']);
+            Route::get('/append', [EmployeeController::class, 'appendDemo']);
+        });
         Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:employee.view');
         Route::post('employees', [EmployeeController::class, 'store'])->middleware('permission:employee.create');
         Route::get('employees/{employee}', [EmployeeController::class, 'show'])->middleware('permission:employee.view');

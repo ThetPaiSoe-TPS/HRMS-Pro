@@ -64,6 +64,8 @@ import SearchDemo from "./api/Search/SearchDemo";
 import IndexingDemo from "./pages/admin/indexing/IndexingDemo";
 import ExplainDemo from "./pages/admin/explain/ExplainDemo";
 import TransactionDemo from "./pages/admin/transactions/TransactionDemo";
+import LoadingDemo from "./pages/admin/performance/LoadingDemo";
+import EloquentDemo from "./pages/admin/performance/EloquentDemo";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -182,11 +184,11 @@ function App() {
         <Route path="/admin/indexing-demo" element={<IndexingDemo />} />
         <Route path="/admin/explain-demo" element={<ExplainDemo />} />
 
-
         <Route path="/admin/transactions" element={<TransactionDemo />} />
 
+        <Route path="/admin/performance" element={<LoadingDemo />} />
 
-
+        <Route path="/admin/eloquent-demo" element={<EloquentDemo />} />
       </Route>
       {/* Default Routes */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

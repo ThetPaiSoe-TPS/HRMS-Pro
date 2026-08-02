@@ -162,4 +162,38 @@ export const positionApi = {
     // but positions might be nested in response.data
     return response.data || response || [];
   },
+
+  // ============================================
+  // ACCESSORS DEMO - Get employees with accessors
+  // ============================================
+  getWithAccessors: async (): Promise<Employee[]> => {
+    const response = await api.get("/employees/with-accessors");
+    return response;
+  },
+
+  // ============================================
+  // MUTATORS DEMO - Create employee with mutators
+  // ============================================
+  createWithMutators: async (data: Partial<Employee>): Promise<Employee> => {
+    const response = await api.post("/employees/with-mutators", data);
+    return response;
+  },
+
+  // ============================================
+  // LOCAL SCOPES DEMO
+  // ============================================
+  getByScope: async (scope: string, params?: any): Promise<ScopeResult> => {
+    const response = await api.get(`/employees/scope/${scope}`, { params });
+    return response;
+  },
+
+  // ============================================
+  // GLOBAL SCOPES DEMO
+  // ============================================
+  getWithGlobalScope: async (without?: string): Promise<Employee[]> => {
+    const response = await api.get("/employees/global-scope", {
+      params: { without },
+    });
+    return response;
+  },
 };

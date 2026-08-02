@@ -25,6 +25,8 @@ import {
   PlusIcon,
   MagnifyingGlassIcon,
   CpuChipIcon,
+  UserIcon,
+  FunnelIcon,
 } from "@heroicons/react/24/outline";
 
 export interface NavItem {
@@ -72,6 +74,17 @@ export const navigationData: NavItem[] = [
     href: "/admin/transactions",
   },
 
+  {
+    name: "Performance Demo",
+    icon: ChartBarIcon,
+    href: "/admin/performance",
+  },
+
+  {
+    name: "Eloquent Demo",
+    icon: PlusIcon,
+    href: "/admin/eloquent-demo",
+  },
   // ============================================
   // EMPLOYEE MANAGEMENT
   // ============================================
@@ -80,9 +93,13 @@ export const navigationData: NavItem[] = [
     icon: UsersIcon,
     href: "#",
     children: [
-        { name: "Employee List", icon: UsersIcon, href: "/employees" },
-        { name: "Deleted Employees", icon: UserMinusIcon, href: "/employees/deleted" },
-        { name: "Add Employee", icon: UserPlusIcon, href: "/employees/create" },
+      { name: "Employee List", icon: UsersIcon, href: "/employees" },
+      {
+        name: "Deleted Employees",
+        icon: UserMinusIcon,
+        href: "/employees/deleted",
+      },
+      { name: "Add Employee", icon: UserPlusIcon, href: "/employees/create" },
       { name: "Departments", icon: BuildingOfficeIcon, href: "/departments" },
       { name: "Positions", icon: BriefcaseIcon, href: "/positions" },
     ],

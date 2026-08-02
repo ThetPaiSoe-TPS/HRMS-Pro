@@ -32,6 +32,10 @@ class Employee extends Model
         'deleted_at' => 'datetime',
     ];
 
+    // ============================================
+    // ✅ RELATIONSHIPS - ADD THESE!
+    // ============================================
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -46,6 +50,42 @@ class Employee extends Model
     {
         return $this->belongsTo(Position::class);
     }
+
+    /**
+     * ✅ Employee has many Payrolls
+     */
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
+    }
+
+    /**
+     * ✅ Employee has many Leaves
+     */
+    public function leaves()
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    /**
+     * ✅ Employee has many Attendances
+     */
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * ✅ Employee has many Salary Records
+     */
+    public function salaries()
+    {
+        return $this->hasMany(EmployeeSalary::class);
+    }
+
+    // ============================================
+    // ✅ SCOPES
+    // ============================================
 
     /**
      * Full-text search using MySQL MATCH...AGAINST
@@ -106,4 +146,45 @@ class Employee extends Model
         }
         return trim($formatted);
     }
+
+    // ============================================
+    // ✅ ATTRIBUTES (Accessors)
+    // ============================================
+
+    // ✅ These accessors need actual columns
+    // In your table: name (single field), not first_name + last_name
+    public function getFullNameAttribute()
+    {
+        return $this->name;  // Use 'name' since you have a single name field
+    }
+
+    public function getTotalEarningsAttribute()
+    {
+        return $this->payrolls()->sum('net_salary');
+    }
+
+    public function getIsSeniorAttribute()
+    {
+        // Calculate years of experience from hire_date
+        if ($this->hire_date) {
+            $years = now()->diffInYears($this->hire_date);
+            return $years > 5;
+        }
+        return false;
+    }
+
+    public function getSalaryGradeAttribute()
+    {
+        // You need a 'salary' column, or calculate from payrolls
+        $avgSalary = $this->payrolls()->avg('net_salary') ?? 0;
+
+        if ($avgSalary > 80000) return 'A';
+        if ($avgSalary > 50000) return 'B';
+        return 'C';
+    }
+
+    // ✅ Which attributes to append
+    protected $appends = ['full_name', 'total_earnings', 'is_senior', 'salary_grade'];
+
+
 }
