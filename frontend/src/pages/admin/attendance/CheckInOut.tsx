@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../../../hooks/useAuth";
 import { attendanceApi } from "../../../api/attendance/attendanceApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 import { getStorageUrl } from "../../../api/axios";
 
 interface Employee {

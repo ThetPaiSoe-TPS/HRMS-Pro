@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Position\PositionController;
 use App\Http\Controllers\Api\Employee\EmployeeController;
 use App\Http\Controllers\Api\Employee\EmployeeExportController;
 use App\Http\Controllers\Api\Attendance\AttendanceController;
+use App\Http\Controllers\Api\CacheDemoController;
 use App\Http\Controllers\Api\Leave\LeaveController;
 use App\Http\Controllers\Api\Payroll\PayrollController;
 use App\Http\Controllers\Api\Report\ReportController;
@@ -114,6 +115,19 @@ Route::prefix('v1')->group(function () {
             Route::get('/load', [EmployeeController::class, 'loadDemo']);
             Route::get('/load-missing', [EmployeeController::class, 'loadMissingDemo']);
             Route::get('/append', [EmployeeController::class, 'appendDemo']);
+
+            Route::get('/with-accessors', [EmployeeController::class, 'withAccessors']);
+            Route::post('/with-mutators', [EmployeeController::class, 'withMutators']);
+            Route::get('/accessor-demo/{id}', [EmployeeController::class, 'accessorDemo']);
+            Route::post('/mutator-demo', [EmployeeController::class, 'mutatorDemo']);
+
+            // ✅ Scope Demo Routes
+            Route::get('/scope/local/{scope}', [EmployeeController::class, 'runLocalScope']);
+            Route::post('/scope/local/{scope}/filter', [EmployeeController::class, 'runFilteredScope']);
+            Route::get('/scope/local/all', [EmployeeController::class, 'getLocalScopes']);
+            Route::post('/scope/global/toggle', [EmployeeController::class, 'toggleGlobalScope']);
+            Route::get('/scope/global/status', [EmployeeController::class, 'getGlobalScopeStatus']);
+            Route::get('/scope/compare', [EmployeeController::class, 'compareScopes']);
         });
         Route::get('employees', [EmployeeController::class, 'index'])->middleware('permission:employee.view');
         Route::post('employees', [EmployeeController::class, 'store'])->middleware('permission:employee.create');
@@ -267,5 +281,14 @@ Route::prefix('v1')->group(function () {
         Route::get('/without-transaction', [TransactionDemoController::class, 'withoutTransaction']);
         Route::get('/with-transaction', [TransactionDemoController::class, 'withTransaction']);
         Route::get('/history', [TransactionDemoController::class, 'history']);
+    });
+
+    Route::prefix('cache')->group(function () {
+        Route::get('/with', [CacheDemoController::class, 'withCache']);
+        Route::get('/without', [CacheDemoController::class, 'withoutCache']);
+        Route::get('/compare', [CacheDemoController::class, 'compare']);
+        Route::get('/stats', [CacheDemoController::class, 'stats']);
+        Route::delete('/clear/{key}', [CacheDemoController::class, 'clear']);
+        Route::delete('/clear-all', [CacheDemoController::class, 'clearAll']);
     });
 });

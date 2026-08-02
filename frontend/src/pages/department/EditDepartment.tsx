@@ -8,7 +8,7 @@ import {
   UserIcon,
   CheckBadgeIcon,
 } from "@heroicons/react/24/outline";
-import { employeeApi } from "../../api/employeeApi";
+import { employeeApi } from "../../api/employee/employeeApi";
 import { departmentApi } from "../../api/department/departmentApi";
 
 interface Employee {

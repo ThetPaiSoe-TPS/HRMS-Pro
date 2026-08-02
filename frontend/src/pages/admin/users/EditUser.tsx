@@ -9,7 +9,7 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import { userApi } from "../../../api/user/userApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 
 interface Employee {
   id: number;

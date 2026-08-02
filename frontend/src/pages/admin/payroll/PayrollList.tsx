@@ -23,7 +23,7 @@ import type {
   PayrollStats,
 } from "../../../types/payroll.types";
 import { payrollApi } from "../../../api/payroll/payrollApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 import { getStorageUrl } from "../../../api/axios";
 
 // Replace the getPhotoUrl function

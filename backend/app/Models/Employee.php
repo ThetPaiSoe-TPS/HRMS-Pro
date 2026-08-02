@@ -30,10 +30,11 @@ class Employee extends Model
         'hire_date' => 'date',
         'date_of_birth' => 'date',
         'deleted_at' => 'datetime',
+        'status' => 'string',
     ];
 
     // ============================================
-    // ✅ RELATIONSHIPS - ADD THESE!
+    // ✅ RELATIONSHIPS
     // ============================================
 
     public function user()
@@ -51,45 +52,195 @@ class Employee extends Model
         return $this->belongsTo(Position::class);
     }
 
-    /**
-     * ✅ Employee has many Payrolls
-     */
     public function payrolls()
     {
         return $this->hasMany(Payroll::class);
     }
 
-    /**
-     * ✅ Employee has many Leaves
-     */
     public function leaves()
     {
         return $this->hasMany(LeaveRequest::class);
     }
 
-    /**
-     * ✅ Employee has many Attendances
-     */
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
 
-    /**
-     * ✅ Employee has many Salary Records
-     */
     public function salaries()
     {
         return $this->hasMany(EmployeeSalary::class);
     }
 
     // ============================================
-    // ✅ SCOPES
+    // ✅ ACCESSORS - Format when reading
     // ============================================
 
     /**
-     * Full-text search using MySQL MATCH...AGAINST
+     * Get full name (using 'name' field)
      */
+    public function getFullNameAttribute()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get status as badge text
+     */
+    public function getStatusBadgeAttribute()
+    {
+        return $this->status === 'active' ? 'Active' : 'Inactive';
+    }
+
+    /**
+     * Get experience in years from hire date
+     */
+    public function getExperienceYearsAttribute()
+    {
+        if ($this->hire_date) {
+            return now()->diffInYears($this->hire_date);
+        }
+        return 0;
+    }
+
+    /**
+     * Get initials from name
+     */
+    public function getInitialsAttribute()
+    {
+        $words = explode(' ', trim($this->name));
+        $initials = '';
+        foreach ($words as $word) {
+            if (!empty($word)) {
+                $initials .= strtoupper($word[0]);
+            }
+        }
+        return $initials ?: 'U';
+    }
+
+    /**
+     * Get age from date of birth
+     */
+    public function getAgeAttribute()
+    {
+        if ($this->date_of_birth) {
+            return now()->diffInYears($this->date_of_birth);
+        }
+        return null;
+    }
+
+    /**
+     * Get uppercase name
+     */
+    public function getUppercaseNameAttribute()
+    {
+        return strtoupper($this->name);
+    }
+
+    /**
+     * Get formatted employee code
+     */
+    public function getFormattedEmployeeCodeAttribute()
+    {
+        return 'EMP-' . $this->employee_code;
+    }
+
+    /**
+     * Get total earnings from payrolls
+     */
+    public function getTotalEarningsAttribute()
+    {
+        return $this->payrolls()->sum('net_salary') ?? 0;
+    }
+
+    /**
+     * Check if employee is senior (5+ years)
+     */
+    public function getIsSeniorAttribute()
+    {
+        if ($this->hire_date) {
+            return now()->diffInYears($this->hire_date) >= 5;
+        }
+        return false;
+    }
+
+    /**
+     * Get salary grade based on average payroll
+     */
+    public function getSalaryGradeAttribute()
+    {
+        $avgSalary = $this->payrolls()->avg('net_salary') ?? 0;
+
+        if ($avgSalary > 80000) return 'A';
+        if ($avgSalary > 50000) return 'B';
+        if ($avgSalary > 30000) return 'C';
+        return 'D';
+    }
+
+    // ============================================
+    // ✅ MUTATORS - Format when saving
+    // ============================================
+
+    /**
+     * Set name (trim and capitalize)
+     */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords(strtolower(trim($value)));
+    }
+
+    /**
+     * Set email (lowercase)
+     */
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = strtolower(trim($value));
+    }
+
+    /**
+     * Set phone (remove non-numeric)
+     */
+    public function setPhoneAttribute($value)
+    {
+        $this->attributes['phone'] = preg_replace('/[^0-9]/', '', trim($value));
+    }
+
+    /**
+     * Set employee code (uppercase)
+     */
+    public function setEmployeeCodeAttribute($value)
+    {
+        $this->attributes['employee_code'] = strtoupper(trim($value));
+    }
+
+    /**
+     * Set status (ensure valid)
+     */
+    public function setStatusAttribute($value)
+    {
+        $this->attributes['status'] = in_array($value, ['active', 'inactive']) ? $value : 'active';
+    }
+
+    // ============================================
+    // ✅ APPEND - Include accessors in JSON
+    // ============================================
+    protected $appends = [
+        'full_name',
+        'status_badge',
+        'experience_years',
+        'initials',
+        'age',
+        'uppercase_name',
+        'formatted_employee_code',
+        'total_earnings',
+        'is_senior',
+        'salary_grade',
+    ];
+
+    // ============================================
+    // ✅ FULL-TEXT SEARCH SCOPES
+    // ============================================
+
     public function scopeSearchFullText(Builder $query, string $searchTerm): Builder
     {
         return $query->whereRaw(
@@ -98,9 +249,6 @@ class Employee extends Model
         );
     }
 
-    /**
-     * Natural language full-text search
-     */
     public function scopeSearchNatural(Builder $query, string $searchTerm): Builder
     {
         return $query->whereRaw(
@@ -109,9 +257,6 @@ class Employee extends Model
         );
     }
 
-    /**
-     * Traditional LIKE search for comparison
-     */
     public function scopeSearchLike(Builder $query, string $searchTerm): Builder
     {
         return $query->where(function ($q) use ($searchTerm) {
@@ -121,9 +266,6 @@ class Employee extends Model
         });
     }
 
-    /**
-     * Get relevance score
-     */
     public function scopeWithRelevance(Builder $query, string $searchTerm): Builder
     {
         return $query->selectRaw(
@@ -132,9 +274,6 @@ class Employee extends Model
         )->orderBy('relevance', 'desc');
     }
 
-    /**
-     * Format search term for boolean mode
-     */
     private function formatSearchTerm(string $term): string
     {
         $terms = preg_split('/\s+/', trim($term));
@@ -147,44 +286,233 @@ class Employee extends Model
         return trim($formatted);
     }
 
-    // ============================================
-    // ✅ ATTRIBUTES (Accessors)
+     // ============================================
+    // ✅ LOCAL SCOPES - Reusable queries
     // ============================================
 
-    // ✅ These accessors need actual columns
-    // In your table: name (single field), not first_name + last_name
-    public function getFullNameAttribute()
+    /**
+     * Scope: Get only active employees
+     */
+    public function scopeActive(Builder $query)
     {
-        return $this->name;  // Use 'name' since you have a single name field
+        return $query->where('status', 'active');
     }
 
-    public function getTotalEarningsAttribute()
+    /**
+     * Scope: Get only inactive employees
+     */
+    public function scopeInactive(Builder $query)
     {
-        return $this->payrolls()->sum('net_salary');
+        return $query->where('status', 'inactive');
     }
 
-    public function getIsSeniorAttribute()
+    /**
+     * Scope: Get senior employees (5+ years)
+     */
+    public function scopeSenior(Builder $query)
     {
-        // Calculate years of experience from hire_date
-        if ($this->hire_date) {
-            $years = now()->diffInYears($this->hire_date);
-            return $years > 5;
+        $fiveYearsAgo = now()->subYears(5);
+        return $query->where('hire_date', '<=', $fiveYearsAgo);
+    }
+
+    /**
+     * Scope: Get employees by department
+     */
+    public function scopeByDepartment(Builder $query, $departmentId)
+    {
+        return $query->where('department_id', $departmentId);
+    }
+
+    /**
+     * Scope: Get employees with salary greater than
+     */
+    public function scopeSalaryGreaterThan(Builder $query, $amount)
+    {
+        return $query->where('salary', '>', $amount);
+    }
+
+    /**
+     * Scope: Get employees hired after date
+     */
+    public function scopeHiredAfter(Builder $query, $date)
+    {
+        return $query->where('hire_date', '>=', $date);
+    }
+
+    /**
+     * Scope: Get employees hired before date
+     */
+    public function scopeHiredBefore(Builder $query, $date)
+    {
+        return $query->where('hire_date', '<=', $date);
+    }
+
+    /**
+     * Scope: Search by name
+     */
+    public function scopeSearchByName(Builder $query, $search)
+    {
+        return $query->where('name', 'LIKE', "%{$search}%");
+    }
+
+    /**
+     * Scope: Get employees who have payrolls
+     */
+    public function scopeWithPayrolls(Builder $query)
+    {
+        return $query->has('payrolls');
+    }
+
+    /**
+     * Scope: Get employees without payrolls
+     */
+    public function scopeWithoutPayrolls(Builder $query)
+    {
+        return $query->doesntHave('payrolls');
+    }
+
+    /**
+     * Scope: Get employees with high salary (avg payroll > 50000)
+     */
+    public function scopeHighSalary(Builder $query)
+    {
+        return $query->whereHas('payrolls', function ($q) {
+            $q->where('net_salary', '>', 50000);
+        });
+    }
+
+    /**
+     * Scope: Get employees with payroll count > N
+     */
+    public function scopeWithPayrollCountGreaterThan(Builder $query, $count)
+    {
+        return $query->has('payrolls', '>', $count);
+    }
+
+    /**
+     * Scope: Get active senior employees (combined)
+     */
+    public function scopeActiveSenior(Builder $query)
+    {
+        return $query->active()->senior();
+    }
+
+    /**
+     * Scope: Get employees by salary range
+     */
+    public function scopeSalaryBetween(Builder $query, $min, $max)
+    {
+        return $query->whereBetween('salary', [$min, $max]);
+    }
+
+    /**
+     * Scope: Get employees hired this year
+     */
+    public function scopeHiredThisYear(Builder $query)
+    {
+        return $query->whereYear('hire_date', now()->year);
+    }
+
+    /**
+     * Scope: Get employees by multiple departments
+     */
+    public function scopeInDepartments(Builder $query, array $departmentIds)
+    {
+        return $query->whereIn('department_id', $departmentIds);
+    }
+
+    /**
+     * Scope: Get employees with eager loaded relationships
+     */
+    public function scopeWithDepartmentAndPosition(Builder $query)
+    {
+        return $query->with(['department', 'position']);
+    }
+
+    /**
+     * Scope: Get employees ordered by name
+     */
+    public function scopeOrderByName(Builder $query)
+    {
+        return $query->orderBy('name', 'asc');
+    }
+
+    /**
+     * Scope: Get employees with optional filter
+     */
+    public function scopeFilterByStatus(Builder $query, $status = null)
+    {
+        if ($status) {
+            return $query->where('status', $status);
         }
-        return false;
+        return $query;
     }
 
-    public function getSalaryGradeAttribute()
+    // ============================================
+    // ✅ GLOBAL SCOPES - Applied to ALL queries
+    // ============================================
+
+    protected static function booted()
     {
-        // You need a 'salary' column, or calculate from payrolls
-        $avgSalary = $this->payrolls()->avg('net_salary') ?? 0;
+        // 1️⃣ Always order by name (default ordering)
+        static::addGlobalScope('ordered', function (Builder $builder) {
+            $builder->orderBy('name', 'asc');
+        });
 
-        if ($avgSalary > 80000) return 'A';
-        if ($avgSalary > 50000) return 'B';
-        return 'C';
+        // 2️⃣ Always show active employees (comment out if not needed)
+        // static::addGlobalScope('active', function (Builder $builder) {
+        //     $builder->where('status', 'active');
+        // });
+
+        // 3️⃣ Always exclude soft-deleted (built-in SoftDeletes handles this)
+        // static::addGlobalScope('not_deleted', function (Builder $builder) {
+        //     $builder->whereNull('deleted_at');
+        // });
+
+        // 4️⃣ Always eager load department (optional)
+        // static::addGlobalScope('with_department', function (Builder $builder) {
+        //     $builder->with('department');
+        // });
+
+        // 5️⃣ Always filter by tenant (multi-tenant app)
+        // static::addGlobalScope('tenant', function (Builder $builder) {
+        //     $builder->where('company_id', auth()->user()->company_id);
+        // });
     }
 
-    // ✅ Which attributes to append
-    protected $appends = ['full_name', 'total_earnings', 'is_senior', 'salary_grade'];
+    // ============================================
+    // ✅ REMOVE GLOBAL SCOPES
+    // ============================================
 
+    /**
+     * Remove the ordered scope
+     */
+    public function scopeWithoutOrderedScope(Builder $query)
+    {
+        return $query->withoutGlobalScope('ordered');
+    }
 
+    /**
+     * Remove the active scope (if used)
+     */
+    public function scopeWithoutActiveScope(Builder $query)
+    {
+        return $query->withoutGlobalScope('active');
+    }
+
+    /**
+     * Remove all global scopes
+     */
+    public function scopeWithoutAllScopes(Builder $query)
+    {
+        return $query->withoutGlobalScopes();
+    }
+
+    /**
+     * Remove specific global scope by name
+     */
+    public function scopeWithoutScope(Builder $query, $scopeName)
+    {
+        return $query->withoutGlobalScope($scopeName);
+    }
 }

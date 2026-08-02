@@ -85,6 +85,31 @@ export const navigationData: NavItem[] = [
     icon: PlusIcon,
     href: "/admin/eloquent-demo",
   },
+
+  // ============================================
+  // ✅ ACCESSORS & MUTATORS DEMO (NEW)
+  // ============================================
+  {
+    name: "Accessors & Mutators",
+    icon: PlusIcon,
+    href: "/admin/accessor-mutator-demo",
+  },
+
+  {
+    name: "Scopes Demo",
+    icon: FunnelIcon,
+    href: "/admin/scope-demo",
+  },
+
+  {
+    name: "Cache Demo",
+    icon: FunnelIcon,
+    href: "/admin/cache-demo",
+  },
+
+
+
+
   // ============================================
   // EMPLOYEE MANAGEMENT
   // ============================================

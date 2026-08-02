@@ -14,7 +14,7 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import type { Employee } from "../../types/employee.types";
-import { employeeApi } from "../../api/employeeApi";
+import { employeeApi } from "../../api/employee/employeeApi";
 import { getStorageUrl } from "../../api/axios";
 
 const getPhotoUrl = (photo: string | null): string | null => {

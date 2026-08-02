@@ -11,7 +11,7 @@ import {
   DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 import { payrollApi } from "../../../api/payroll/payrollApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 import { getStorageUrl } from "../../../api/axios";
 
 export const GeneratePayroll: React.FC = () => {

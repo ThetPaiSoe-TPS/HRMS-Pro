@@ -32,7 +32,7 @@ import type {
   EmployeeAttendanceSummary,
 } from "../../../types/attendance.types";
 import { attendanceApi } from "../../../api/attendance/attendanceApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 import { departmentApi } from "../../../api/department/departmentApi";
 import { getStorageUrl } from "../../../api/axios";
 

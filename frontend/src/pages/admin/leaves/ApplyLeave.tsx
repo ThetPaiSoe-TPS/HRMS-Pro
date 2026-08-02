@@ -14,7 +14,7 @@ import type {
   LeaveRequestFormData,
 } from "../../../types/leave.types";
 import { getStorageUrl } from "../../../api/axios";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 
 export const ApplyLeave: React.FC = () => {
   const navigate = useNavigate();

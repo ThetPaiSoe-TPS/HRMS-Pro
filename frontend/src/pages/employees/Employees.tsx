@@ -21,7 +21,9 @@ import {
   UserMinusIcon,
 } from "@heroicons/react/24/outline";
 import type { Employee, EmployeeFilters } from "../../types/employee.types";
-import { employeeApi, departmentApi, positionApi } from "../../api/employeeApi";
+import { employeeApi } from "../../api/employee/employeeApi";
+import { departmentApi } from "../../api/department/departmentApi";
+import { positionApi } from "../../api/position/positionApi";
 import type { Department, Position } from "../../types/employee.types";
 import { getStorageUrl } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";

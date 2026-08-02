@@ -12,7 +12,9 @@ import {
   CheckBadgeIcon,
   CameraIcon,
 } from "@heroicons/react/24/outline";
-import { employeeApi, departmentApi, positionApi } from "../../api/employeeApi";
+import { employeeApi } from "../../api/employee/employeeApi";
+import { departmentApi } from "../../api/department/departmentApi";
+import { positionApi } from "../../api/position/positionApi";
 
 interface Department {
   id: number;

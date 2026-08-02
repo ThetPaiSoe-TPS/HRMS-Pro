@@ -66,6 +66,9 @@ import ExplainDemo from "./pages/admin/explain/ExplainDemo";
 import TransactionDemo from "./pages/admin/transactions/TransactionDemo";
 import LoadingDemo from "./pages/admin/performance/LoadingDemo";
 import EloquentDemo from "./pages/admin/performance/EloquentDemo";
+import AccessorMutatorDemo from "./components/performance/AccessorMutatorDemo";
+import ScopeDemo from "./pages/admin/performance/ScopeDemo";
+import CacheDemo from "./pages/admin/performance/CacheDemo";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -189,13 +192,23 @@ function App() {
         <Route path="/admin/performance" element={<LoadingDemo />} />
 
         <Route path="/admin/eloquent-demo" element={<EloquentDemo />} />
+
+        {/* ✅ Accessors & Mutators Demo */}
+        <Route
+          path="/admin/accessor-mutator-demo"
+          element={<AccessorMutatorDemo />}
+        />
+
+        <Route path="/admin/scope-demo" element={<ScopeDemo />} />
+
+        <Route path="/admin/cache-demo" element={<CacheDemo />} />
+
       </Route>
+
       {/* Default Routes */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
       <Route path="/admin/reports/attendance" element={<AttendanceReport />} />
-
-
     </Routes>
   );
 }

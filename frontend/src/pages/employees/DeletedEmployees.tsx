@@ -12,7 +12,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import type { Employee, EmployeeFilters } from "../../types/employee.types";
-import { employeeApi } from "../../api/employeeApi";
+import { employeeApi } from "../../api/employee/employeeApi";
 import { getStorageUrl } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 

@@ -300,7 +300,7 @@ export const EloquentDemo: React.FC = () => {
   ];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto bg-primary-700 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto bg-primary-100 min-h-screen">
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

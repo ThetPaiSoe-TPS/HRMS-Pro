@@ -18,7 +18,7 @@ import type {
 } from "../../../types/report.types";
 import { reportApi } from "../../../api/report/reportApi";
 import { departmentApi } from "../../../api/department/departmentApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 import { useAuth } from "../../../hooks/useAuth";
 
 interface Department {

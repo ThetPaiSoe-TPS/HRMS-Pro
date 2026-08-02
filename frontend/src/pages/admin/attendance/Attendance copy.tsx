@@ -18,7 +18,7 @@ import type {
   AttendanceStats,
 } from "../../../types/attendance.types";
 import { attendanceApi } from "../../../api/attendance/attendanceApi";
-import { employeeApi } from "../../../api/employeeApi";
+import { employeeApi } from "../../../api/employee/employeeApi";
 import { getStorageUrl } from "../../../api/axios";
 import { useAuth } from "../../../context/AuthContext";
 

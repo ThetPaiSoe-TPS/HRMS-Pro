@@ -20,7 +20,7 @@ import { attendanceApi } from "../../api/attendance/attendanceApi";
 import { leaveApi } from "../../api/leave/leaveApi";
 import { payrollApi } from "../../api/payroll/payrollApi";
 import { announcementApi } from "../../api/announcement/announcementApi";
-import { employeeApi } from "../../api/employeeApi";
+import { employeeApi } from "../../api/employee/employeeApi";
 import { departmentApi } from "../../api/department/departmentApi";
 
 // Chart.js imports
