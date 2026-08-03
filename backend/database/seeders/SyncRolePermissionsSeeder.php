@@ -47,6 +47,11 @@ class SyncRolePermissionsSeeder extends Seeder
             ['name' => 'Update Roles',         'slug' => 'role.update'],
             ['name' => 'Delete Roles',         'slug' => 'role.delete'],
             ['name' => 'Update Settings',      'slug' => 'setting.update'],
+            ['name' => 'View Announcements',   'slug' => 'announcement.view'],
+            ['name' => 'Create Announcements', 'slug' => 'announcement.create'],
+            ['name' => 'Update Announcements', 'slug' => 'announcement.update'],
+            ['name' => 'Delete Announcements', 'slug' => 'announcement.delete'],
+            ['name' => 'Publish Announcements', 'slug' => 'announcement.publish'],
         ];
 
         $all = [];
@@ -59,36 +64,68 @@ class SyncRolePermissionsSeeder extends Seeder
         $deptMgr    = Role::firstOrCreate(['slug' => 'dept-manager'],    ['name' => 'Department Manager']);
         $employee   = Role::firstOrCreate(['slug' => 'employee'],        ['name' => 'Employee']);
 
+        // ✅ Super Admin gets ALL permissions including announcements
         $superAdmin->permissions()->sync(Permission::all()->pluck('id'));
 
+        // ✅ HR Manager gets announcement permissions
         $hrManager->permissions()->sync(Permission::whereIn('slug', [
-            'employee.view', 'employee.create', 'employee.update', 'employee.delete',
+            'employee.view',
+            'employee.create',
+            'employee.update',
+            'employee.delete',
             'department.view',
             'position.view',
-            'attendance.view', 'attendance.create', 'attendance.update',
-            'leave.view', 'leave.create', 'leave.approve', 'leave.reject',
-            'payroll.view', 'payroll.generate',
+            'attendance.view',
+            'attendance.create',
+            'attendance.update',
+            'leave.view',
+            'leave.create',
+            'leave.approve',
+            'leave.reject',
+            'payroll.view',
+            'payroll.generate',
             'salary.view',
             'report.view',
             'user.view',
             'role.view',
+            // ✅ Add announcement permissions for HR Manager
+            'announcement.view',
+            'announcement.create',
+            'announcement.update',
+            'announcement.publish',
         ])->pluck('id'));
 
+        // ✅ Department Manager gets view permission
         $deptMgr->permissions()->sync(Permission::whereIn('slug', [
-            'employee.view', 'employee.create', 'employee.update',
+            'employee.view',
+            'employee.create',
+            'employee.update',
             'department.view',
             'position.view',
-            'attendance.view', 'attendance.create', 'attendance.update',
-            'leave.view', 'leave.create', 'leave.approve', 'leave.reject',
-            'payroll.view', 'payroll.generate',
+            'attendance.view',
+            'attendance.create',
+            'attendance.update',
+            'leave.view',
+            'leave.create',
+            'leave.approve',
+            'leave.reject',
+            'payroll.view',
+            'payroll.generate',
             'report.view',
             'user.view',
+            // ✅ Department Manager can view announcements
+            'announcement.view',
         ])->pluck('id'));
 
+        // ✅ Employee gets view permission
         $employee->permissions()->sync(Permission::whereIn('slug', [
-            'attendance.view', 'attendance.create',
-            'leave.view', 'leave.create',
+            'attendance.view',
+            'attendance.create',
+            'leave.view',
+            'leave.create',
             'payroll.view',
+            // ✅ Employee can view announcements
+            'announcement.view',
         ])->pluck('id'));
     }
 }

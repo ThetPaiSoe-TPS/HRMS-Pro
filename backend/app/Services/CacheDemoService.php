@@ -137,7 +137,7 @@ class CacheDemoService
             Cache::put($key, $summary, 3600);
         }
 
-        $time = microtime(true) - $start;
+$time = microtime(true) - $start;
 
         return [
             'data' => $summary,
@@ -145,6 +145,9 @@ class CacheDemoService
             'cached' => $fromCache,
             'source' => $fromCache ? 'Cache' : 'Database',
             'table' => 'payrolls + employees',
+            'columns' => ['employee', 'payroll_month', 'gross_salary', 'net_salary', 'status'],
+            'recent_columns' => ['employee', 'payroll_month', 'gross_salary', 'net_salary', 'status'],
+            'month_columns' => ['month', 'count', 'total'],
         ];
     }
 
@@ -234,7 +237,50 @@ class CacheDemoService
         ];
     }
 
-    private function logCache(string $key, string $query, float $time, int $count, bool $hit): void
+/**
+     * ✅ Get Cache Statistics from cache logs
+     */
+    public function getCacheStats(): array
+    {
+        $totalQueries = CacheLog::count();
+        $cacheHits = CacheLog::hits()->count();
+        $cacheMisses = CacheLog::misses()->count();
+
+        /*
+         * logCache() stores a single non-zero time per row:
+         * - cache MISS (DB query) rows   => time is stored in with_cache_time
+         * - cache HIT (cache read) rows  => time is stored in without_cache_time
+         *
+         * So to get a meaningful average we read the non-zero column per state.
+         */
+        $avgWithoutCacheSec = CacheLog::misses()
+            ->selectRaw('AVG(NULLIF(COALESCE(without_cache_time, 0) + COALESCE(with_cache_time, 0), 0)) as avg_time')
+            ->value('avg_time') ?? 0;
+        $avgWithCacheSec = CacheLog::hits()
+            ->selectRaw('AVG(NULLIF(COALESCE(without_cache_time, 0) + COALESCE(with_cache_time, 0), 0)) as avg_time')
+            ->value('avg_time') ?? 0;
+
+        // Convert seconds -> milliseconds (frontend renders these as "ms")
+        $avgWithoutCacheMs = (float) $avgWithoutCacheSec * 1000;
+        $avgWithCacheMs = (float) $avgWithCacheSec * 1000;
+
+        // Total time saved = (avg without cache - avg with cache) * number of cache hits
+        $totalTimeSaved = ($avgWithoutCacheMs - $avgWithCacheMs) * $cacheHits;
+
+        return [
+            'total_queries' => $totalQueries,
+            'cache_hits' => $cacheHits,
+            'cache_misses' => $cacheMisses,
+            'hit_rate' => $totalQueries > 0
+                ? round(($cacheHits / $totalQueries) * 100, 2) . '%'
+                : '0%',
+            'avg_without_cache' => round($avgWithoutCacheMs, 2),
+            'avg_with_cache' => round($avgWithCacheMs, 2),
+            'total_time_saved' => round(max($totalTimeSaved, 0), 2),
+        ];
+    }
+
+private function logCache(string $key, string $query, float $time, int $count, bool $hit): void
     {
         try {
             CacheLog::create([

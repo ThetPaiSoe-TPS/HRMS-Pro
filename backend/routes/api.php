@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\ExplainController;
 use App\Http\Controllers\Api\IndexingController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\TransactionDemoController;
+use App\Http\Controllers\Api\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -283,12 +284,25 @@ Route::prefix('v1')->group(function () {
         Route::get('/history', [TransactionDemoController::class, 'history']);
     });
 
-    Route::prefix('cache')->group(function () {
+Route::prefix('cache')->group(function () {
         Route::get('/with', [CacheDemoController::class, 'withCache']);
         Route::get('/without', [CacheDemoController::class, 'withoutCache']);
+        Route::get('/department-stats', [CacheDemoController::class, 'departmentStats']);
+        Route::get('/payroll-summary', [CacheDemoController::class, 'payrollSummary']);
         Route::get('/compare', [CacheDemoController::class, 'compare']);
         Route::get('/stats', [CacheDemoController::class, 'stats']);
         Route::delete('/clear/{key}', [CacheDemoController::class, 'clear']);
         Route::delete('/clear-all', [CacheDemoController::class, 'clearAll']);
+    });
+
+    Route::prefix('notifications')->middleware('auth:sanctum')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::get('/settings', [NotificationController::class, 'getSettings']);
+        Route::put('/settings', [NotificationController::class, 'updateSettings']);
+        Route::put('/mark-read/{id}', [NotificationController::class, 'markAsRead']);
+        Route::put('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/{id}', [NotificationController::class, 'destroy']);
+        Route::delete('/all', [NotificationController::class, 'destroyAll']);
     });
 });

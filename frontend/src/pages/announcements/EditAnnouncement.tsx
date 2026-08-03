@@ -158,11 +158,32 @@ export const EditAnnouncement: React.FC = () => {
     setLoading(true);
     try {
       const submitData = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          submitData.append(key, value as string | boolean);
+
+      // ✅ Same helper function
+      const appendValue = (key: string, value: any) => {
+        if (value === null || value === undefined) return;
+
+        if (typeof value === "boolean") {
+          submitData.append(key, value ? "1" : "0");
+        } else {
+          submitData.append(key, String(value));
         }
-      });
+      };
+
+      appendValue("title", formData.title);
+      appendValue("content", formData.content);
+      appendValue("summary", formData.summary);
+      appendValue("type", formData.type);
+      appendValue("priority", formData.priority);
+      appendValue("status", formData.status);
+      appendValue("is_pinned", formData.is_pinned);
+      appendValue("is_important", formData.is_important);
+      appendValue("target_type", formData.target_type);
+      appendValue("target_id", formData.target_id);
+      appendValue("start_date", formData.start_date);
+      appendValue("end_date", formData.end_date);
+
+      // ✅ Append attachments
       attachments.forEach((file) => {
         submitData.append("attachments[]", file);
       });
@@ -170,6 +191,7 @@ export const EditAnnouncement: React.FC = () => {
       await announcementApi.updateAnnouncement(parseInt(id!), submitData);
       navigate("/announcements");
     } catch (error: any) {
+      console.error("Error:", error);
       setErrors({
         general:
           error.response?.data?.message || "Failed to update announcement",

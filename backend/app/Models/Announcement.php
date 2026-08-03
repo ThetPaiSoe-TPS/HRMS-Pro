@@ -72,7 +72,18 @@ class Announcement extends Model
         return $this->status !== 'archived';
     }
 
+    /**
+     * ✅ FIXED: Published scope
+     */
     public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    /**
+     * ✅ FIXED: Active scope - check dates (for employees)
+     */
+    public function scopeActive($query)
     {
         return $query->where('status', 'published')
             ->where(function ($q) {
@@ -112,5 +123,23 @@ class Announcement extends Model
                         ->where('target_id', $user->id);
                 });
         });
+    }
+
+    /**
+     * ✅ FIXED: Scope to include all (for admin)
+     */
+    public function scopeForAdmin($query)
+    {
+        return $query;
+    }
+
+    /**
+     * ✅ Check if announcement is published
+     */
+    public function isPublished(): bool
+    {
+        return $this->status === 'published' &&
+            ($this->start_date === null || $this->start_date <= now()) &&
+            ($this->end_date === null || $this->end_date >= now());
     }
 }

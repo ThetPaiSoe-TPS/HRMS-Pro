@@ -70,7 +70,7 @@ export const Announcements: React.FC = () => {
   const [filters, setFilters] = useState<AnnouncementFilters>({
     search: "",
     type: "",
-    status: "",
+    status: "", // ← Change from "published" to "" to show all
     priority: "",
     pinned: false,
     important: false,

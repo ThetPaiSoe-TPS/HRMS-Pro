@@ -4,21 +4,13 @@ import type { Activity } from "../../types/activity.types";
 import type { AuthResponse, LoginCredentials, RegisterData, User } from "../../types/auth.types";
 import api from "../axios";
 
-const roleMap: Record<number, string> = {
-  1: 'super_admin',
-  2: 'admin',
-  3: 'hr_manager',
-  4: 'manager',
-  5: 'employee',
-};
-
 const mapUser = (data: any): User => ({
   id: data.id,
   name: data.name,
   email: data.email,
-  role: roleMap[data.role_id] || 'employee',
+  role: (data.role_slug || '').replace(/-/g, '_') || 'employee',
   role_id: data.role_id,
-  role_name: data.role_name || roleMap[data.role_id] || 'employee',
+  role_name: data.role_name || (data.role_slug || '').replace(/-/g, '_') || 'employee',
   permissions: data.permissions || [],
   employee_id: data.employee_id,
   avatar: data.avatar || null,

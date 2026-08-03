@@ -319,7 +319,7 @@ export const CacheDemo: React.FC = () => {
               <PlayIcon className="h-5 w-5 text-purple-600" />
             )}
           </div>
-          {payrollResult && (
+{payrollResult && (
             <div className="mt-2 space-y-1">
               <p className="text-xs text-gray-600">⏱️ {payrollResult.time}</p>
               <p className="text-xs text-green-600">
@@ -331,8 +331,53 @@ export const CacheDemo: React.FC = () => {
                     Total: {payrollResult.data.total_payrolls || 0}
                   </p>
                   <p className="text-xs text-gray-600">
-                    Amount: ${payrollResult.data.total_amount?.toFixed(2) || 0}
+                    Amount: $
+                    {Number(payrollResult.data.total_amount || 0).toFixed(2)}
                   </p>
+                  <p className="text-xs text-gray-600">
+                    Avg Salary: $
+                    {Number(payrollResult.data.avg_salary || 0).toFixed(2)}
+                  </p>
+
+                  {/* Recent Payrolls Table */}
+                  {payrollResult.data.recent_payrolls &&
+                    payrollResult.data.recent_payrolls.length > 0 &&
+                    renderDataTable(
+                      payrollResult.data.recent_payrolls.map(
+                        (p: any) => ({
+                          employee: p.employee?.name || `#${p.employee_id}`,
+                          payroll_month: p.payroll_month,
+                          gross_salary: p.gross_salary,
+                          net_salary: p.net_salary,
+                          status: p.status,
+                        }),
+                      ),
+                      payrollResult.recent_columns || [
+                        "employee",
+                        "payroll_month",
+                        "gross_salary",
+                        "net_salary",
+                        "status",
+                      ],
+                      "Recent Payrolls",
+                    )}
+
+                  {/* Payrolls by Month Table */}
+                  {payrollResult.data.by_month &&
+                    payrollResult.data.by_month.length > 0 &&
+                    renderDataTable(
+                      payrollResult.data.by_month.map((m: any) => ({
+                        month: m.month,
+                        count: m.count,
+                        total: m.total,
+                      })),
+                      payrollResult.month_columns || [
+                        "month",
+                        "count",
+                        "total",
+                      ],
+                      "Payrolls by Month",
+                    )}
                 </div>
               )}
             </div>
@@ -504,11 +549,11 @@ export const CacheDemo: React.FC = () => {
   const renderStats = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Cache Statistics</h3>
+        <h3 className="font-semibold text-white">Cache Statistics</h3>
         <div className="flex items-center gap-2">
           <button
             onClick={fetchStats}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 border border-gray-300 rounded-lg text-white text-sm hover:bg-secondary-900 hover:text-black transition-colors"
           >
             <ArrowPathIcon className="h-4 w-4 inline" /> Refresh
           </button>

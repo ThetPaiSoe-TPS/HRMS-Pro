@@ -8,6 +8,7 @@ use App\Models\AnnouncementAttachment;
 use App\Models\AnnouncementView;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,10 +20,38 @@ class AnnouncementController extends Controller
     {
         $query = Announcement::with(['creator', 'attachments']);
 
-        // Filters
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        // ✅ If user is admin or has manage permission, show ALL
+        $isAdmin = $request->user()->hasPermission('announcement.manage') ||
+            $request->user()->role === 'super_admin';
+
+        if (!$isAdmin) {
+            // ✅ For regular users: only show published & targeted
+            $query->where('status', 'published');
+
+            // ✅ Target audience filter
+            $query->where(function ($q) use ($request) {
+                $q->where('target_type', 'all')
+                    ->orWhere(function ($q) use ($request) {
+                        $q->where('target_type', 'department')
+                            ->where('target_id', $request->user()->employee?->department_id);
+                    })
+                    ->orWhere(function ($q) use ($request) {
+                        $q->where('target_type', 'role')
+                            ->where('target_id', $request->user()->role_id);
+                    });
+            });
         }
+
+        // ✅ For admin: show ALL announcements (including drafts)
+        if ($isAdmin) {
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            // If no status filter, show all
+        }
+
+        // ✅ Optional: Filter by date range (only if dates are provided)
+        // Remove the automatic date filtering from the query
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -49,11 +78,6 @@ class AnnouncementController extends Controller
             $query->where('is_important', true);
         }
 
-        // For regular users, only show published announcements targeted to them
-        if (!$request->user()->hasPermission('announcement.manage')) {
-            $query->published()->targetedTo($request->user());
-        }
-
         $perPage = $request->integer('per_page', 10);
         $announcements = $query->orderBy('is_pinned', 'desc')
             ->orderBy('created_at', 'desc')
@@ -64,28 +88,75 @@ class AnnouncementController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // ✅ 1. Convert empty strings to null for nullable fields
+        $input = $request->all();
+        $nullableFields = ['start_date', 'end_date', 'summary', 'target_id'];
+        foreach ($nullableFields as $field) {
+            if (isset($input[$field]) && $input[$field] === '') {
+                $input[$field] = null;
+            }
+        }
+
+        // ✅ 2. Debug: Log what's being received
+        Log::info('Announcement Creation Request', [
+            'input' => $input,
+            'files' => $request->allFiles(),
+            'user' => $request->user() ? $request->user()->id : null,
+        ]);
+
+        // ✅ 3. Make sure status has a default value
+        if (!isset($input['status']) || empty($input['status'])) {
+            $input['status'] = 'draft';
+        }
+
+        // ✅ 4. Make sure type has a default value
+        if (!isset($input['type']) || empty($input['type'])) {
+            $input['type'] = 'general';
+        }
+
+        // ✅ 5. Make sure priority has a default value
+        if (!isset($input['priority']) || empty($input['priority'])) {
+            $input['priority'] = 'medium';
+        }
+
+        // ✅ 6. Make sure target_type has a default value
+        if (!isset($input['target_type']) || empty($input['target_type'])) {
+            $input['target_type'] = 'all';
+        }
+
+        // ✅ 7. Merge input with files for validation
+        $validator = Validator::make(array_merge($input, $request->allFiles()), [
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'summary' => ['nullable', 'string', 'max:500'],
-            'type' => ['required', 'in:general,hr,payroll,event,policy,emergency'],
-            'priority' => ['required', 'in:low,medium,high,urgent'],
-            'is_pinned' => ['boolean'],
-            'is_important' => ['boolean'],
-            'target_type' => ['required', 'in:all,department,role,specific'],
-            'target_id' => ['nullable', 'integer'],
+            'type' => ['required', 'string', 'in:general,hr,payroll,event,policy,emergency'],
+            'priority' => ['required', 'string', 'in:low,medium,high,urgent'],
+            'is_pinned' => ['nullable', 'boolean'],
+            'is_important' => ['nullable', 'boolean'],
+            'target_type' => ['required', 'string', 'in:all,department,role,specific'],
+            'target_id' => ['nullable', 'integer', 'exists:departments,id'],
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after:start_date'],
-            'status' => ['required', 'in:draft,published,archived'],
+            'status' => ['required', 'string', 'in:draft,published,archived'],
             'attachments' => ['nullable', 'array'],
             'attachments.*' => ['file', 'max:10240'], // 10MB max
         ]);
 
         if ($validator->fails()) {
+            // ✅ 8. Log validation errors for debugging
+            Log::error('Announcement Validation Failed', [
+                'errors' => $validator->errors()->toArray(),
+                'input' => $input,
+            ]);
+
             return $this->validationError($validator->errors());
         }
 
         $data = $validator->validated();
+
+        // ✅ 9. Ensure boolean fields are properly cast
+        $data['is_pinned'] = $data['is_pinned'] ?? false;
+        $data['is_important'] = $data['is_important'] ?? false;
         $data['created_by'] = $request->user()->id;
 
         if ($data['status'] === 'published') {
@@ -94,7 +165,7 @@ class AnnouncementController extends Controller
 
         $announcement = Announcement::create($data);
 
-        // Handle attachments
+        // ✅ 10. Handle attachments
         if ($request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('announcements', 'public');

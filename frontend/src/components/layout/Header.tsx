@@ -1,14 +1,15 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 import {
   Bars3Icon,
   BellIcon,
   MagnifyingGlassIcon,
   MoonIcon,
   SunIcon,
-} from '@heroicons/react/24/outline';
-import { useAuth } from '../../hooks/useAuth';
-import { ThemeToggle } from './ThemeToggle';
+} from "@heroicons/react/24/outline";
+import { useAuth } from "../../hooks/useAuth";
+import { ThemeToggle } from "./ThemeToggle";
+import { NotificationBell } from "../notifications/NotificationBell";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -50,11 +51,15 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
           <div className="h-8 w-px bg-gray-200 hidden sm:block dark:bg-gray-700"></div>
 
+          <NotificationBell />
+
+          <div className="h-8 w-px bg-gray-200"></div>
+
           {/* User Avatar */}
           <Link to="/profile" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center dark:bg-primary-900">
               <span className="text-primary-700 text-sm font-medium dark:text-primary-300">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </span>
             </div>
             <span className="text-sm text-gray-700 hidden sm:inline dark:text-gray-200">

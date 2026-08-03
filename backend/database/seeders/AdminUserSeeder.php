@@ -19,7 +19,7 @@ class AdminUserSeeder extends Seeder
         $users = [
             [
                 'name' => 'Super Admin',
-                'email' => 'name1.admin@hrms.com',
+                'email' => 'super.admin@hrms.com',
                 'password' => '123123123',
                 'role' => 'super-admin', // Using role slug for lookup
             ],

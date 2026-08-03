@@ -24,7 +24,7 @@ import { Button } from "../../components/common/Button/Button";
 const DEMO_CREDENTIALS = {
   super_admin: {
     email: "super.admin@hrms.com",
-    password: "asd123!@#",
+    password: "123123123",
     label: "Super Admin",
     icon: ShieldCheckIcon,
     color: "bg-purple-600 hover:bg-purple-700",
